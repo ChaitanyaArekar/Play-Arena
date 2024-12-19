@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: #f4f4f4;
+    background-color: #fff;
     color: #333;
 }
 
@@ -16,6 +16,7 @@ header {
     align-items: center;
     padding: 10px 20px;
     position: absolute;
+    background-color: #fff;
     top: 0;
     left: 0;
     width: 100%;
@@ -49,46 +50,114 @@ header {
 
 
 .about-us-container {
-    margin-top: 120px;
-    margin-left: 5%;
-    margin-right: 5%;
-    max-width: 90%;
+    margin-top: 60px;
+    max-width: 100%;
     padding: 20px;
 }
 
 .about-card {
-    background-color: #fff;
+    background-color: #F2F8E2 ;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 200px;
 }
 
-.about-card h2, .about-card h3 {
-    color: #333;
-    margin-bottom: 15px;
+.about-card h2{
+    text-align: center;
+    margin-top: 20px;
+    font-size: 55px;
+    color: #0f660f;
 }
 
-.about-card ul {
-    list-style: disc;
-    margin-left: 20px;
-    font-size: 1.1em;
-    line-height: 1.6;
+.about-card p{
+    color: black;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
 }
 
-.about-card p {
-    font-size: 1.1em;
-    line-height: 1.6;
+
+
+.mission-card {
     margin-bottom: 20px;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
-/* Add spacing between the cards */
-.about-us-container {
-    margin-top: 120px;
+.mission-card .image{  
+    width: 130rem;
+    border-radius: 8px;
+}
+
+.mission-card .details{
+    color: black;
+    background-color: #21a030;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    color: #fff;
+
+}
+.mission-card .details h2{
     margin-left: 5%;
-    margin-right: 5%;
+    margin-top: 5%;
+    font-size: 50px;
 }
 
+.mission-card .details p{
+    margin-top: 40px;
+    padding: 15px;
+    font-size: 17.5px;
+}
+
+.background-image{
+    height: 300px;
+    width: 100%;
+    border-radius: 8px;
+}
+.choose-card {
+    background-color: #F2F8E2;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    height: 250px;
+}
+
+.choose-card h3{
+    text-align: center;
+    margin-top: 30px;
+    font-size: 45px;
+    color: #0f660f;
+}
+
+.choose-card p{
+    color: black;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.choose-card ul {
+    list-style: none;
+    display: flex;
+    margin-top: 15px;
+    margin-right: 55px;
+    gap: 40px;
+}
+
+.choose-card ul li {
+    display: inline-block;
+}
+
+.choose-card ul li a {
+    text-decoration: none;
+    color: black;
+    font-size: 2rem;
+    transition: color 0.3s ease;    
+}
 
 footer {
     background: #333;
