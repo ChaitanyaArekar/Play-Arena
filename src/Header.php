@@ -24,7 +24,7 @@
     </header>
 
     <section class="home-page">
-        <img src="images/Wallpaper.jpg" alt="Background" class="background-image">
+        <img src="Public/img/Wallpaper.jpg" alt="Background" class="background-image">
         <div class="home-page-content">
             <h1>YOUR<br>NEAREST<br>SPORTS COMMUNITY</h1>
             <p><b>IS JUST A TAP AWAY</b></p>
