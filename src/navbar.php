@@ -76,7 +76,6 @@ $navLinks = [
             const isVisible = sidebar.classList.contains('hidden');
             sidebar.classList.toggle('hidden', !isVisible);
             
-            // Toggle icons
             menuIcon.classList.toggle('hidden', !isVisible);
             closeIcon.classList.toggle('hidden', isVisible);
         });

@@ -1,5 +1,5 @@
 
-<?php include 'src/header.php'; ?>
+<?php include 'src/home.php'; ?>
 <?php include 'src/booking.php';?>
 <?php include 'src/contact.php'; ?>
 <?php include 'src/friend.php'; ?>
