@@ -11,7 +11,6 @@
 <header class="<?php echo $textColor; ?>">
     <?php include 'navbar.php'; ?>
 </header>
-
     <section class="about-us">
         <div class="about-us-container">
             <div class="about-card">
@@ -56,8 +55,7 @@
             </div>
 
             <div class="contact-card">
-                <h3>Get in Touch</h3>
-                <p>If you have any questions or need assistance, don't hesitate to <?php include 'contact.php'; ?>.</p>
+                <?php include 'contact.php'; ?>
             </div>
         </div>
     </section>

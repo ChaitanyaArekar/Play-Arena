@@ -101,15 +101,20 @@ header {
 }
 
 .home-page-content h1 {
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-top: 200px;
     margin-left: 7%;
+    font-weight: 1000;
 }
 
 .home-page-content p {
     font-size: 1.5rem;
     margin-left: 7%;
-    color: rgb(91, 228, 66);
+    background: linear-gradient(to right, #1d976c, #93f9b9); /* Gradient applied to text */
+    -webkit-background-clip: text; /* Clips the gradient to the text */
+    background-clip: text;
+    color: transparent;    
+    font-weight: bold;
 }
 
 .btn {
@@ -117,8 +122,9 @@ header {
     width: 120px;
     margin-top: 15px;
     margin-left: 7%;
-    color: white;
-    background-color: rgb(91, 228, 66);
+    color: black;
+    font-weight: 650;
+    background : linear-gradient(to right, #1d976c, #93f9b9);
     border-radius: 50px;
     border: none;
     cursor: pointer;
@@ -159,4 +165,40 @@ header {
         display: block;
     }
 
+}
+
+/* Animation */
+
+.home-page-content {
+    opacity: 0;
+    transform: translateY(30px); 
+    animation: fadeInUp 1.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUpButton 1.5s ease-out forwards 1s;
+}
+
+@keyframes fadeInUpButton {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
