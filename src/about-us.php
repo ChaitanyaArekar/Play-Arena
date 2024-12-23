@@ -7,35 +7,24 @@
     <link rel="stylesheet" href="about-us.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <h1>Play Arena</h1>
-        </div>
-        <nav class="navbar">
-            <div class="menu-icon" id="menu-icon">&#9776;</div> <!-- Hamburger icon -->
-            <div class="close-icon" id="close-icon">&#10005;</div> <!-- Close icon -->
-            <ul class="nav-list">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="#contact-us">Contact Us</a></li>
-                <li><a href="#book-now">Book Now</a></li>
-                <li><a href="#login">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+<?php $textColor = 'text-black'; ?>
+<header class="<?php echo $textColor; ?>">
+    <?php include 'navbar.php'; ?>
+</header>
 
     <section class="about-us">
         <div class="about-us-container">
             <div class="about-card">
-                <h2>About Play Arena</h2>
+                <h3>About Play Arena</h3>
                 <p>Welcome to <strong>Play Arena</strong>, your one-stop platform for booking sports turf and facilities for a variety of sports. Whether you're a casual player looking to enjoy a friendly match or a team looking for regular practice sessions, Play Arena has got you covered.</p>
             </div>
 
             <div class="mission-card">
                 <div class="image">
-                    <img src="Public/img/Wallpaper.jpg" alt="Background" class="background-image">
+                    <img src="/Public/img/Wallpaper.jpg" alt="Background" class="background-image">
                 </div>
                 <div class="details">
-                    <h2><strong>Our Mission</strong></h2>
+                    <h3><strong>Our Mission</strong></h3>
                     <p>Our mission is to make sports accessible to everyone by providing easy-to-use and reliable turf booking services. We aim to promote an active lifestyle, foster community spirit, and offer seamless turf booking experiences for individuals, teams, and organizations alike.</p>
                 </div>
             </div>
@@ -62,40 +51,20 @@
                     </ul>
                 </div>
                 <div class="image">
-                    <img src="Public/img/Wallpaper.jpg" alt="Background" class="background-image">
+                <img src="/Public/img/Wallpaper.jpg" alt="Background" class="background-image">
                 </div>
             </div>
 
             <div class="contact-card">
                 <h3>Get in Touch</h3>
-                <p>If you have any questions or need assistance, don't hesitate to <a href="#contact-us">contact us</a>.</p>
+                <p>If you have any questions or need assistance, don't hesitate to <?php include 'contact.php'; ?>.</p>
             </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2024 Play Arena. All Rights Reserved.</p>
+    <?php include 'footer.php'; ?>
     </footer>
 
-    <script>
-        // JavaScript to toggle the menu visibility on mobile
-        const menuIcon = document.getElementById('menu-icon');
-        const closeIcon = document.getElementById('close-icon');
-        const navList = document.querySelector('.nav-list');
-
-        // When the menu icon is clicked, show the menu and hide the menu icon
-        menuIcon.addEventListener('click', () => {
-            navList.classList.add('active');
-            menuIcon.style.display = 'none'; // Hide the menu icon
-            closeIcon.style.display = 'block'; // Show the close icon
-        });
-
-        // When the close icon is clicked, hide the menu and show the menu icon again
-        closeIcon.addEventListener('click', () => {
-            navList.classList.remove('active');
-            closeIcon.style.display = 'none'; // Hide the close icon
-            menuIcon.style.display = 'block'; // Show the menu icon again
-        });
-    </script>
 </body>
 </html>

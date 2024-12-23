@@ -21,7 +21,7 @@ header {
     z-index: 1000;
 }
 
-.logo h1 {
+/* .logo h1 {
     margin-top: 15px;
     margin-left: 30px;
     margin-bottom: 10px;
@@ -73,7 +73,7 @@ header {
 
 .navbar ul.active + .close-icon + .menu-icon {
     display: none;
-}
+} */
 
 .home-page {
     position: relative;
