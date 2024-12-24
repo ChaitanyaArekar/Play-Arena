@@ -2,8 +2,8 @@
 $navLinks = [
     ["id" => "about", "title" => "About", "url" => "/src/about-us.php"],
     ["id" => "contact", "title" => "Contact", "url" => "/src/contact.php"],
-    ["id" => "book", "title" => "Book Now", "url" => "/src/booking.php"],
-    ["id" => "login", "title" => "Login", "url" => "/src/login.php"]
+    ["id" => "book", "title" => "Book Now", "url" => "booking.php"],
+    ["id" => "login", "title" => "Login", "url" => "contact.php"]
 ];
 ?>
 
@@ -18,6 +18,16 @@ $navLinks = [
         .rotate-90 { transform: rotate(90deg); }
         .transition-transform { transition: transform 0.4s ease-in-out; }
         .icon { transition: transform 0.4s ease-in-out; }
+        .icon:hover { transform: scale(1.2); }
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.show {
+            transform: translateX(0);
+        }
+        .sidebar.hidden {
+            transform: translateX(100%);
+        }
     </style>
 </head>
 <body>
@@ -40,7 +50,7 @@ $navLinks = [
         <div class="sm:hidden flex flex-1 justify-end items-center relative">
             <button 
                 id="menu-toggle" 
-                class="<?php echo isset($textColor) ? $textColor : 'text-white'; ?>"
+                class="text-white focus:outline-none"
             >
                 <svg id="menu-icon" class="h-6 w-6 icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path id="menu-path" d="M4 6h16M4 12h16M4 18h16" />
@@ -75,6 +85,7 @@ $navLinks = [
         toggleButton.addEventListener('click', () => {
             const isVisible = sidebar.classList.contains('hidden');
             sidebar.classList.toggle('hidden', !isVisible);
+            sidebar.classList.toggle('show', isVisible);
             
             menuIcon.classList.toggle('hidden', !isVisible);
             closeIcon.classList.toggle('hidden', isVisible);

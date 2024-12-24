@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frequently Asked Questions</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion"></script>  <!-- Adding Framer Motion for animations -->
     <style>
         .faq-answer {
             max-height: 0;
@@ -34,28 +33,24 @@
             cursor: pointer;
         }
 
-        /* Animation for fade-in effect */
         .fade-in {
             opacity: 0;
-            animation: fadeIn 0.5s forwards;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
 <body class="bg-gray-100">
 
-<section id="faq" class="text-black py-16">
-    <div class="container mx-auto px-4">
+<section id="faq" class="text-black py-16 sm:py-16 px-2 sm:px-0">
+    <div class="container mx-auto px-2 sm:px-6">
         <h2 class="text-4xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
-        <div class="space-y-4 mx-28">
+        <div class="space-y-4 mx-2 sm:mx-20">
             <?php
             $faqs = [
                 [
@@ -78,7 +73,7 @@
 
             foreach ($faqs as $index => $faq) {
                 echo '
-                <div class="border-b border-gray-700">
+                <div class="border-b border-gray-700 fade-in">
                     <button class="faq-question w-full text-left py-4 px-6 flex justify-between items-center focus:outline-none" onclick="toggleAnswer(' . $index . ')">
                         <span class="text-xl font-semibold">' . $faq['question'] . '</span>
                         <span class="arrow transform transition-transform">
@@ -87,7 +82,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="faq-answer fade-in" id="answer-' . $index . '">
+                    <div class="faq-answer" id="answer-' . $index . '">
                         <p class="py-4 px-6">' . $faq['answer'] . '</p>
                     </div>
                 </div>';
@@ -98,19 +93,17 @@
 </section>
 
 <script>
-    let openIndex = null; // Track the currently open FAQ index
+    let openIndex = null;
 
     function toggleAnswer(index) {
         const answer = document.getElementById('answer-' + index);
         const arrow = document.querySelectorAll('.faq-question')[index].querySelector('.arrow');
 
-        // If the same FAQ is clicked, close it
         if (openIndex === index) {
             answer.classList.remove("active");
             arrow.classList.remove("rotate");
             openIndex = null;
         } else {
-            // Close the previously open FAQ if any
             if (openIndex !== null) {
                 const previousAnswer = document.getElementById('answer-' + openIndex);
                 const previousArrow = document.querySelectorAll('.faq-question')[openIndex].querySelector('.arrow');
@@ -118,23 +111,27 @@
                 previousArrow.classList.remove("rotate");
             }
 
-            // Open the clicked FAQ
             answer.classList.add("active");
             arrow.classList.add("rotate");
-            openIndex = index; // Set the current FAQ as open
+            openIndex = index;
         }
     }
 
-    // Adding scroll animations using Framer Motion (animation on scroll into view)
-    const faqs = document.querySelectorAll('.faq-answer');
-    window.addEventListener('scroll', () => {
-        faqs.forEach(faq => {
-            const rect = faq.getBoundingClientRect();
-            if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-                faq.classList.add('fade-in');
+    const faqItems = document.querySelectorAll('.fade-in');
+    const observerOptions = {
+        threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); 
             }
         });
-    });
+    }, observerOptions);
+
+    faqItems.forEach((item) => observer.observe(item)); 
 </script>
 
 </body>
