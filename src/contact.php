@@ -29,25 +29,27 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <section id="Contactus" class="relative">
-        <div class="max-w-6xl mx-auto py-12 mt-4 mb-16 px-5 flex lg:items-center flex-col lg:flex-row lg:gap-16 gap-8">
-            <div class="max-w-[300px]">
-                <h2 class="text-4xl font-bold opacity-0" id="contact-title">Contact Us</h2>
-                <p class="py-5 text-lg opacity-0" id="contact-desc">We’d love your feedback, ideas, or anything else you’d like to share! Let us know!</p>
-            </div>
-            <form id="contactForm" class="w-full lg:w-[600px] py-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div id="message" class="hidden"></div>
-
-                <input type="text" id="name" name="name" placeholder="Your name" class="bg-black text-white p-4 rounded-md transform scale-0" required>
-                <input type="email" id="email" name="email" placeholder="Your email" class="bg-black text-white p-4 rounded-md transform scale-0" required onblur="validateEmail()">
-                <textarea id="messageText" name="message" placeholder="Message" class="bg-black text-white p-4 rounded-md h-40 sm:col-span-2 transform scale-0" required></textarea>
-
-                <button type="button" onclick="sendEmail()" class="bg-black hover:bg-gray-800 text-white h-[45px] flex items-center justify-center gap-2 transition-all rounded-md transform scale-0">
-                    <span>Send</span>
-                </button>
-            </form>
+<section id="Contactus" class="relative">
+    <div class="max-w-6xl mx-auto py-12 mt-4 mb-4 sm:mb-8 md:mb-16 px-5 flex lg:items-center flex-col lg:flex-row lg:gap-16 gap-8">
+        <div class="max-w-[300px]">
+            <h2 class="text-4xl font-bold opacity-0" id="contact-title">Contact Us</h2>
+            <p class="py-5 text-lg opacity-0" id="contact-desc">We’d love your feedback, ideas, or anything else you’d like to share! Let us know!</p>
         </div>
-    </section>
+        <form id="contactForm" class="w-full lg:w-[600px] py-10 grid grid-cols-1 md:grid-cols-2 gap-5 pb-4 sm:pb-8 md:pb-12">
+            <div id="message" class="hidden"></div>
+
+            <input type="text" id="name" name="name" placeholder="Your name" class="bg-black text-white p-4 rounded-md transform scale-0" required>
+            <input type="email" id="email" name="email" placeholder="Your email" class="bg-black text-white p-4 rounded-md transform scale-0" required onblur="validateEmail()">
+            <textarea id="messageText" name="message" placeholder="Message" class="bg-black text-white p-4 rounded-md h-40 sm:col-span-2 transform scale-0" required></textarea>
+
+            <button type="button" onclick="sendEmail()" class="bg-black hover:bg-gray-800 text-white h-[45px] flex items-center justify-center gap-2 transition-all rounded-md transform scale-0">
+                <span>Send</span>
+            </button>
+        </form>
+    </div>
+</section>
+
+
 
     <script>
         gsap.registerPlugin(ScrollTrigger);

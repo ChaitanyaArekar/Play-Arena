@@ -130,7 +130,7 @@ header {
     cursor: pointer;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .navbar ul {
         display: none; 
         flex-direction: column;
@@ -165,7 +165,7 @@ header {
         display: block;
     }
 
-}
+} */
 
 /* Animation */
 

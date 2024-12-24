@@ -1,8 +1,8 @@
 <?php
 $navLinks = [
     ["id" => "about", "title" => "About", "url" => "/src/about-us.php"],
-    ["id" => "contact", "title" => "Contact", "url" => "/src/contact.php"],
-    ["id" => "book", "title" => "Book Now", "url" => "booking.php"],
+    ["id" => "contact", "title" => "Contact", "url" => "#Contactus"],
+    ["id" => "book", "title" => "Book Now", "url" => "#booking"],
     ["id" => "login", "title" => "Login", "url" => "contact.php"]
 ];
 ?>
@@ -28,12 +28,15 @@ $navLinks = [
         .sidebar.hidden {
             transform: translateX(100%);
         }
+        html {
+        scroll-behavior: smooth;
+    }
     </style>
 </head>
 <body>
-    <nav class="w-full flex py-6 justify-between items-center navbar">
+    <nav class="w-full flex py-3 sm:py-6 justify-between items-center navbar">
         <span 
-            class="text-3xl ml-10 font-bold <?php echo isset($textColor) ? $textColor : 'text-white'; ?> cursor-pointer"
+            class="text-2xl sm:text-3xl ml-2 sm:ml-10 font-bold <?php echo isset($textColor) ? $textColor : 'text-white'; ?> cursor-pointer"
             onclick="window.location.href='/'"
         >
             PlayArena

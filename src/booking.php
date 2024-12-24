@@ -21,6 +21,7 @@
     </style>
 </head>
 <body class="bg-gray-100">
+    <section id="booking">
     <h1 class="text-xl font-semibold m-10 ml-20 mt-16">Start Your Adventure &rarr;</h1>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-6">
@@ -72,6 +73,7 @@
             <img src="public/img/booking.png" alt="Children playing" class="w-[250px] sm:w-[500px] h-auto object-contain mr-5 m-2" id="heroImage">
         </div>
     </div>
+    </section>
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
