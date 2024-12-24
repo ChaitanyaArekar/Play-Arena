@@ -64,7 +64,7 @@ $navLinks = [
             </button>
             <div 
                 id="sidebar" 
-                class="p-6 bg-black absolute top-20 right-0 mx-4 my-2 min-w-[140px] rounded-xl shadow-lg border border-gray-300 sidebar hidden"
+                class="p-6 bg-black absolute top-10 right-0 mx-4 my-2 min-w-[140px] rounded-xl shadow-lg border border-gray-300 sidebar hidden"
             >
                 <ul class="list-none flex flex-col justify-end items-center flex-1">
                     <?php foreach ($navLinks as $index => $nav): ?>
