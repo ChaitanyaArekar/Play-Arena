@@ -44,8 +44,9 @@ $navLinks = [
         <ul class="list-none sm:flex hidden justify-end items-center flex-1">
             <?php foreach ($navLinks as $index => $nav): ?>
                 <li 
-                    class="font-poppins font-normal cursor-pointer text-[16px] <?= $index === count($navLinks) - 1 ? 'mr-10' : 'mr-10' ?> <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform"
-                >
+    class="font-poppins font-normal cursor-pointer text-[16px] mr-10 <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform"
+>
+
                     <a href="<?= $nav['url'] ?>"><?= $nav['title'] ?></a>
                 </li>
             <?php endforeach; ?>
@@ -53,7 +54,7 @@ $navLinks = [
         <div class="sm:hidden flex flex-1 justify-end items-center relative">
             <button 
                 id="menu-toggle" 
-                class="text-white focus:outline-none"
+                class="<?php echo isset($textColor) ? $textColor : 'text-white'; ?>  focus:outline-none"
             >
                 <svg id="menu-icon" class="h-6 w-6 icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path id="menu-path" d="M4 6h16M4 12h16M4 18h16" />

@@ -257,7 +257,7 @@ header {
         font-size: 14px;
     }
 
-    .logo h1 {
+    /* .logo h1 {
         font-size: 5vw;
     }
 
@@ -284,15 +284,11 @@ header {
         left: 0;
         padding: 10px;
     }
+        */
 
     .navbar ul li a {
-        font-size: 4vw;
         color: white;
-        text-align: center;
-        width: 100%;
-        padding: 10px;
-        display: block;
-    }
+    } 
 
     .about-us-container {
         margin-left: 10%;
