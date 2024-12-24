@@ -75,7 +75,7 @@
                 echo '
                 <div class="border-b border-gray-700 fade-in">
                     <button class="faq-question w-full text-left py-4 px-6 flex justify-between items-center focus:outline-none" onclick="toggleAnswer(' . $index . ')">
-                        <span class="text-xl font-semibold">' . $faq['question'] . '</span>
+                        <span class="text-xl sm:text-2xl font-semibold">' . $faq['question'] . '</span>
                         <span class="arrow transform transition-transform">
                             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />

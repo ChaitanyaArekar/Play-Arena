@@ -16,7 +16,7 @@
         <div class="home-page-content">
             <h1>YOUR<br>NEAREST<br>SPORTS COMMUNITY</h1>
             <p><b>IS JUST A TAP AWAY</b></p>
-            <a href="book-now.html">
+            <a href="#booking">
                 <button class="btn">To Book Turf</button>
             </a>
          </div>

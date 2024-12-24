@@ -53,10 +53,6 @@
                 <img src="/Public/img/Wallpaper.jpg" alt="Background" class="background-image">
                 </div>
             </div>
-
-            <div class="contact-card">
-                <?php include 'contact.php'; ?>
-            </div>
         </div>
     </section>
 

@@ -1,9 +1,9 @@
 <?php
 $navLinks = [
     ["id" => "about", "title" => "About", "url" => "/src/about-us.php"],
-    ["id" => "contact", "title" => "Contact", "url" => "#Contactus"],
-    ["id" => "book", "title" => "Book Now", "url" => "#booking"],
-    ["id" => "login", "title" => "Login", "url" => "contact.php"]
+    ["id" => "contact", "title" => "Contact", "url" => "index.php#Contactus"],
+    ["id" => "book", "title" => "Book Now", "url" => "index.php#booking"],
+    ["id" => "login", "title" => "Login", "url" => "/src/login.php"]
 ];
 ?>
 
