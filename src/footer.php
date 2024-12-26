@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,6 +57,7 @@
                 transform: translateX(-30px);
                 opacity: 0;
             }
+
             100% {
                 transform: translateX(0);
                 opacity: 1;
@@ -70,85 +72,86 @@
             0% {
                 opacity: 0;
             }
+
             100% {
                 opacity: 1;
             }
         }
     </style>
 </head>
+
 <body class="bg-gray-100">
 
-<section class="text-white bg-gradient-to-r" style="background: linear-gradient(to right, #000000, #434343);">
-    <div class="flex flex-col md:flex-row w-full mb-6 footer-section">
-        <div class="flex-1 flex flex-col justify-start mr-8 m-6 p-10">
-            <span class="text-4xl font-bold footer-title">PlayArena</span>
-            <p class="text-gray-400 mt-4 max-w-[310px] footer-text">
-                Find your perfect turf with ease,  
-                Play, compete, and create memories that please!
+    <section class="text-white bg-gradient-to-r" style="background: linear-gradient(to right, #000000, #434343);">
+        <div class="flex flex-col md:flex-row w-full mb-6 footer-section">
+            <div class="flex-1 flex flex-col justify-start mr-8 m-6 p-10 text-center sm:text-left">
+                <span class="text-4xl font-bold footer-title">PlayArena</span>
+                <p class="text-gray-400 mt-4 max-w-[310px] footer-text">
+                    Find your perfect turf with ease,
+                    Play, compete, and create memories that please!
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center md:justify-between mt-6 md:mt-0 text-center sm:text-left">
+                <?php
+                $footerLinks = [
+                    [
+                        'title' => 'Company',
+                        'links' => [
+                            ['name' => 'About Us', 'url' => '../src/about-us.php'],
+                            ['name' => 'Contact', 'url' => '../index.php#Contactus']
+                        ]
+                    ],
+                    [
+                        'title' => 'Community',
+                        'links' => [
+                            ['name' => 'Terms & Conditions', 'url' => '#'],
+                            ['name' => 'Privacy Policy', 'url' => '#']
+                        ]
+                    ],
+                    [
+                        'title' => 'Help',
+                        'links' => [
+                            ['name' => 'FAQ', 'url' => '../index.php#faq'],
+                            ['name' => 'Cancellation Policy', 'url' => '../src/cancellation_policy.php']
+                        ]
+                    ]
+                ];
+
+                foreach ($footerLinks as $link) {
+                    echo '<div class="flex flex-col ss:my-0 my-2 min-w-[150px] m-6 pt-10 sm:my-2">';
+                    echo '<h4 class="font-poppins font-medium text-[18px] leading-[27px] text-white">' . $link['title'] . '</h4>';
+                    echo '<ul class="list-none mt-4">';
+                    foreach ($link['links'] as $item) {
+                        echo '<li class="font-poppins font-normal text-[16px] leading-[24px] text-gray-400 hover:text-white cursor-pointer footer-link mb-2">';
+                        echo '<a href="' . $item['url'] . '">' . $item['name'] . '</a>';
+                        echo '</li>';
+                    }
+                    echo '</ul>';
+                    echo '</div>';
+                }
+                ?>
+
+            </div>
+        </div>
+
+        <div class="w-full flex justify-between items-center md:flex-row flex-col pt-4 border-t-[1px] p-4 sm:p-8 border-t-[#9d9ca3] footer-text text-center sm:text-left">
+            <p class="font-poppins font-normal text-center text-[16px] sm:text-[18px] leading-[27px] text-white">
+                &#169; 2024 PlayArena. All Rights Reserved.
             </p>
         </div>
-        <div class="flex flex-wrap justify-start md:justify-between mt-6 md:mt-0">
-            <?php
-            $footerLinks = [
-                [
-                    'title' => 'Company',
-                    'links' => [
-                        ['name' => 'About Us', 'url' => 'www.ritesh.com'],
-                        ['name' => 'Careers', 'url' => '/careers'],
-                        ['name' => 'Contact', 'url' => '/contact']
-                    ]
-                ],
-                [
-                    'title' => 'Community',
-                    'links' => [
-                        ['name' => 'Terms & Conditions'],
-                        ['name' => 'Privacy Policy'],
-                        ['name' => 'Newsletters']
-                    ]
-                ],
-                [
-                    'title' => 'Help',
-                    'links' => [
-                        ['name' => 'FAQ'],
-                        ['name' => 'Support'],
-                        ['name' => 'Privacy Policy']
-                    ]
-                ]
-            ];
+    </section>
 
-            foreach ($footerLinks as $link) {
-                echo '<div class="flex flex-col ss:my-0 my-4 min-w-[150px] m-6 pt-10">';
-                echo '<h4 class="font-poppins font-medium text-[18px] leading-[27px] text-white">' . $link['title'] . '</h4>';
-                echo '<ul class="list-none mt-4">';
-                foreach ($link['links'] as $item) {
-                    echo '<li class="font-poppins font-normal text-[16px] leading-[24px] text-gray-400 hover:text-white cursor-pointer footer-link mb-4">';
-                    echo $item['name'];
-                    echo '</li>';
-                }
-                echo '</ul>';
-                echo '</div>';
+    <script>
+        window.addEventListener('scroll', () => {
+            const footer = document.querySelector('.footer-section');
+            const windowHeight = window.innerHeight;
+            const footerPosition = footer.getBoundingClientRect().top;
+            if (footerPosition < windowHeight) {
+                footer.classList.add('show');
             }
-            ?>
-        </div>
-    </div>
-
-    <div class="w-full flex justify-between items-center md:flex-row flex-col pt-4 border-t-[1px] p-4 sm:p-8 border-t-[#9d9ca3] footer-text">
-        <p class="font-poppins font-normal text-center text-[16px] sm:text-[18px] leading-[27px] text-white">
-            &#169; 2024 PlayArena. All Rights Reserved.
-        </p>
-    </div>
-</section>
-
-<script>
-    window.addEventListener('scroll', () => {
-        const footer = document.querySelector('.footer-section');
-        const windowHeight = window.innerHeight;
-        const footerPosition = footer.getBoundingClientRect().top;
-        if (footerPosition < windowHeight) {
-            footer.classList.add('show');
-        }
-    });
-</script>
+        });
+    </script>
 
 </body>
+
 </html>

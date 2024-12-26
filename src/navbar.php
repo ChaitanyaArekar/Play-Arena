@@ -11,9 +11,9 @@ if (isset($_GET['logout'])) {
 
 // Define navigation links
 $navLinks = [
-    ["id" => "about", "title" => "About", "url" => "/src/about-us.php"],
-    ["id" => "contact", "title" => "Contact", "url" => "index.php#Contactus"],
-    ["id" => "book", "title" => "Book Now", "url" => "index.php#booking"],
+    ["id" => "about", "title" => "About", "url" => "../src/about-us.php"],
+    ["id" => "contact", "title" => "Contact", "url" => "../index.php#Contactus"],
+    ["id" => "book", "title" => "Book Now", "url" => "../index.php#booking"],
 ];
 
 // Check if the user is logged in (either 'user' or 'owner' session exists)
@@ -23,7 +23,7 @@ $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['owner']); // Check if
 if ($isLoggedIn) {
     $navLinks[] = ["id" => "logout", "title" => "Logout", "url" => "?logout=true"]; // Add logout link to the navbar
 } else {
-    $navLinks[] = ["id" => "login", "title" => "Login", "url" => "/src/login.php"]; // Add login link to the navbar
+    $navLinks[] = ["id" => "login", "title" => "Login", "url" => "../src/login.php"]; // Add login link to the navbar
 }
 
 ?>
@@ -71,7 +71,7 @@ if ($isLoggedIn) {
                 </li>
             <?php endforeach; ?>
         </ul>
-        <div class="sm:hidden flex flex-1 justify-end items-center relative">
+        <div class="sm:hidden flex flex-1 justify-end items-center relative pr-2 sm:pr-0">
             <button 
                 id="menu-toggle" 
                 class="<?php echo isset($textColor) ? $textColor : 'text-white'; ?>  focus:outline-none"
