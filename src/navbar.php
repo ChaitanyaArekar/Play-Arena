@@ -1,10 +1,31 @@
 <?php
+session_start();  // Start the session at the top of the page
+
+// Handle logout request directly in this page
+if (isset($_GET['logout'])) {
+    session_unset();  // Clear all session variables
+    session_destroy();  // Destroy the session
+    header("Location: /index.php");  // Redirect to the homepage
+    exit();
+}
+
+// Define navigation links
 $navLinks = [
     ["id" => "about", "title" => "About", "url" => "/src/about-us.php"],
     ["id" => "contact", "title" => "Contact", "url" => "index.php#Contactus"],
     ["id" => "book", "title" => "Book Now", "url" => "index.php#booking"],
-    ["id" => "login", "title" => "Login", "url" => "/src/login.php"]
 ];
+
+// Check if the user is logged in (either 'user' or 'owner' session exists)
+$isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['owner']); // Check if session has user or owner
+
+// If the user is logged in, change the login button to logout
+if ($isLoggedIn) {
+    $navLinks[] = ["id" => "logout", "title" => "Logout", "url" => "?logout=true"]; // Add logout link to the navbar
+} else {
+    $navLinks[] = ["id" => "login", "title" => "Login", "url" => "/src/login.php"]; // Add login link to the navbar
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -44,9 +65,8 @@ $navLinks = [
         <ul class="list-none sm:flex hidden justify-end items-center flex-1">
             <?php foreach ($navLinks as $index => $nav): ?>
                 <li 
-    class="font-poppins font-normal cursor-pointer text-[16px] mr-10 <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform"
->
-
+                    class="font-poppins font-normal cursor-pointer text-[16px] mr-10 <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform"
+                >
                     <a href="<?= $nav['url'] ?>"><?= $nav['title'] ?></a>
                 </li>
             <?php endforeach; ?>
