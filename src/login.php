@@ -1,14 +1,12 @@
 <?php
-session_start();  // Start the session at the beginning
+session_start();
 
-require '../vendor/autoload.php';  // Include MongoDB PHP library
+require '../vendor/autoload.php';
 
-// MongoDB connection URI
 $uri = "mongodb+srv://chaitanya32:Atlas123@cluster.jx1zl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster";
 $client = new MongoDB\Client($uri);
-$collection = $client->Play_Arena->users;  // Reference to the 'users' collection
+$collection = $client->Play_Arena->users; 
 
-// Initialize form submission flag
 $formType = 'login'; // Default form type is login
 
 // Handle form submission
@@ -18,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $full_name = $_POST['full_name'];
         $email = $_POST['email'];
         $user_type = $_POST['user_type'];
-        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);  // Hash the password
+        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
         // Check if the email already exists in the database
         $existingUser = $collection->findOne(['email' => $email]);
@@ -33,11 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user_type' => $user_type,
                 'password' => $password
             ]);
-            // Store success message in session
             $_SESSION['success_message'] = "Registration successful! You can now login.";
-            // Redirect to the login form after registration
             header('Location: login.php?form=login');
-            exit();  // Make sure no further code is executed
+            exit();
         }
     }
 
@@ -46,17 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $user_type = $_POST['user_type'];
         $password = $_POST['password'];
-
-        // Find the user in the database based on email and user type
         $user = $collection->findOne(['email' => $email, 'user_type' => $user_type]);
 
         if ($user && password_verify($password, $user['password'])) {
-            // Login successful
-            $_SESSION['login_success_message'] = "Login successful! Welcome, " . $user['full_name'] . ".";  // Store the success message in session
-            $_SESSION['user'] = $user;  // Store user session data
+            $_SESSION['user'] = $user; 
             // Redirect to the index page (root directory) after successful login
-            header("Location: /index.php");  // Redirect to the root directory's index.php
-            exit();  // Ensure the script stops executing after the redirect
+            header("Location: /index.php"); 
+            exit();
         } else {
             echo "Invalid credentials or user not found.";
         }
@@ -68,33 +60,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register - Play Arena</title>
-    <style>
-        .form-container { width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
-        .btn { padding: 10px; width: 100%; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
-        .btn:hover { background-color: #45a049; }
-        .success-message { color: green; margin-bottom: 15px; }
-        .error-message { color: red; margin-bottom: 15px; }
-    </style>
+    <link rel="stylesheet" href="login.css">
 </head>
+
 <body>
 
-    <div class="form-container">
-        <!-- Display Success Message for Registration if available -->
-        <?php if (isset($_SESSION['success_message'])): ?>
-            <div class="success-message">
-                <?php
-                    echo $_SESSION['success_message'];  // Display success message
-                    unset($_SESSION['success_message']);  // Clear the message after displaying it
-                ?>
-            </div>
-        <?php endif; ?>
+    <!-- Display Success Message for Registration if available -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="success-message">
+            <?php
+            echo $_SESSION['success_message'];
+            unset($_SESSION['success_message']);
+            ?>
+        </div>
+    <?php endif; ?>
 
 
-        <!-- Show Login Form if $formType is login -->
+    <!-- Show Login Form if $formType is login -->
+    <div class="container">
         <div id="loginForm" style="<?php echo ($formType == 'login') ? '' : 'display:none;'; ?>">
             <h2>Login</h2>
             <form action="login.php" method="POST">
@@ -126,14 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
+
     <script>
-        // JavaScript function to show the register form
         function showRegisterForm() {
             document.getElementById('loginForm').style.display = 'none'; // Hide login form
             document.getElementById('registerForm').style.display = 'block'; // Show register form
         }
 
-        // JavaScript function to show the login form
         function showLoginForm() {
             document.getElementById('registerForm').style.display = 'none'; // Hide register form
             document.getElementById('loginForm').style.display = 'block'; // Show login form
@@ -141,4 +128,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 
 </body>
+
 </html>

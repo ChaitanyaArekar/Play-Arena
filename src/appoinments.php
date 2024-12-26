@@ -272,28 +272,6 @@ $bookedSlots = ['12:00 PM', '3:00 PM', '6:00 PM'];
 $(document).ready(function() {
     // ... (keep existing code) ...
 
-    // Add payment mode selection
-    let paymentMode = 'full';
-    const paymentModeHtml = `
-        <div class="mb-4">
-            <h3 class="font-semibold mb-2">Select Payment Mode</h3>
-            <div class="space-y-2">
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="payment_mode" value="full" checked>
-                    <span>Full Payment Now</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="payment_mode" value="advance">
-                    <span>40% Advance (60% at venue)</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="payment_mode" value="venue">
-                    <span>Full Payment at Venue</span>
-                </label>
-            </div>
-        </div>
-    `;
-    
     // Add payment mode selection before the proceed button
     $('#cart-total').append(paymentModeHtml);
     
