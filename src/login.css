@@ -75,10 +75,27 @@ button:hover {
     transform: scale(1.05);
 }
 
+#message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 9999;
+    max-width: 90%;
+    display: none;
+    font-size: 16px;
+    text-align: center;
+}
+.success {
+    background-color: #4caf50;
+    color: white;
+}
+
 .error {
-    color: #e74c3c;
-    font-size: 0.9em;
-    margin-bottom: 15px;
+    background-color: #f44336;
+    color: white;
 }
 
 p {

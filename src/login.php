@@ -2,38 +2,36 @@
 session_start();
 require '../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__. '/../');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 $uri = $_ENV['MONGODB_URI'];
 $client = new MongoDB\Client($uri);
 $collection = $client->Play_Arena->users;
 
-$formType = 'login'; // Default form type is login
+$formType = 'login';
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Registration logic
     if (isset($_POST['register'])) {
         $full_name = $_POST['full_name'];
         $email = $_POST['email'];
         $user_type = $_POST['user_type'];
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-        // Check if the email already exists in the database
         $existingUser = $collection->findOne(['email' => $email]);
 
         if ($existingUser) {
-            echo "Email already exists. Please choose another.";
+            $_SESSION['message'] = "Email already exists. Please choose another.";
+            $_SESSION['message_type'] = "error";
         } else {
-            // Insert new user data into MongoDB
             $collection->insertOne([
                 'full_name' => $full_name,
                 'email' => $email,
                 'user_type' => $user_type,
                 'password' => $password
             ]);
-            $_SESSION['success_message'] = "Registration successful! You can now login.";
+            $_SESSION['message'] = "Registration successful! You can now login.";
+            $_SESSION['message_type'] = "success";
             header('Location: login.php?form=login');
             exit();
         }
@@ -48,15 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
-            // Redirect to the index page (root directory) after successful login
+            $_SESSION['message'] = "Login successful! Welcome back.";
+            $_SESSION['message_type'] = "success";
             header("Location: /index.php");
             exit();
         } else {
-            echo "Invalid credentials or user not found.";
+            $_SESSION['message'] = "Invalid credentials or user not found.";
+            $_SESSION['message_type'] = "error";
         }
     }
-} else {
-    $formType = 'login'; // Show login form by default
 }
 ?>
 
@@ -68,22 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register - Play Arena</title>
     <link rel="stylesheet" href="login.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 
 <body>
-    <!-- Display Success Message for Registration if available -->
-    <?php if (isset($_SESSION['success_message'])): ?>
-        <div class="success-message">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div id="message" class="<?php echo $_SESSION['message_type'] === 'success' ? 'success' : 'error'; ?>">
             <?php
-            echo $_SESSION['success_message'];
-            unset($_SESSION['success_message']);
+            echo $_SESSION['message'];
+            unset($_SESSION['message'], $_SESSION['message_type']);
             ?>
         </div>
     <?php endif; ?>
 
-    <!-- Show Login Form if $formType is login -->
     <div class="container">
-        <div id="loginForm" style="<?php echo ($formType == 'login') ? '' : 'display:none;'; ?>">
+        <div id="loginForm">
             <h2>Login</h2>
             <form action="login.php" method="POST">
                 <input type="email" name="email" placeholder="Email" required><br><br>
@@ -97,8 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>Don't have an account? <a href="javascript:void(0);" onclick="showRegisterForm()">Register here</a></p>
         </div>
 
-        <!-- Show Register Form if $formType is register -->
-        <div id="registerForm" style="<?php echo ($formType == 'register') ? '' : 'display:none;'; ?>">
+        <div id="registerForm" style="display: none;">
             <h2>Register</h2>
             <form action="login.php" method="POST">
                 <input type="text" name="full_name" placeholder="Full Name" required><br><br>
@@ -115,6 +111,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        const messageDiv = document.getElementById('message');
+        if (messageDiv) {
+            messageDiv.style.display = 'block';
+            gsap.fromTo("#message", {
+                opacity: 0,
+                y: -30
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                ease: "power3.out"
+            });
+
+            setTimeout(() => {
+                gsap.to("#message", {
+                    opacity: 0,
+                    y: -30,
+                    duration: 0.5,
+                    ease: "power3.out",
+                    onComplete: () => messageDiv.style.display = "none"
+                });
+            }, 3000);
+        }
+
         function showRegisterForm() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
@@ -125,7 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById('loginForm').style.display = 'block';
         }
     </script>
-
 </body>
 
 </html>
