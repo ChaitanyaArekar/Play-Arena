@@ -1,11 +1,13 @@
 <?php
 session_start();
-
 require '../vendor/autoload.php';
 
-$uri = "mongodb+srv://chaitanya32:Atlas123@cluster.jx1zl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster";
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__. '/../');
+$dotenv->load();
+
+$uri = $_ENV['MONGODB_URI'];
 $client = new MongoDB\Client($uri);
-$collection = $client->Play_Arena->users; 
+$collection = $client->Play_Arena->users;
 
 $formType = 'login'; // Default form type is login
 
@@ -45,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $collection->findOne(['email' => $email, 'user_type' => $user_type]);
 
         if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user'] = $user; 
+            $_SESSION['user'] = $user;
             // Redirect to the index page (root directory) after successful login
-            header("Location: /index.php"); 
+            header("Location: /index.php");
             exit();
         } else {
             echo "Invalid credentials or user not found.";
@@ -69,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
     <!-- Display Success Message for Registration if available -->
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="success-message">
@@ -79,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ?>
         </div>
     <?php endif; ?>
-
 
     <!-- Show Login Form if $formType is login -->
     <div class="container">
@@ -114,16 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-
     <script>
         function showRegisterForm() {
-            document.getElementById('loginForm').style.display = 'none'; // Hide login form
-            document.getElementById('registerForm').style.display = 'block'; // Show register form
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
         }
 
         function showLoginForm() {
-            document.getElementById('registerForm').style.display = 'none'; // Hide register form
-            document.getElementById('loginForm').style.display = 'block'; // Show login form
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
         }
     </script>
 
