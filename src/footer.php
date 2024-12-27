@@ -7,6 +7,7 @@
     <title>Footer - PlayArena</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> <!-- Font Awesome CDN -->
     <style>
         .footer-link {
             transition: transform 0.3s ease, color 0.3s ease;
@@ -23,8 +24,8 @@
         }
 
         .icon {
-            width: 21px;
-            height: 21px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
             transition: transform 0.3s ease, filter 0.3s ease;
         }
@@ -130,14 +131,19 @@
                     echo '</div>';
                 }
                 ?>
-
             </div>
         </div>
 
         <div class="w-full flex justify-between items-center md:flex-row flex-col pt-4 border-t-[1px] p-4 sm:p-8 border-t-[#9d9ca3] footer-text text-center sm:text-left">
-            <p class="font-poppins font-normal text-center text-[16px] sm:text-[18px] leading-[27px] text-white">
+            <p class="font-poppins font-normal text-center text-[18px] sm:text-[18px] leading-[27px] text-white mb-0 sm:mb-5">
                 &#169; 2024 PlayArena. All Rights Reserved.
             </p>
+            <div class="flex justify-center space-x-6 mt-4 sm:mt-0 sm:mr-16 mr-0 text-xl mb-5">
+                <a href="https://linkedin.com" class="icon text-white" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com" class="icon text-white" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/my_shitstagram/" class="icon text-white" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com" class="icon text-white" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
         </div>
     </section>
 

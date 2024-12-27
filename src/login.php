@@ -3,6 +3,7 @@ session_start();
 require '../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+
 $dotenv->load();
 
 $uri = $_ENV['MONGODB_URI'];
@@ -43,9 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_type = $_POST['user_type'];
         $password = $_POST['password'];
         $user = $collection->findOne(['email' => $email, 'user_type' => $user_type]);
-
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
+            $_SESSION['user_full_name'] = $user['full_name'];
+            $_SESSION['user_type'] = $user['user_type'];
             $_SESSION['message'] = "Login successful! Welcome back.";
             $_SESSION['message_type'] = "success";
             header("Location: /index.php");
