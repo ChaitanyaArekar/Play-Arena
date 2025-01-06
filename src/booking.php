@@ -29,7 +29,7 @@
         <h1 class="text-xl font-semibold m-10 ml-20 mt-16">Start Your Adventure &rarr;</h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-16 py-6">
-            <a href="/src/appoinments.php" class="block card">
+            <a href="/src/book.php" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/Football.jpg" alt="Box Football" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">

@@ -1,6 +1,14 @@
 {
+    "name": "ritesh/play-arena",
+    "autoload": {
+        "psr-4": {
+            "Ritesh\\PlayArena\\": "src/",
+            "Ritesh\\PlayArena\\Backend\\": "backend/"
+        }
+    },
     "require": {
-        "mongodb/mongodb": "^1.20",
-        "vlucas/phpdotenv": "^5.6"
+        "monolog/monolog": "^3.8",
+        "vlucas/phpdotenv": "^5.6",
+        "mongodb/mongodb": "^1.20"
     }
 }

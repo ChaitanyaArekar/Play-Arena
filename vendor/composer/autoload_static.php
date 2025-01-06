@@ -22,6 +22,11 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
+        'R' => 
+        array (
+            'Ritesh\\PlayArena\\Backend\\' => 25,
+            'Ritesh\\PlayArena\\' => 17,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -29,6 +34,7 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
         ),
         'M' => 
         array (
+            'Monolog\\' => 8,
             'MongoDB\\' => 8,
         ),
         'G' => 
@@ -58,6 +64,14 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
+        'Ritesh\\PlayArena\\Backend\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/backend',
+        ),
+        'Ritesh\\PlayArena\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
@@ -65,6 +79,10 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
         'PhpOption\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'MongoDB\\' => 
         array (
