@@ -64,6 +64,7 @@ button {
     background: linear-gradient(to right, #1d976c, #93f9b9);
     color: white;
     padding: 14px;
+    margin-top: 5%;
     border: none;
     border-radius: 8px;
     font-size: 1.2em;
@@ -89,6 +90,7 @@ button:hover {
     font-size: 16px;
     text-align: center;
 }
+
 .success {
     background-color: #4caf50;
     color: white;
@@ -112,6 +114,28 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 30px;
+}
+
+.password-field i {
+    position: absolute;
+    top: 40%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ecf0f1;
+    font-size: 1.2em;
+}
+
+.password-field i:hover {
+    color: #1abc9c;
 }
 
 @media (max-width: 768px) {
