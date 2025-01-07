@@ -250,10 +250,10 @@ if (!empty($turf['photos'])) {
                     hour = hour % 12 || 12;
 
                     timeButton.className = `p-3 rounded-lg text-center transition-all ${
-                isBooked ? 
-                'bg-red-50 text-red-600 cursor-not-allowed' : 
-                'bg-green-50 text-green-600 hover:bg-green-100'
-            }`;
+                        isBooked ? 
+                        'bg-red-50 text-red-600 cursor-not-allowed' : 
+                        'bg-green-50 text-green-600 hover:bg-green-100'
+                    }`;
                     timeButton.textContent = `${hour}:00 ${period}`;
 
                     if (!isBooked) {
@@ -273,11 +273,20 @@ if (!empty($turf['photos'])) {
             }
         };
 
+        const checkLoginStatus = () => {
+            return <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+        };
 
         const bookSlot = async () => {
             if (!selectedDate || selectedTime === null) {
                 popupText.textContent = 'Please select both date and time slot';
                 popupMessage.classList.remove('hidden');
+                return;
+            }
+
+            const isLoggedIn = <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+            if (!isLoggedIn) {
+                window.location.href = "../src/login.php";
                 return;
             }
 
