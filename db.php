@@ -35,7 +35,7 @@ class Database
             return $existing; // Return existing slots
         }
 
-        $startHour = 10;
+        $startHour = 8;
         $endHour = 23;
 
         $slots = [];
