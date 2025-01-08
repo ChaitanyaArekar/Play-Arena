@@ -231,7 +231,17 @@ if (!empty($turf['photos'])) {
         const populateTimeSlots = async () => {
             if (!selectedDate) return;
 
-            timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center">Loading...</div>';
+            timeSlotsGrid.innerHTML = `
+    <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
+        <div class="flex space-x-2">
+            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
+            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+        </div>
+        <p class="text-gray-500 text-sm">Fetching available time slots...</p>
+    </div>
+`;
+
 
             try {
                 const response = await fetch(`${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`);
