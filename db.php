@@ -4,6 +4,8 @@ require 'vendor/autoload.php';
 use MongoDB\Client;
 use Dotenv\Dotenv;
 
+session_start(); // Start the session to access session variables
+
 class Database
 {
     private $client;
@@ -78,11 +80,20 @@ class Database
                         ['$set' => ['slots' => $slotsData['slots']]]
                     );
 
+                    // Replace user_id with full_name and email from session
+                    if (isset($_SESSION['user'])) {
+                        $full_name = $_SESSION['user']['full_name'];
+                        $email = $_SESSION['user']['email'];
+                    } else {
+                        return ['success' => false, 'message' => 'User not authenticated'];
+                    }
+
                     $this->bookingsCollection->insertOne([
                         'date' => $date,
                         'hour' => $hour,
                         'sport' => $sport,
-                        'user_id' => 'user-id'
+                        'full_name' => $full_name,
+                        'email' => $email
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -113,10 +124,12 @@ class Database
                         ['$set' => ['slots' => $slotsData['slots']]]
                     );
 
+                    // Cancel booking by matching the user
                     $this->bookingsCollection->deleteOne([
                         'date' => $date,
                         'hour' => $hour,
-                        'sport' => $sport
+                        'sport' => $sport,
+                        'email' => $_SESSION['user']['email'] // Match by email (user-specific)
                     ]);
 
                     return ['success' => true, 'message' => 'Slot cancelled successfully'];
@@ -129,10 +142,10 @@ class Database
         }
     }
 
-    public function getBookings($userId)
+    public function getBookings($userEmail)
     {
         try {
-            return $this->bookingsCollection->find(['user_id' => $userId])->toArray();
+            return $this->bookingsCollection->find(['email' => $userEmail])->toArray();
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Error fetching bookings'];
         }
@@ -143,8 +156,13 @@ $db = new Database();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['bookings'])) {
-        $userId = $_GET['user_id'] ?? 'user-id';
-        echo json_encode($db->getBookings($userId));
+        // Fetch email from session instead of using a user_id query parameter
+        if (isset($_SESSION['user'])) {
+            $userEmail = $_SESSION['user']['email'];
+            echo json_encode($db->getBookings($userEmail));
+        } else {
+            echo json_encode(['success' => false, 'message' => 'User not authenticated']);
+        }
     } else {
         $date = $_GET['date'] ?? date('Y-m-d');
         $sport = $_GET['sport'] ?? 'cricket';
