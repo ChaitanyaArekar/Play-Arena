@@ -12,12 +12,10 @@ class Database
     public function __construct()
     {
         try {
-            // Load environment variables from .env file
             $dotenv = Dotenv::createImmutable(__DIR__);
             $dotenv->load();
 
-            // Get MongoDB URI from environment variables
-            $uri = $_ENV['MONGODB_URI']; // Accessing Mongo URI from .env file
+            $uri = $_ENV['MONGODB_URI'];
             $this->client = new Client($uri);
             $this->bookingsCollection = $this->client->turf->bookings;
         } catch (Exception $e) {
@@ -26,13 +24,12 @@ class Database
         }
     }
 
-    // Generate slots dynamically based on the sport
     public function generateSlots($date, $sport)
     {
         $slotsCollection = $this->client->turf->{$sport . '_slots'};
         $existing = $slotsCollection->findOne(['date' => $date]);
         if ($existing) {
-            return $existing; // Return existing slots
+            return $existing;
         }
 
         $startHour = 8;
@@ -51,7 +48,6 @@ class Database
         return ['date' => $date, 'slots' => $slots];
     }
 
-    // Fetch slots for a specific date and sport
     public function getSlots($date, $sport)
     {
         try {
@@ -61,7 +57,6 @@ class Database
         }
     }
 
-    // Book a slot for a specific sport
     public function bookSlot($date, $hour, $sport)
     {
         try {
@@ -87,7 +82,7 @@ class Database
                         'date' => $date,
                         'hour' => $hour,
                         'sport' => $sport,
-                        'user_id' => 'example-user-id' // Replace with actual user ID
+                        'user_id' => 'user-id'
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -100,7 +95,6 @@ class Database
         }
     }
 
-    // Cancel a booked slot for a specific sport
     public function cancelSlot($date, $hour, $sport)
     {
         try {
@@ -119,7 +113,6 @@ class Database
                         ['$set' => ['slots' => $slotsData['slots']]]
                     );
 
-                    // Remove the booking from the bookings collection
                     $this->bookingsCollection->deleteOne([
                         'date' => $date,
                         'hour' => $hour,
@@ -136,7 +129,6 @@ class Database
         }
     }
 
-    // Fetch bookings for a user
     public function getBookings($userId)
     {
         try {
@@ -147,16 +139,15 @@ class Database
     }
 }
 
-// Handle HTTP Requests
 $db = new Database();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['bookings'])) {
-        $userId = $_GET['user_id'] ?? 'example-user-id'; // Replace with actual user ID logic
+        $userId = $_GET['user_id'] ?? 'user-id';
         echo json_encode($db->getBookings($userId));
     } else {
         $date = $_GET['date'] ?? date('Y-m-d');
-        $sport = $_GET['sport'] ?? 'cricket'; // Default to cricket
+        $sport = $_GET['sport'] ?? 'cricket';
         echo json_encode($db->getSlots($date, $sport));
     }
     exit;

@@ -129,23 +129,19 @@ if (!empty($turf['photos'])) {
                                 </select>
                             </div>
 
-                            <!-- 7-Day Date Selector -->
                             <div class="mb-6">
                                 <label class="block text-sm font-medium text-gray-700 mb-4">
                                     <i class="far fa-calendar mr-2"></i>Select Date
                                 </label>
                                 <div id="calendar-grid" class="grid grid-cols-7 gap-2">
-                                    <!-- Next 7 days will be populated dynamically -->
                                 </div>
                             </div>
 
-                            <!-- Time Slots Grid -->
                             <div class="mb-6">
                                 <label class="block text-sm font-medium text-gray-700 mb-4">
                                     <i class="far fa-clock mr-2"></i>Select Time Slot
                                 </label>
                                 <div id="time-slots-grid" class="grid grid-cols-4 gap-3">
-                                    <!-- Time slots will be populated dynamically -->
                                 </div>
                             </div>
 
@@ -199,9 +195,13 @@ if (!empty($turf['photos'])) {
         const popupMessage = document.getElementById('popup-message');
         const popupText = document.getElementById('popup-text');
         const popupClose = document.getElementById('popup-close');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const totalSlots = document.getElementById('total-slots');
+        const totalAmount = document.getElementById('total-amount');
 
         let selectedDate = null;
         let selectedTime = null;
+        const selectedSlots = []; // Track selected slots for cart
 
         const populateCalendar = () => {
             calendarGrid.innerHTML = '';
@@ -212,9 +212,7 @@ if (!empty($turf['photos'])) {
                 const isToday = i === 0;
 
                 const dayElement = document.createElement('button');
-                dayElement.className = `p-2 rounded-lg text-center transition-all ${
-                        dateStr === selectedDate ? 'bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200'
-                    } ${isToday ? 'ring-2 ring-blue-500' : ''}`;
+                dayElement.className = `p-2 rounded-lg text-center transition-all ${dateStr === selectedDate ? 'bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200'} ${isToday ? 'ring-2 ring-blue-500' : ''}`;
                 dayElement.textContent = `${date.toLocaleDateString('en-US', { weekday: 'short' })} ${date.getDate()}`;
 
                 dayElement.addEventListener('click', () => {
@@ -244,16 +242,11 @@ if (!empty($turf['photos'])) {
                     const timeButton = document.createElement('button');
                     const isBooked = slot.status === 'booked';
 
-                    // Convert the hour to AM/PM format
                     let hour = slot.hour;
                     const period = hour >= 12 ? 'PM' : 'AM';
                     hour = hour % 12 || 12;
 
-                    timeButton.className = `p-3 rounded-lg text-center transition-all ${
-                        isBooked ? 
-                        'bg-red-50 text-red-600 cursor-not-allowed' : 
-                        'bg-green-50 text-green-600 hover:bg-green-100'
-                    }`;
+                    timeButton.className = `p-3 rounded-lg text-center transition-all ${isBooked ? 'bg-red-50 text-red-600 cursor-not-allowed' : 'bg-green-50 text-green-600 hover:bg-green-100'}`;
                     timeButton.textContent = `${hour}:00 ${period}`;
 
                     if (!isBooked) {
@@ -263,6 +256,16 @@ if (!empty($turf['photos'])) {
                             });
                             timeButton.classList.add('ring-2', 'ring-green-500');
                             selectedTime = slot.hour;
+
+                            // Add slot to the cart
+                            selectedSlots.push({
+                                sport: sportSelect.value,
+                                date: selectedDate,
+                                time: `${hour}:00 ${period}`,
+                                price: 800 // Price for each slot (you can adjust this)
+                            });
+
+                            updateCart();
                         });
                     }
 
@@ -273,13 +276,49 @@ if (!empty($turf['photos'])) {
             }
         };
 
-        const checkLoginStatus = () => {
-            return <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+        const updateCart = () => {
+            // Clear current cart content
+            cartItemsContainer.innerHTML = '';
+            let totalPrice = 0;
+
+            selectedSlots.forEach((slot, index) => {
+                // Add slot to the cart
+                const cartItem = document.createElement('div');
+                cartItem.className = 'flex justify-between items-center p-2 border-b';
+
+                cartItem.innerHTML = `
+                <span>${slot.sport} - ${slot.date} - ${slot.time}</span>
+                <button class="text-red-600 text-sm remove-slot" data-index="${index}">Remove</button>
+            `;
+                cartItemsContainer.appendChild(cartItem);
+
+                totalPrice += slot.price;
+            });
+
+            // Update total
+            totalSlots.textContent = selectedSlots.length;
+            totalAmount.textContent = `₹${totalPrice}`;
+
+            // Show total if there are items in the cart
+            if (selectedSlots.length > 0) {
+                document.getElementById('cart-total').classList.remove('hidden');
+            } else {
+                document.getElementById('cart-total').classList.add('hidden');
+            }
+
+            // Add event listener to remove buttons
+            document.querySelectorAll('.remove-slot').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    selectedSlots.splice(index, 1); // Remove selected slot from array
+                    updateCart(); // Re-render the cart
+                });
+            });
         };
 
         const bookSlot = async () => {
-            if (!selectedDate || selectedTime === null) {
-                popupText.textContent = 'Please select both date and time slot';
+            if (selectedSlots.length === 0) {
+                popupText.textContent = 'Please select at least one slot';
                 popupMessage.classList.remove('hidden');
                 return;
             }
@@ -296,19 +335,13 @@ if (!empty($turf['photos'])) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    sport: sportSelect.value,
-                    date: selectedDate,
-                    hour: selectedTime
+                    slots: selectedSlots
                 }),
             });
             const result = await response.json();
 
             popupText.textContent = result.message;
             popupMessage.classList.remove('hidden');
-
-            if (result.success) {
-                await populateTimeSlots();
-            }
         };
 
         popupClose.addEventListener('click', () => {
@@ -324,6 +357,7 @@ if (!empty($turf['photos'])) {
         populateCalendar();
     });
 </script>
+
 </body>
 
 </html>
