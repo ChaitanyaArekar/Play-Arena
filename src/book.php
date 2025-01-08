@@ -195,13 +195,9 @@ if (!empty($turf['photos'])) {
         const popupMessage = document.getElementById('popup-message');
         const popupText = document.getElementById('popup-text');
         const popupClose = document.getElementById('popup-close');
-        const cartItemsContainer = document.getElementById('cart-items');
-        const totalSlots = document.getElementById('total-slots');
-        const totalAmount = document.getElementById('total-amount');
 
         let selectedDate = null;
         let selectedTime = null;
-        const selectedSlots = []; // Track selected slots for cart
 
         const populateCalendar = () => {
             calendarGrid.innerHTML = '';
@@ -242,7 +238,6 @@ if (!empty($turf['photos'])) {
     </div>
 `;
 
-
             try {
                 const response = await fetch(`${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`);
                 const data = await response.json();
@@ -252,15 +247,12 @@ if (!empty($turf['photos'])) {
                     const timeButton = document.createElement('button');
                     const isBooked = slot.status === 'booked';
 
+                    // Convert the hour to AM/PM format
                     let hour = slot.hour;
                     const period = hour >= 12 ? 'PM' : 'AM';
                     hour = hour % 12 || 12;
 
-                    timeButton.className = `p-3 rounded-lg text-center transition-all ${
-                isBooked ? 
-                'bg-red-50 text-red-600 cursor-not-allowed' : 
-                'bg-green-50 text-green-600 hover:bg-green-100'
-            }`;
+                    timeButton.className = `p-3 rounded-lg text-center transition-all ${isBooked ? 'bg-red-50 text-red-600 cursor-not-allowed' : 'bg-green-50 text-green-600 hover:bg-green-100'}`;
                     timeButton.textContent = `${hour}:00 ${period}`;
 
                     if (!isBooked) {
@@ -270,16 +262,6 @@ if (!empty($turf['photos'])) {
                             });
                             timeButton.classList.add('ring-2', 'ring-green-500');
                             selectedTime = slot.hour;
-
-                            // Add slot to the cart
-                            selectedSlots.push({
-                                sport: sportSelect.value,
-                                date: selectedDate,
-                                time: `${hour}:00 ${period}`,
-                                price: 800 // Price for each slot (you can adjust this)
-                            });
-
-                            updateCart();
                         });
                     }
 
@@ -290,11 +272,20 @@ if (!empty($turf['photos'])) {
             }
         };
 
+        const checkLoginStatus = () => {
+            return <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+        };
 
         const bookSlot = async () => {
-            if (selectedSlots.length === 0) {
-                popupText.textContent = 'Please select at least one slot';
+            if (!selectedDate || selectedTime === null) {
+                popupText.textContent = 'Please select both date and time slot';
                 popupMessage.classList.remove('hidden');
+                return;
+            }
+
+            const isLoggedIn = <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+            if (!isLoggedIn) {
+                window.location.href = "../src/login.php";
                 return;
             }
 
@@ -304,13 +295,19 @@ if (!empty($turf['photos'])) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    slots: selectedSlots
+                    sport: sportSelect.value,
+                    date: selectedDate,
+                    hour: selectedTime
                 }),
             });
             const result = await response.json();
 
             popupText.textContent = result.message;
             popupMessage.classList.remove('hidden');
+
+            if (result.success) {
+                await populateTimeSlots();
+            }
         };
 
         popupClose.addEventListener('click', () => {
@@ -322,7 +319,6 @@ if (!empty($turf['photos'])) {
         });
         bookSlotButton.addEventListener('click', bookSlot);
 
-        // Initial population
         populateCalendar();
     });
 </script>
