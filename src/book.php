@@ -256,7 +256,11 @@ if (!empty($turf['photos'])) {
                     const period = hour >= 12 ? 'PM' : 'AM';
                     hour = hour % 12 || 12;
 
-                    timeButton.className = `p-3 rounded-lg text-center transition-all ${isBooked ? 'bg-red-50 text-red-600 cursor-not-allowed' : 'bg-green-50 text-green-600 hover:bg-green-100'}`;
+                    timeButton.className = `p-3 rounded-lg text-center transition-all ${
+                isBooked ? 
+                'bg-red-50 text-red-600 cursor-not-allowed' : 
+                'bg-green-50 text-green-600 hover:bg-green-100'
+            }`;
                     timeButton.textContent = `${hour}:00 ${period}`;
 
                     if (!isBooked) {
@@ -286,56 +290,11 @@ if (!empty($turf['photos'])) {
             }
         };
 
-        const updateCart = () => {
-            // Clear current cart content
-            cartItemsContainer.innerHTML = '';
-            let totalPrice = 0;
-
-            selectedSlots.forEach((slot, index) => {
-                // Add slot to the cart
-                const cartItem = document.createElement('div');
-                cartItem.className = 'flex justify-between items-center p-2 border-b';
-
-                cartItem.innerHTML = `
-                <span>${slot.sport} - ${slot.date} - ${slot.time}</span>
-                <button class="text-red-600 text-sm remove-slot" data-index="${index}">Remove</button>
-            `;
-                cartItemsContainer.appendChild(cartItem);
-
-                totalPrice += slot.price;
-            });
-
-            // Update total
-            totalSlots.textContent = selectedSlots.length;
-            totalAmount.textContent = `₹${totalPrice}`;
-
-            // Show total if there are items in the cart
-            if (selectedSlots.length > 0) {
-                document.getElementById('cart-total').classList.remove('hidden');
-            } else {
-                document.getElementById('cart-total').classList.add('hidden');
-            }
-
-            // Add event listener to remove buttons
-            document.querySelectorAll('.remove-slot').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const index = e.target.getAttribute('data-index');
-                    selectedSlots.splice(index, 1); // Remove selected slot from array
-                    updateCart(); // Re-render the cart
-                });
-            });
-        };
 
         const bookSlot = async () => {
             if (selectedSlots.length === 0) {
                 popupText.textContent = 'Please select at least one slot';
                 popupMessage.classList.remove('hidden');
-                return;
-            }
-
-            const isLoggedIn = <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
-            if (!isLoggedIn) {
-                window.location.href = "../src/login.php";
                 return;
             }
 
