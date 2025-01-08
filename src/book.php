@@ -16,6 +16,9 @@ if (!empty($turf['photos'])) {
 } else {
     $firstPhoto =  '/public/img/football.jpg';
 }
+
+$selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
+                               
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -120,13 +123,13 @@ if (!empty($turf['photos'])) {
                             <!-- Sport selection -->
                             <div class="mb-6">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-running mr-2"></i>Select Sport
-                                </label>
-                                <select id="sport-select" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                                    <option value="cricket">🏏 Cricket</option>
-                                    <option value="football">⚽ Football</option>
-                                    <option value="tennis">🎾 Tennis</option>
-                                </select>
+                                    <i class="fas fa-running mr-2 mb-4"></i>Select Sport
+                                    <label for="sport-select"></label>
+                                    <select id="sport-select" class="block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                        <option value="cricket" <?php echo ($selectedSport === 'cricket') ? 'selected' : ''; ?>>🏏 Cricket</option>
+                                        <option value="football" <?php echo ($selectedSport === 'football') ? 'selected' : ''; ?>>⚽ Football</option>
+                                        <option value="tennis" <?php echo ($selectedSport === 'tennis') ? 'selected' : ''; ?>>🎾 Tennis</option>
+                                    </select>
                             </div>
 
                             <div class="mb-6">

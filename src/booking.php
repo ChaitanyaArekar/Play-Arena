@@ -29,7 +29,7 @@
         <h1 class="text-xl font-semibold m-10 ml-20 mt-16">Start Your Adventure &rarr;</h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-16 py-6">
-            <a href="/src/book.php" class="block card">
+            <a href="/src/book.php?sport=football" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/Football.jpg" alt="Box Football" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -41,7 +41,7 @@
             </a>
 
 
-            <a href="box_cricket.php" class="block card">
+            <a href="/src/book.php?sport=cricket" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/cricket.jpg" alt="Box Cricket" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -52,7 +52,7 @@
                 </div>
             </a>
 
-            <a href="tennis_turf.php" class="block card">
+            <a href="/src/book.php?sport=tennis" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/tennis.jpg" alt="Tennis Turf" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
