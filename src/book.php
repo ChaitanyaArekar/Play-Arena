@@ -8,7 +8,11 @@ $turf = [
     ],
     'address' => '123 Turf Lane, Vadodara',
     'sports' => 'Cricket',
-    'price' => 800
+    'prices' => [
+        'cricket' => 1300,
+        'football' => 1500,
+        'tennis' => 800
+    ]
 ];
 
 if (!empty($turf['photos'])) {
@@ -114,13 +118,12 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             <label class="block text-sm font-medium text-gray-700 mb-4">
                                 <i class="far fa-calendar mr-2"></i>Select Date
                             </label>
-                            <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+                            <div id="calendar-grid" class="grid sm:grid-cols-7 grid-cols-3 gap-2 "></div>
                         </div>
 
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-4">
                                 <i class="far fa-clock mr-2"></i>Select Time Slots
-                                <span class="text-sm text-gray-500">(Multiple selection allowed)</span>
                             </label>
                             <div id="time-slots-grid" class="grid grid-cols-4 gap-3"></div>
                         </div>
@@ -147,16 +150,12 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             </div>
 
                             <div id="cart-total" class="border-t pt-4 space-y-3">
-                                <div class="bg-blue-50 p-4 rounded-lg space-y-2">
-                                    <div class="flex justify-between text-sm text-blue-600">
+                                <div class="p-4 rounded-lg space-y-2">
+                                    <div class="flex justify-between text-sm text-black">
                                         <span class="font-medium">Selected Slots</span>
                                         <span id="total-slots" class="font-bold">0</span>
                                     </div>
-                                    <div class="flex justify-between text-sm text-blue-600">
-                                        <span class="font-medium">Price per Slot</span>
-                                        <span class="font-bold">₹<?php echo $turf['price']; ?></span>
-                                    </div>
-                                    <div class="flex justify-between text-blue-800 border-t border-blue-200 pt-2">
+                                    <div class="flex justify-between text-black pt-2">
                                         <span class="font-bold">Total Amount</span>
                                         <span id="total-amount" class="font-bold">₹0</span>
                                     </div>
@@ -165,7 +164,7 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                 <button id="book-slot"
                                     class="w-full bg-green-500 text-white py-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 font-medium">
                                     <i class="fas fa-check-circle"></i>
-                                    Book Selected Slots
+                                    Book Now
                                 </button>
                             </div>
                         </div>
@@ -181,6 +180,22 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                         </button>
                     </div>
                 </div>
+                <div id="login-popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full transform transition-all">
+                        <p class="text-lg font-semibold text-gray-800 text-center mb-6">Please login to book slots</p>
+                        <div class="flex gap-4">
+                            <button id="login-cancel" class="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                                Cancel
+                            </button>
+                            <button id="login-confirm" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-all">
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="user-logged-in" value="<?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>">
+                <input type="hidden" id="turf-images" value='<?php echo json_encode($turf['photos']); ?>'>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
@@ -195,13 +210,21 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                         const cartItems = document.getElementById('cart-items');
                         const totalSlots = document.getElementById('total-slots');
                         const totalAmount = document.getElementById('total-amount');
-                        const PRICE_PER_SLOT = <?php echo $turf['price']; ?>;
+                        const loginPopup = document.getElementById('login-popup');
+                        const loginConfirm = document.getElementById('login-confirm');
+                        const loginCancel = document.getElementById('login-cancel');
+
+                        const PRICES = {
+                            cricket: 1300,
+                            football: 1500,
+                            tennis: 800
+                        };
 
                         let selectedDate = null;
                         let selectedTimeSlots = new Set();
 
                         // Image Slideshow
-                        const images = <?php echo json_encode($turf['photos']); ?>;
+                        const images = JSON.parse(document.getElementById('turf-images').value);
                         let currentIndex = 0;
                         const imgElement = document.getElementById('turf-image');
 
@@ -212,6 +235,7 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
 
                         const updateCart = () => {
                             const clearCartButton = document.getElementById('clear-cart');
+                            const currentPrice = PRICES[sportSelect.value];
 
                             if (selectedTimeSlots.size === 0) {
                                 cartItems.innerHTML = `
@@ -228,6 +252,11 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                 return;
                             }
 
+                            const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                            });
+
                             cartItems.innerHTML = '';
                             selectedTimeSlots.forEach(slot => {
                                 const hour = slot % 12 || 12;
@@ -235,14 +264,15 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                 const itemDiv = document.createElement('div');
                                 itemDiv.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all';
                                 itemDiv.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="text-blue-500">
-                        <i class="far fa-clock"></i>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium capitalize">${sportSelect.value}</span>
+                        <span class="text-sm text-gray-500">|</span>
+                        <span class="text-sm text-gray-600">${formattedDate}</span>
+                        <span class="text-sm text-gray-500">|</span>
+                        <div class="text-xs text-gray-600">${hour}:00 ${period}</div>
                     </div>
-                    <div>
-                        <div class="text-sm font-medium">${hour}:00 ${period}</div>
-                        <div class="text-xs text-gray-500">${selectedDate}</div>
-                    </div>
+                    <div class="text-sm text-gray-500">₹${currentPrice}</div>
                 </div>
                 <button class="text-red-500 hover:text-red-600 p-1 hover:bg-red-50 rounded-full transition-all" 
                     onclick="removeTimeSlot(${slot})" 
@@ -254,15 +284,13 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             });
 
                             totalSlots.textContent = selectedTimeSlots.size;
-                            totalAmount.textContent = `₹${selectedTimeSlots.size * PRICE_PER_SLOT}`;
+                            totalAmount.textContent = `₹${selectedTimeSlots.size * currentPrice}`;
                             bookSlotButton.disabled = false;
                             clearCartButton.disabled = false;
                         };
 
-                        // Add clear cart functionality
                         const clearCart = () => {
                             selectedTimeSlots.clear();
-                            // Reset all selected time slots in the grid
                             const timeButtons = timeSlotsGrid.querySelectorAll('button');
                             timeButtons.forEach(btn => {
                                 btn.classList.remove('ring-2', 'ring-green-500', 'bg-green-200');
@@ -271,7 +299,6 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             updateCart();
                         };
 
-                        // Add event listener for clear cart button
                         document.getElementById('clear-cart').addEventListener('click', () => {
                             if (selectedTimeSlots.size > 0) {
                                 clearCart();
@@ -321,15 +348,15 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             if (!selectedDate) return;
 
                             timeSlotsGrid.innerHTML = `
-                    <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
-                        <div class="flex space-x-2">
-                            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
-                            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-                            <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
-                        </div>
-                        <p class="text-gray-500 text-sm">Fetching available time slots...</p>
-                    </div>
-                `;
+            <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
+                <div class="flex space-x-2">
+                    <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+                    <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+                </div>
+                <p class="text-gray-500 text-sm">Fetching available time slots...</p>
+            </div>
+        `;
 
                             try {
                                 const response = await fetch(`${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`);
@@ -343,8 +370,8 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                     const period = slot.hour >= 12 ? 'PM' : 'AM';
 
                                     timeButton.className = `p-3 rounded-lg text-center transition-all ${
-                            isBooked ? 'bg-red-50 text-red-600 cursor-not-allowed' : 'bg-green-50 text-green-600 hover:bg-green-100'
-                        }`;
+                    isBooked ? 'bg-red-50 text-red-600 cursor-not-allowed' : 'bg-green-50 text-green-600 hover:bg-green-100'
+                }`;
                                     timeButton.textContent = `${hour}:00 ${period}`;
                                     timeButton.dataset.hour = slot.hour;
 
@@ -377,9 +404,9 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                 return;
                             }
 
-                            const isLoggedIn = <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+                            const isLoggedIn = document.getElementById('user-logged-in').value === 'true';
                             if (!isLoggedIn) {
-                                window.location.href = "../src/login.php";
+                                loginPopup.classList.remove('hidden');
                                 return;
                             }
 
@@ -415,6 +442,16 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             popupMessage.classList.remove('hidden');
                         };
 
+                        // Login popup event listeners
+                        loginConfirm.addEventListener('click', () => {
+                            window.location.href = "../src/login.php";
+                        });
+
+                        loginCancel.addEventListener('click', () => {
+                            loginPopup.classList.add('hidden');
+                        });
+
+                        // Sport selection event listener
                         sportSelect.addEventListener('change', () => {
                             if (selectedDate) {
                                 selectedTimeSlots.clear();
@@ -423,12 +460,15 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                             }
                         });
 
+                        // Book slot button event listener
                         bookSlotButton.addEventListener('click', bookSlot);
 
+                        // Popup close button event listener
                         popupClose.addEventListener('click', () => {
                             popupMessage.classList.add('hidden');
                         });
 
+                        // Initialize calendar and cart
                         populateCalendar();
                         updateCart();
                     });
