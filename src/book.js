@@ -162,68 +162,83 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!selectedDate) return;
 
     timeSlotsGrid.innerHTML = `
-                                <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
-                                    <div class="flex space-x-2">
-                                        <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
-                                        <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-                                        <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
-                                    </div>
-                                    <p class="text-gray-500 text-sm">Every great game starts with the right time!</p>
-
-                                </div>
-                            `;
+        <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
+            <div class="flex space-x-2">
+                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
+                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+            </div>
+            <p class="text-gray-500 text-sm">Every great game starts with the right time!</p>
+        </div>
+    `;
 
     try {
-      const response = await fetch(
-        `${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`
-      );
-      const data = await response.json();
+        const response = await fetch(
+            `${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`
+        );
+        const data = await response.json();
 
-      timeSlotsGrid.innerHTML = "";
-      data.slots.forEach((slot) => {
-        const timeButton = document.createElement("button");
-        const isBooked = slot.status === "booked";
-        const hour = slot.hour % 12 || 12;
-        const period = slot.hour >= 12 ? "PM" : "AM";
+        timeSlotsGrid.innerHTML = "";
+        
+        // Get current hour for comparison
+        const now = new Date();
+        const currentHour = now.getHours();
+        const today = now.toISOString().split('T')[0];
 
-        timeButton.className = `p-3 rounded-lg text-center transition-all ${
-          isBooked
-            ? "bg-red-50 text-red-600 cursor-not-allowed"
-            : "bg-green-50 text-green-600 hover:bg-green-100"
-        }`;
-        timeButton.textContent = `${hour}:00 ${period}`;
-        timeButton.dataset.hour = slot.hour;
-
-        if (!isBooked) {
-          timeButton.addEventListener("click", () => {
-            if (selectedTimeSlots.has(slot.hour)) {
-              selectedTimeSlots.delete(slot.hour);
-              timeButton.classList.remove(
-                "ring-2",
-                "ring-green-500",
-                "bg-green-200"
-              );
-              timeButton.classList.add("bg-green-50");
-            } else {
-              selectedTimeSlots.add(slot.hour);
-              timeButton.classList.add(
-                "ring-2",
-                "ring-green-500",
-                "bg-green-200"
-              );
-              timeButton.classList.remove("bg-green-50");
+        data.slots.forEach((slot) => {
+            // Skip past time slots if it's today
+            if (selectedDate === today && slot.hour <= currentHour) {
+                return;
             }
-            updateCart();
-          });
-        }
 
-        timeSlotsGrid.appendChild(timeButton);
-      });
+            const timeButton = document.createElement("button");
+            const isBooked = slot.status === "booked";
+            const hour = slot.hour % 12 || 12;
+            const period = slot.hour >= 12 ? "PM" : "AM";
+
+            timeButton.className = `p-3 rounded-lg text-center transition-all ${
+                isBooked
+                    ? "bg-red-50 text-red-600 cursor-not-allowed"
+                    : "bg-green-50 text-green-600 hover:bg-green-100"
+            }`;
+            timeButton.textContent = `${hour}:00 ${period}`;
+            timeButton.dataset.hour = slot.hour;
+
+            if (!isBooked) {
+                timeButton.addEventListener("click", () => {
+                    if (selectedTimeSlots.has(slot.hour)) {
+                        selectedTimeSlots.delete(slot.hour);
+                        timeButton.classList.remove(
+                            "ring-2",
+                            "ring-green-500",
+                            "bg-green-200"
+                        );
+                        timeButton.classList.add("bg-green-50");
+                    } else {
+                        selectedTimeSlots.add(slot.hour);
+                        timeButton.classList.add(
+                            "ring-2",
+                            "ring-green-500",
+                            "bg-green-200"
+                        );
+                        timeButton.classList.remove("bg-green-50");
+                    }
+                    updateCart();
+                });
+            }
+
+            timeSlotsGrid.appendChild(timeButton);
+        });
+
+        // Show message if no available slots
+        if (timeSlotsGrid.children.length === 0) {
+            timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-gray-500">No more slots available for today</div>';
+        }
     } catch (error) {
-      timeSlotsGrid.innerHTML =
-        '<div class="col-span-4 text-center text-red-500">Error loading time slots</div>';
+        timeSlotsGrid.innerHTML =
+            '<div class="col-span-4 text-center text-red-500">Error loading time slots</div>';
     }
-  };
+};
 
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
