@@ -124,7 +124,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
                             </label>
                             <div id="calendar-grid" class="grid sm:grid-cols-7 grid-cols-3 gap-2"></div>
                         </div>
-                        
+
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-4">
                                 <i class="far fa-clock mr-2"></i>Select Time Slots

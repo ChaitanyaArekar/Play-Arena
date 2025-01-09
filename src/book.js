@@ -1,4 +1,3 @@
-// book.js
 document.addEventListener("DOMContentLoaded", () => {
   const backendUrl = "http://localhost:8000/db.php";
   const sportSelect = document.getElementById("sport-select");
@@ -204,13 +203,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // Add booking info for owner
         if (isBooked && isOwner && slot.booking_info) {
           const bookingInfo = document.createElement("div");
-          bookingInfo.className = "text-xs text-gray-600 mt-1";
+          bookingInfo.className = "text-xs text-gray-600 mt-1 ";
           bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
           timeButton.appendChild(bookingInfo);
           
           // Cancel button for owner
           const cancelBtn = document.createElement("button");
-          cancelBtn.className = "absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 transition-all";
+          cancelBtn.className = "absolute top-1 right-1 bg-red-500 text-white text-xs px-1 py-1 rounded hover:bg-red-600 transition-all";
           cancelBtn.textContent = "Cancel";
           cancelBtn.onclick = async (e) => {
             e.stopPropagation();
