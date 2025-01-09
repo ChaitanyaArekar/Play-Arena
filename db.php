@@ -1,18 +1,17 @@
 <?php
+// db.php
 require 'vendor/autoload.php';
 
 use MongoDB\Client;
 use Dotenv\Dotenv;
 
-session_start(); // Start the session to access session variables
+session_start();
 
-class Database
-{
+class Database {
     private $client;
     private $bookingsCollection;
 
-    public function __construct()
-    {
+    public function __construct() {
         try {
             $dotenv = Dotenv::createImmutable(__DIR__);
             $dotenv->load();
@@ -26,11 +25,29 @@ class Database
         }
     }
 
-    public function generateSlots($date, $sport)
-    {
+    public function generateSlots($date, $sport) {
         $slotsCollection = $this->client->turf->{$sport . '_slots'};
         $existing = $slotsCollection->findOne(['date' => $date]);
+        
         if ($existing) {
+            // If user is owner, add booking info to booked slots
+            if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] === 'owner') {
+                foreach ($existing['slots'] as &$slot) {
+                    if ($slot['status'] === 'booked') {
+                        $booking = $this->bookingsCollection->findOne([
+                            'date' => $date,
+                            'hour' => $slot['hour'],
+                            'sport' => $sport
+                        ]);
+                        if ($booking) {
+                            $slot['booking_info'] = [
+                                'full_name' => $booking['full_name'],
+                                'email' => $booking['email']
+                            ];
+                        }
+                    }
+                }
+            }
             return $existing;
         }
 
@@ -64,6 +81,7 @@ class Database
         try {
             $slotsCollection = $this->client->turf->{$sport . '_slots'};
             $slotsData = $slotsCollection->findOne(['date' => $date]);
+
             if (!$slotsData) {
                 return ['success' => false, 'message' => 'Slots not available for this date'];
             }
@@ -80,11 +98,7 @@ class Database
                         ['$set' => ['slots' => $slotsData['slots']]]
                     );
 
-                    // Replace user_id with full_name and email from session
-                    if (isset($_SESSION['user'])) {
-                        $full_name = $_SESSION['user']['full_name'];
-                        $email = $_SESSION['user']['email'];
-                    } else {
+                    if (!isset($_SESSION['user'])) {
                         return ['success' => false, 'message' => 'User not authenticated'];
                     }
 
@@ -92,8 +106,8 @@ class Database
                         'date' => $date,
                         'hour' => $hour,
                         'sport' => $sport,
-                        'full_name' => $full_name,
-                        'email' => $email
+                        'full_name' => $_SESSION['user']['full_name'],
+                        'email' => $_SESSION['user']['email']
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -109,8 +123,14 @@ class Database
     public function cancelSlot($date, $hour, $sport)
     {
         try {
+            // Check if user is owner
+            if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
+                return ['success' => false, 'message' => 'Unauthorized to cancel bookings'];
+            }
+
             $slotsCollection = $this->client->turf->{$sport . '_slots'};
             $slotsData = $slotsCollection->findOne(['date' => $date]);
+
             if (!$slotsData) {
                 return ['success' => false, 'message' => 'Slots not available for this date'];
             }
@@ -124,21 +144,20 @@ class Database
                         ['$set' => ['slots' => $slotsData['slots']]]
                     );
 
-                    // Cancel booking by matching the user
+                    // Remove the booking
                     $this->bookingsCollection->deleteOne([
                         'date' => $date,
                         'hour' => $hour,
-                        'sport' => $sport,
-                        'email' => $_SESSION['user']['email'] // Match by email (user-specific)
+                        'sport' => $sport
                     ]);
 
-                    return ['success' => true, 'message' => 'Slot cancelled successfully'];
+                    return ['success' => true, 'message' => 'Booking cancelled successfully'];
                 }
             }
 
             return ['success' => false, 'message' => 'Slot not booked or invalid'];
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'Error cancelling slot'];
+            return ['success' => false, 'message' => 'Error cancelling booking'];
         }
     }
 
@@ -156,7 +175,6 @@ $db = new Database();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['bookings'])) {
-        // Fetch email from session instead of using a user_id query parameter
         if (isset($_SESSION['user'])) {
             $userEmail = $_SESSION['user']['email'];
             echo json_encode($db->getBookings($userEmail));
@@ -177,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hour = $data['hour'] ?? null;
     $sport = $data['sport'] ?? null;
 
-    if ($date && $hour && $sport) {
+    if ($date && $hour !== null && $sport) {
         $result = $db->bookSlot($date, $hour, $sport);
         echo json_encode($result);
     } else {
@@ -192,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $hour = $data['hour'] ?? null;
     $sport = $data['sport'] ?? null;
 
-    if ($date && $hour && $sport) {
+    if ($date && $hour !== null && $sport) {
         $result = $db->cancelSlot($date, $hour, $sport);
         echo json_encode($result);
     } else {
@@ -200,3 +218,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     }
     exit;
 }
+?>

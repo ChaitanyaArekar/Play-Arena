@@ -1,3 +1,4 @@
+// book.js
 document.addEventListener("DOMContentLoaded", () => {
   const backendUrl = "http://localhost:8000/db.php";
   const sportSelect = document.getElementById("sport-select");
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginPopup = document.getElementById("login-popup");
   const loginConfirm = document.getElementById("login-confirm");
   const loginCancel = document.getElementById("login-cancel");
+  const isOwner = document.getElementById("user-type").value === "owner";
 
   const PRICES = {
     cricket: 1300,
@@ -22,8 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let selectedDate = null;
   let selectedTimeSlots = new Set();
-
-  // Image Slideshow
   const images = JSON.parse(document.getElementById("turf-images").value);
   let currentIndex = 0;
   const imgElement = document.getElementById("turf-image");
@@ -39,12 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (selectedTimeSlots.size === 0) {
       cartItems.innerHTML = `
-                                    <div class="flex flex-col items-center justify-center py-8">
-                                        <div class="text-gray-400 mb-2">
-                                            <i class="fas fa-shopping-cart text-3xl"></i>
-                                        </div>
-                                        <p class="text-gray-500 text-sm text-center">No slots selected</p>
-                                    </div>`;
+        <div class="flex flex-col items-center justify-center py-8">
+            <div class="text-gray-400 mb-2">
+                <i class="fas fa-shopping-cart text-3xl"></i>
+            </div>
+            <p class="text-gray-500 text-sm text-center">No slots selected</p>
+        </div>`;
       totalSlots.textContent = "0";
       totalAmount.textContent = "₹0";
       bookSlotButton.disabled = true;
@@ -65,22 +65,21 @@ document.addEventListener("DOMContentLoaded", () => {
       itemDiv.className =
         "flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all";
       itemDiv.innerHTML = `
-                                    <div class="flex-1">
-    <div class="flex items-center gap-2">
-        <span class="font-medium capitalize">${sportSelect.value}</span>
-        <span class="text-sm text-gray-500">|</span>
-        <span class="text-sm text-gray-600">${formattedDate}</span>
-        <span class="text-sm text-gray-500">|</span>
-        <div class="text-xs text-gray-600">${hour}:00 ${period}</div>
-    </div>
-    <div class="text-sm text-gray-500">₹${currentPrice}</div>
-</div>
-<button class="text-red-500 hover:text-red-600 p-1 hover:bg-red-50 rounded-full transition-all" 
-    onclick="removeTimeSlot(${slot})" 
-    title="Remove Slot">
-    <i class="fas fa-times"></i>
-</button>
-`;
+        <div class="flex-1">
+            <div class="flex items-center gap-2">
+                <span class="font-medium capitalize">${sportSelect.value}</span>
+                <span class="text-sm text-gray-500">|</span>
+                <span class="text-sm text-gray-600">${formattedDate}</span>
+                <span class="text-sm text-gray-500">|</span>
+                <div class="text-xs text-gray-600">${hour}:00 ${period}</div>
+            </div>
+            <div class="text-sm text-gray-500">₹${currentPrice}</div>
+        </div>
+        <button class="text-red-500 hover:text-red-600 p-1 hover:bg-red-50 rounded-full transition-all" 
+            onclick="removeTimeSlot(${slot})" 
+            title="Remove Slot">
+            <i class="fas fa-times"></i>
+        </button>`;
       cartItems.appendChild(itemDiv);
     });
 
@@ -121,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const populateCalendar = () => {
     calendarGrid.innerHTML = "";
     const today = new Date();
-    // Set default selected date to today
     selectedDate = today.toISOString().split("T")[0];
 
     for (let i = 0; i < 7; i++) {
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       calendarGrid.appendChild(dayElement);
     }
-    // Load time slots for today immediately
     populateTimeSlots();
   };
 
@@ -168,77 +165,109 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
                 <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
             </div>
-            <p class="text-gray-500 text-sm">Every great game starts with the right time!</p>
-        </div>
-    `;
+            <p class="text-gray-500 text-sm">Loading available slots...</p>
+        </div>`;
 
     try {
-        const response = await fetch(
-            `${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`
-        );
-        const data = await response.json();
+      const response = await fetch(
+        `${backendUrl}?sport=${sportSelect.value}&date=${selectedDate}`
+      );
+      const data = await response.json();
 
-        timeSlotsGrid.innerHTML = "";
-        
-        // Get current hour for comparison
-        const now = new Date();
-        const currentHour = now.getHours();
-        const today = now.toISOString().split('T')[0];
+      timeSlotsGrid.innerHTML = "";
+      
+      const now = new Date();
+      const currentHour = now.getHours();
+      const today = now.toISOString().split('T')[0];
 
-        data.slots.forEach((slot) => {
-            // Skip past time slots if it's today
-            if (selectedDate === today && slot.hour <= currentHour) {
-                return;
-            }
-
-            const timeButton = document.createElement("button");
-            const isBooked = slot.status === "booked";
-            const hour = slot.hour % 12 || 12;
-            const period = slot.hour >= 12 ? "PM" : "AM";
-
-            timeButton.className = `p-3 rounded-lg text-center transition-all ${
-                isBooked
-                    ? "bg-red-50 text-red-600 cursor-not-allowed"
-                    : "bg-green-50 text-green-600 hover:bg-green-100"
-            }`;
-            timeButton.textContent = `${hour}:00 ${period}`;
-            timeButton.dataset.hour = slot.hour;
-
-            if (!isBooked) {
-                timeButton.addEventListener("click", () => {
-                    if (selectedTimeSlots.has(slot.hour)) {
-                        selectedTimeSlots.delete(slot.hour);
-                        timeButton.classList.remove(
-                            "ring-2",
-                            "ring-green-500",
-                            "bg-green-200"
-                        );
-                        timeButton.classList.add("bg-green-50");
-                    } else {
-                        selectedTimeSlots.add(slot.hour);
-                        timeButton.classList.add(
-                            "ring-2",
-                            "ring-green-500",
-                            "bg-green-200"
-                        );
-                        timeButton.classList.remove("bg-green-50");
-                    }
-                    updateCart();
-                });
-            }
-
-            timeSlotsGrid.appendChild(timeButton);
-        });
-
-        // Show message if no available slots
-        if (timeSlotsGrid.children.length === 0) {
-            timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-gray-500">No more slots available for today</div>';
+      data.slots.forEach((slot) => {
+        if (selectedDate === today && slot.hour <= currentHour) {
+          return;
         }
+
+        const timeButton = document.createElement("div");
+        const isBooked = slot.status === "booked";
+        const hour = slot.hour % 12 || 12;
+        const period = slot.hour >= 12 ? "PM" : "AM";
+
+        timeButton.className = `relative p-3 rounded-lg text-center transition-all ${
+          isBooked
+            ? "bg-red-50 text-red-600"
+            : "bg-green-50 text-green-600 hover:bg-green-100"
+        }`;
+
+        // Main time display
+        const timeDisplay = document.createElement("div");
+        timeDisplay.textContent = `${hour}:00 ${period}`;
+        timeButton.appendChild(timeDisplay);
+
+        // Add booking info for owner
+        if (isBooked && isOwner && slot.booking_info) {
+          const bookingInfo = document.createElement("div");
+          bookingInfo.className = "text-xs text-gray-600 mt-1";
+          bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
+          timeButton.appendChild(bookingInfo);
+          
+          // Cancel button for owner
+          const cancelBtn = document.createElement("button");
+          cancelBtn.className = "absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 transition-all";
+          cancelBtn.textContent = "Cancel";
+          cancelBtn.onclick = async (e) => {
+            e.stopPropagation();
+            try {
+              const response = await fetch(backendUrl, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  sport: sportSelect.value,
+                  date: selectedDate,
+                  hour: slot.hour
+                })
+              });
+              
+              const result = await response.json();
+              if (result.success) {
+                popupText.textContent = "Booking cancelled successfully!";
+                await populateTimeSlots();
+              } else {
+                popupText.textContent = result.message || "Failed to cancel booking";
+              }
+              popupMessage.classList.remove("hidden");
+            } catch (error) {
+              popupText.textContent = "Error cancelling booking";
+              popupMessage.classList.remove("hidden");
+            }
+          };
+          timeButton.appendChild(cancelBtn);
+        }
+
+        if (!isBooked) {
+          timeButton.dataset.hour = slot.hour;
+          timeButton.style.cursor = "pointer";
+          timeButton.onclick = () => {
+            if (selectedTimeSlots.has(slot.hour)) {
+              selectedTimeSlots.delete(slot.hour);
+              timeButton.classList.remove("ring-2", "ring-green-500", "bg-green-200");
+              timeButton.classList.add("bg-green-50");
+            } else {
+              selectedTimeSlots.add(slot.hour);
+              timeButton.classList.add("ring-2", "ring-green-500", "bg-green-200");
+              timeButton.classList.remove("bg-green-50");
+            }
+            updateCart();
+          };
+        }
+
+        timeSlotsGrid.appendChild(timeButton);
+      });
+
+      if (timeSlotsGrid.children.length === 0) {
+        timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-gray-500">No slots available for this day</div>';
+      }
     } catch (error) {
-        timeSlotsGrid.innerHTML =
-            '<div class="col-span-4 text-center text-red-500">Error loading time slots</div>';
+      timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
-};
+  };
 
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
@@ -247,8 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const isLoggedIn =
-      document.getElementById("user-logged-in").value === "true";
+    const isLoggedIn = document.getElementById("user-logged-in").value === "true";
     if (!isLoggedIn) {
       loginPopup.classList.remove("hidden");
       return;
@@ -273,13 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const allSuccessful = results.every((r) => r.ok);
 
       if (allSuccessful) {
-        popupText.textContent = "All slots booked successfully!";
+        popupText.textContent = "Slots booked successfully!";
         selectedTimeSlots.clear();
         await populateTimeSlots();
         updateCart();
       } else {
-        popupText.textContent =
-          "Some slots could not be booked. Please try again.";
+        popupText.textContent = "Some slots could not be booked. Please try again.";
       }
     } catch (error) {
       popupText.textContent = "Error booking slots. Please try again.";
