@@ -33,7 +33,7 @@
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/Football.jpg" alt="Box Football" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <p class="text-white text-lg font-bold">Box Football</p>
+                        <p class="text-white text-lg font-bold">Football</p>
                         <p class="text-gray-300 text-sm">United Sports Arena</p>
                         <p class="text-gray-300 text-sm">Playground in Vadodara</p>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="relative overflow-hidden rounded-lg shadow-md">
                     <img src="public/img/cricket.jpg" alt="Box Cricket" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <p class="text-white text-lg font-bold">Box Cricket</p>
+                        <p class="text-white text-lg font-bold">Cricket</p>
                         <p class="text-white text-sm">United Sports Arena</p>
                         <p class="text-white text-sm">Playground in Vadodara</p>
                     </div>
