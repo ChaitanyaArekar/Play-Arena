@@ -136,7 +136,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
 
                 <!-- Cart Summary -->
                 <div class="lg:w-1/4">
-                    <div class="bg-white rounded-lg shadow-lg  flex-grow h-full">
+                    <div class="bg-white rounded-lg shadow-lg  flex-grow h-full mb-12">
                         <div class="p-4 border-b bg-gray-50 rounded-t-lg">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-xl font-bold text-gray-800">Cart Summary</h2>
