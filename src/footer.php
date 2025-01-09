@@ -85,7 +85,7 @@
 
     <section class="text-white bg-gradient-to-r" style="background: linear-gradient(to right, #000000, #434343);">
         <div class="flex flex-col md:flex-row w-full mb-6 footer-section">
-            <div class="flex-1 flex flex-col justify-start mr-8 m-6 p-10 text-center sm:text-left">
+            <div class="flex-1 flex flex-col justify-start mr-8 m-6 sm:p-10 text-center sm:text-left">
                 <span class="text-4xl font-bold footer-title">PlayArena</span>
                 <p class="text-gray-400 mt-4 max-w-[310px] footer-text">
                     Find your perfect turf with ease,
@@ -119,7 +119,7 @@
                 ];
 
                 foreach ($footerLinks as $link) {
-                    echo '<div class="flex flex-col ss:my-0 my-2 min-w-[150px] m-6 pt-10 sm:my-2">';
+                    echo '<div class="flex flex-col ss:my-0 my-2 min-w-[150px] m-6 sm:pt-10 sm:my-2">';
                     echo '<h4 class="font-poppins font-medium text-[18px] leading-[27px] text-white">' . $link['title'] . '</h4>';
                     echo '<ul class="list-none mt-4">';
                     foreach ($link['links'] as $item) {

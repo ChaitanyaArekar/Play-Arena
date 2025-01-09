@@ -32,6 +32,13 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
     <title>Turf Booking</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @media (max-width: 768px) {
+            .navbar ul li a {
+                color: white;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen py-2 px-4">
@@ -40,7 +47,7 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
         <?php include 'navbar.php'; ?>
     </header>
 
-    <div class="max-h-screen p-8">
+    <div class="max-h-screen pt-7">
         <div class="container mx-auto">
             <div class="flex flex-col lg:flex-row gap-6">
                 <!-- Turf Details Section -->
@@ -63,11 +70,11 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                                     </span>
                                 </div>
                                 <div class=" flex items-center gap-2 text-gray-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <span class="text-sm">08:00 AM - 11:59 PM</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="text-sm">08:00 AM - 11:59 PM</span>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2">
@@ -135,7 +142,7 @@ $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : '';
                 </div>
 
                 <!-- Cart Summary Section -->
-                <div class="lg:w-1/4">
+                <div class="lg:w-1/4 lg:m-0 lg:p-0 mb-10">
                     <div class="bg-white rounded-lg shadow-lg h-full">
                         <div class="p-4 border-b bg-gray-50 rounded-t-lg">
                             <div class="flex items-center justify-between">
