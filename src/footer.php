@@ -7,7 +7,7 @@
     <title>Footer - PlayArena</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         .footer-link {
             transition: transform 0.3s ease, color 0.3s ease;
@@ -87,7 +87,7 @@
         <div class="flex flex-col md:flex-row w-full mb-6 footer-section">
             <div class="flex-1 flex flex-col justify-start mr-8 m-6 sm:p-10 text-center sm:text-left">
                 <span class="text-4xl font-bold footer-title">PlayArena</span>
-                <p class="text-gray-400 mt-4 max-w-[310px] footer-text">
+                <p class="text-gray-400 mt-4 sm:max-w-[310px] align-items-center footer-text">
                     Find your perfect turf with ease,
                     Play, compete, and create memories that please!
                 </p>

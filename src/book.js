@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const backendUrl = "http://localhost:8000/db.php";
+let backendUrl;
+
+if (navigator.onLine && window.location.hostname === "localhost") {
+    backendUrl = "http://localhost:8000/db.php";
+} else {
+    backendUrl = "http://192.168.12.248:8000/db.php";
+}
   const sportSelect = document.getElementById("sport-select");
   const calendarGrid = document.getElementById("calendar-grid");
   const timeSlotsGrid = document.getElementById("time-slots-grid");

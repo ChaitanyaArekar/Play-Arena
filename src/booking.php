@@ -26,7 +26,7 @@
 
 <body class="bg-gray-100">
     <section id="booking">
-        <h1 class="text-xl font-semibold m-10 ml-20 mt-16">Start Your Adventure &rarr;</h1>
+        <h1 class="text-2xl font-semibold m-10 ml-8 sm:ml-20 mt-16">Start Your Adventure &rarr;</h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-5 sm:px-16 py-6">
             <a href="/src/book.php?sport=football" class="block card">
