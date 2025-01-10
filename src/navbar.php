@@ -20,6 +20,7 @@ $navLinks = [
 $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['owner']);
 
 if ($isLoggedIn) {
+    $navLinks[] = ["id" => "profile", "title" => "Profile", "url" => "../src/profile.php"];
     $navLinks[] = ["id" => "logout", "title" => "Logout", "url" => "?logout=true", "class" => "bg-red-600 hover:bg-red-700"];
 } else {
     $navLinks[] = ["id" => "login", "title" => "Login", "url" => "../src/login.php", "class" => "bg-green-600 hover:bg-green-700"];
