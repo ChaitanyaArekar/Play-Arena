@@ -9,27 +9,13 @@
     --text-secondary: #666666;
 }
 
-body {
+/* body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-primary);
-}
-
-.back-button {
-    color: white;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: transform 0.2s;
-}
-
-.back-button:hover {
-    transform: translateX(-5px);
-}
+} */
 
 .container {
     max-width: 1200px;
@@ -40,7 +26,7 @@ body {
 .profile-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
-    gap: 2rem;
+    gap: 6rem;
     margin-top: 2rem;
 }
 
@@ -50,6 +36,7 @@ body {
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     height: 100%;
+    padding-right: 10px;
 }
 
 .profile-picture {
@@ -77,15 +64,17 @@ body {
     align-items: center;
     gap: 10px;
     margin-bottom: 1rem;
-    padding: 0.8rem;
+    padding: 10px;
     background: var(--background-color);
     border-radius: 10px;
+    width: relative;
 }
 
 .info-item i {
     color: var(--primary-color);
     font-size: 1.2rem;
     width: 24px;
+    padding: 2px;
 }
 
 .bookings-section {

@@ -14,6 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginConfirm = document.getElementById("login-confirm");
   const loginCancel = document.getElementById("login-cancel");
   const isOwner = document.getElementById("user-type").value === "owner";
+    const cancelConfirmPopup = document.getElementById("cancel-confirm-popup");
+  const cancelConfirmDetails = document.getElementById("cancel-confirm-details");
+  const cancelConfirmYes = document.getElementById("cancel-confirm-yes");
+  const cancelConfirmNo = document.getElementById("cancel-confirm-no");
 
   const PRICES = {
     cricket: 1300,
@@ -195,51 +199,76 @@ document.addEventListener("DOMContentLoaded", () => {
             : "bg-green-50 text-green-600 hover:bg-green-100"
         }`;
 
-        // Main time display
         const timeDisplay = document.createElement("div");
         timeDisplay.textContent = `${hour}:00 ${period}`;
         timeButton.appendChild(timeDisplay);
 
-        // Add booking info for owner
         if (isBooked && isOwner && slot.booking_info) {
           const bookingInfo = document.createElement("div");
-          bookingInfo.className = "text-xs text-gray-600 mt-1 ";
+          bookingInfo.className = "text-xs text-gray-600 mt-1";
           bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
           timeButton.appendChild(bookingInfo);
           
-          // Cancel button for owner
           const cancelBtn = document.createElement("button");
           cancelBtn.className = "absolute top-1 right-1 bg-red-500 text-white text-xs px-1 py-1 rounded hover:bg-red-600 transition-all";
           cancelBtn.textContent = "Cancel";
-          cancelBtn.onclick = async (e) => {
+          cancelBtn.onclick = (e) => {
             e.stopPropagation();
-            try {
-              const response = await fetch(backendUrl, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  sport: sportSelect.value,
-                  date: selectedDate,
-                  hour: slot.hour
-                })
-              });
-              
-              const result = await response.json();
-              if (result.success) {
-                popupText.textContent = "Booking cancelled successfully!";
-                await populateTimeSlots();
-              } else {
-                popupText.textContent = result.message || "Failed to cancel booking";
+            const formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+            
+            cancelConfirmDetails.innerHTML = `
+              <div class="space-y-3">
+                <div class="text-lg font-semibold text-red-600 mb-4">Are you sure you want to cancel this booking?</div>
+                <div class="space-y-2 text-gray-700">
+                  <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+                  <p><span class="font-medium">Date:</span> ${formattedDate}</p>
+                  <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
+                  <p><span class="font-medium">Customer Name:</span> ${slot.booking_info.full_name}</p>
+                  <p><span class="font-medium">Email:</span> ${slot.booking_info.email || 'N/A'}</p>
+                </div>
+            `;
+            
+            cancelConfirmPopup.classList.remove("hidden");
+            
+            cancelConfirmYes.onclick = async () => {
+              try {
+                const response = await fetch(backendUrl, {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    sport: sportSelect.value,
+                    date: selectedDate,
+                    hour: slot.hour
+                  })
+                });
+                
+                const result = await response.json();
+                cancelConfirmPopup.classList.add("hidden");
+                
+                if (result.success) {
+                  popupText.textContent = "Booking cancelled successfully!";
+                  await populateTimeSlots();
+                } else {
+                  popupText.textContent = result.message || "Failed to cancel booking";
+                }
+                popupMessage.classList.remove("hidden");
+              } catch (error) {
+                cancelConfirmPopup.classList.add("hidden");
+                popupText.textContent = "Error cancelling booking";
+                popupMessage.classList.remove("hidden");
               }
-              popupMessage.classList.remove("hidden");
-            } catch (error) {
-              popupText.textContent = "Error cancelling booking";
-              popupMessage.classList.remove("hidden");
-            }
+            };
+            cancelConfirmNo.onclick = () => {
+              cancelConfirmPopup.classList.add("hidden");
+            };
           };
           timeButton.appendChild(cancelBtn);
         }
-
         if (!isBooked) {
           timeButton.dataset.hour = slot.hour;
           timeButton.style.cursor = "pointer";
@@ -267,7 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
       timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
-
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
@@ -312,8 +340,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     popupMessage.classList.remove("hidden");
   };
-
-  // Event Listeners
   loginConfirm.addEventListener("click", () => {
     window.location.href = "../src/login.php";
   });
@@ -335,8 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
   popupClose.addEventListener("click", () => {
     popupMessage.classList.add("hidden");
   });
-
-  // Initialize calendar and cart
   populateCalendar();
   updateCart();
 });

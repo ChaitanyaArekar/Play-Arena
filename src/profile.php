@@ -15,10 +15,20 @@ $uri = $_ENV['MONGODB_URI'];
 $client = new MongoDB\Client($uri);
 $bookingsCollection = $client->turf->bookings;
 
-$userBookings = $bookingsCollection->find(
-    ['email' => $_SESSION['email']],
-    ['sort' => ['date' => 1, 'hour' => 1]]
-)->toArray();
+// Modified query based on user type
+if ($_SESSION['user_type'] === 'owner') {
+    // Get all bookings for owners
+    $userBookings = $bookingsCollection->find(
+        [],
+        ['sort' => ['date' => 1, 'hour' => 1]]
+    )->toArray();
+} else {
+    // Get only user's bookings for regular users
+    $userBookings = $bookingsCollection->find(
+        ['email' => $_SESSION['email']],
+        ['sort' => ['date' => 1, 'hour' => 1]]
+    )->toArray();
+}
 
 $upcomingBookings = [];
 $pastBookings = [];
@@ -48,12 +58,37 @@ function formatTime($hour)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - Play Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="/src/profile.css">
+    <style>
+        header {
+            position: sticky;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .navbar ul li a {
+                color: white;
+            }
+        }
+
+        .user-details {
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        .user-details i {
+            margin-right: 0.5rem;
+            color: #4a5568;
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-gradient-to-br from-green-50 to-blue-50 py-2 px-4">
     <?php $textColor = 'text-black'; ?>
-    <header class="<?php echo $textColor; ?> p-3 mr-6">
+    <header class="<?php echo $textColor; ?>">
         <?php include 'navbar.php'; ?>
     </header>
 
@@ -80,7 +115,7 @@ function formatTime($hour)
             <!-- Bookings Section -->
             <div class="bookings-section">
                 <div class="bookings-header">
-                    <h2>Your Bookings</h2>
+                    <h2><?php echo $_SESSION['user_type'] === 'owner' ? 'All Bookings' : 'Your Bookings'; ?></h2>
                 </div>
 
                 <div class="bookings-tabs">
@@ -120,6 +155,18 @@ function formatTime($hour)
                                             <i class="far fa-clock"></i>
                                             <?php echo formatTime($booking['hour']); ?>
                                         </div>
+                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                            <div class="user-details">
+                                                <div class="info-item">
+                                                    <i class="fas fa-user"></i>
+                                                    <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -159,6 +206,18 @@ function formatTime($hour)
                                             <i class="far fa-clock"></i>
                                             <?php echo formatTime($booking['hour']); ?>
                                         </div>
+                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                            <div class="user-details">
+                                                <div class="info-item">
+                                                    <i class="fas fa-user"></i>
+                                                    <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

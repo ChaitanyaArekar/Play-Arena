@@ -32,6 +32,19 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
     <title>Turf Booking</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        header {
+            position: sticky;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .navbar ul li a {
+                color: white;
+            }
+        }
+    </style>
+
 </head>
 
 <body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen py-2 px-4">
@@ -182,8 +195,6 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
             </div>
         </div>
     </div>
-
-    <!-- Popups -->
     <div id="popup-message" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <p id="popup-text" class="text-lg font-semibold text-gray-800 text-center mb-6"></p>
@@ -209,8 +220,20 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
             </div>
         </div>
     </div>
-
-    <!-- Hidden Fields -->
+    <div id="cancel-confirm-popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+            <div id="cancel-confirm-details" class="mb-6">
+            </div>
+            <div class="flex gap-4">
+                <button id="cancel-confirm-no" class="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg">
+                    Keep Booking
+                </button>
+                <button id="cancel-confirm-yes" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg">
+                    Cancel Booking
+                </button>
+            </div>
+        </div>
+    </div>
     <input type="hidden" id="user-logged-in" value="<?php echo $isLoggedIn ? 'true' : 'false'; ?>">
     <input type="hidden" id="user-type" value="<?php echo $userType; ?>">
     <input type="hidden" id="turf-images" value='<?php echo json_encode($turf['photos']); ?>'>
