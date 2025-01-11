@@ -78,8 +78,8 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
                                     <i class="far fa-clock"></i>
                                     <span class="text-sm">08:00 AM - 11:59 PM</span>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4 mt-4">
-                                    <div class="p-3 bg-gray-50 rounded-lg">
+                                <div class="grid grid-cols-2 bg-gray-50 gap-4 mt-4">
+                                    <div class="p-3 rounded-lg">
                                         <h3 class="font-semibold text-sm mb-2">Amenities</h3>
                                         <ul class="text-sm text-gray-600 space-y-1">
                                             <li>• Floodlights</li>
@@ -88,7 +88,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
                                             <li>• Water Facility</li>
                                         </ul>
                                     </div>
-                                    <div class="p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-3 rounded-lg">
                                         <h3 class="font-semibold text-sm mb-2">Rules</h3>
                                         <ul class="text-sm text-gray-600 space-y-1">
                                             <li>• Respect Time</li>

@@ -9,7 +9,7 @@
 </head>
 
 <body class="">
-    <div class="max-full mx-auto m-16 ml-10 p-6">
+    <div class="max-full mx-auto m-16 mt-0 p-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">The Grid Turf And Cafe Cancellation Policy</h1>
         <ul class="list-disc list-inside space-y-2 text-gray-700 text-md">
             <li><strong>100% refund</strong> if the slot is cancelled more than <strong>24 hours</strong> before the start time.</li>

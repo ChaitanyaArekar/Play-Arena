@@ -3,7 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
 if (isset($_GET['logout'])) {
     session_unset();
     session_destroy();
@@ -21,11 +20,16 @@ $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['owner']);
 
 if ($isLoggedIn) {
     $navLinks[] = ["id" => "profile", "title" => "Profile", "url" => "../src/profile.php"];
-    $navLinks[] = ["id" => "logout", "title" => "Logout", "url" => "?logout=true", "class" => "bg-red-600 hover:bg-red-700"];
+    $navLinks[] = [
+        "id" => "logout",
+        "title" => "Logout",
+        "url" => "#",
+        "class" => "bg-red-600 hover:bg-red-700",
+        "onclick" => "showLogoutConfirmation(event)"
+    ];
 } else {
     $navLinks[] = ["id" => "login", "title" => "Login", "url" => "../src/login.php", "class" => "bg-green-600 hover:bg-green-700"];
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -68,10 +72,52 @@ if ($isLoggedIn) {
         html {
             scroll-behavior: smooth;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal.show {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4">Confirm Logout</h2>
+            <p class="mb-6">Are you sure you want to logout?</p>
+            <div class="flex justify-end gap-4">
+                <button onclick="cancelLogout()" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                    Cancel
+                </button>
+                <button onclick="confirmLogout()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
     <nav class="w-full flex py-3 sm:py-6 justify-between items-center navbar">
         <span
             class="text-2xl sm:text-3xl ml-2 sm:ml-10 font-bold <?php echo isset($textColor) ? $textColor : 'text-white'; ?> cursor-pointer"
@@ -83,9 +129,18 @@ if ($isLoggedIn) {
                 <li
                     class="font-poppins font-normal cursor-pointer text-[16px] mr-10 <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform">
                     <?php if (isset($nav['class'])): ?>
-                        <a href="<?= $nav['url'] ?>" class="px-4 py-2 rounded-md <?= $nav['class'] ?> text-white"><?= $nav['title'] ?></a> <!-- Using rounded-md for less rounded corners -->
+                        <a
+                            href="<?= $nav['url'] ?>"
+                            class="px-4 py-2 rounded-md <?= $nav['class'] ?> text-white"
+                            <?= isset($nav['onclick']) ? "onclick=\"{$nav['onclick']}\"" : '' ?>>
+                            <?= $nav['title'] ?>
+                        </a>
                     <?php else: ?>
-                        <a href="<?= $nav['url'] ?>"><?= $nav['title'] ?></a>
+                        <a
+                            href="<?= $nav['url'] ?>"
+                            <?= isset($nav['onclick']) ? "onclick=\"{$nav['onclick']}\"" : '' ?>>
+                            <?= $nav['title'] ?>
+                        </a>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
@@ -109,9 +164,18 @@ if ($isLoggedIn) {
                         <li
                             class="font-poppins font-normal cursor-pointer text-[16px] <?= $index === count($navLinks) - 1 ? 'mr-10' : 'mb-4' ?> <?php echo isset($textColor) ? $textColor : 'text-white'; ?> hover:text-gray-500 transition-transform">
                             <?php if (isset($nav['class'])): ?>
-                                <a href="<?= $nav['url'] ?>" class="px-4 py-2 rounded-md <?= $nav['class'] ?> text-white"><?= $nav['title'] ?></a>
+                                <a
+                                    href="<?= $nav['url'] ?>"
+                                    class="px-4 py-2 rounded-md <?= $nav['class'] ?> text-white"
+                                    <?= isset($nav['onclick']) ? "onclick=\"{$nav['onclick']}\"" : '' ?>>
+                                    <?= $nav['title'] ?>
+                                </a>
                             <?php else: ?>
-                                <a href="<?= $nav['url'] ?>"><?= $nav['title'] ?></a>
+                                <a
+                                    href="<?= $nav['url'] ?>"
+                                    <?= isset($nav['onclick']) ? "onclick=\"{$nav['onclick']}\"" : '' ?>>
+                                    <?= $nav['title'] ?>
+                                </a>
                             <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
@@ -125,6 +189,7 @@ if ($isLoggedIn) {
         const menuIcon = document.getElementById('menu-icon');
         const closeIcon = document.getElementById('close-icon');
         const sidebar = document.getElementById('sidebar');
+        const logoutModal = document.getElementById('logoutModal');
 
         let isMenuOpen = false;
 
@@ -154,6 +219,31 @@ if ($isLoggedIn) {
                 sidebar.classList.remove('show');
                 menuIcon.classList.remove('hidden');
                 closeIcon.classList.add('hidden');
+            }
+        });
+
+        function showLogoutConfirmation(event) {
+            event.preventDefault();
+            logoutModal.classList.add('show');
+        }
+
+        function cancelLogout() {
+            logoutModal.classList.remove('show');
+        }
+
+        function confirmLogout() {
+            window.location.href = '?logout=true';
+        }
+
+        logoutModal.addEventListener('click', function(event) {
+            if (event.target === logoutModal) {
+                cancelLogout();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && logoutModal.classList.contains('show')) {
+                cancelLogout();
             }
         });
     </script>
