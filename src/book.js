@@ -184,10 +184,10 @@ if (navigator.onLine && window.location.hostname === "localhost") {
       const data = await response.json();
 
       timeSlotsGrid.innerHTML = "";
-      
+
       const now = new Date();
       const currentHour = now.getHours();
-      const today = now.toISOString().split('T')[0];
+      const today = now.toISOString().split("T")[0];
 
       data.slots.forEach((slot) => {
         if (selectedDate === today && slot.hour <= currentHour) {
@@ -201,7 +201,8 @@ if (navigator.onLine && window.location.hostname === "localhost") {
 
         timeButton.className = `relative p-3 rounded-lg text-center transition-all ${
           isBooked
-            ? "bg-red-50 text-red-600"
+            ? "bg-red-50 text-red-600 " +
+              (isOwner ? "cursor-pointer hover:bg-red-100" : "")
             : "bg-green-50 text-green-600 hover:bg-green-100"
         }`;
 
@@ -212,35 +213,40 @@ if (navigator.onLine && window.location.hostname === "localhost") {
         if (isBooked && isOwner && slot.booking_info) {
           const bookingInfo = document.createElement("div");
           bookingInfo.className = "text-xs text-gray-600 mt-1";
-          bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
+          // bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
           timeButton.appendChild(bookingInfo);
-          
-          const cancelBtn = document.createElement("button");
-          cancelBtn.className = "absolute top-1 right-1 bg-red-500 text-white text-xs px-1 py-1 rounded hover:bg-red-600 transition-all";
-          cancelBtn.textContent = "Cancel";
-          cancelBtn.onclick = (e) => {
-            e.stopPropagation();
-            const formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-            
+
+          timeButton.onclick = () => {
+            const formattedDate = new Date(selectedDate).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
+
             cancelConfirmDetails.innerHTML = `
               <div class="space-y-3">
                 <div class="text-lg font-semibold text-red-600 mb-4">Are you sure you want to cancel this booking?</div>
                 <div class="space-y-2 text-gray-700">
-                  <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+                  <p><span class="font-medium">Sport:</span> ${
+                    sportSelect.value
+                  }</p>
                   <p><span class="font-medium">Date:</span> ${formattedDate}</p>
                   <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
-                  <p><span class="font-medium">Customer Name:</span> ${slot.booking_info.full_name}</p>
-                  <p><span class="font-medium">Email:</span> ${slot.booking_info.email || 'N/A'}</p>
+                  <p><span class="font-medium">Customer Name:</span> ${
+                    slot.booking_info.full_name
+                  }</p>
+                  <p><span class="font-medium">Email:</span> ${
+                    slot.booking_info.email || "N/A"
+                  }</p>
                 </div>
             `;
-            
+
             cancelConfirmPopup.classList.remove("hidden");
-            
+
             cancelConfirmYes.onclick = async () => {
               try {
                 const response = await fetch(backendUrl, {
@@ -249,18 +255,19 @@ if (navigator.onLine && window.location.hostname === "localhost") {
                   body: JSON.stringify({
                     sport: sportSelect.value,
                     date: selectedDate,
-                    hour: slot.hour
-                  })
+                    hour: slot.hour,
+                  }),
                 });
-                
+
                 const result = await response.json();
                 cancelConfirmPopup.classList.add("hidden");
-                
+
                 if (result.success) {
                   popupText.textContent = "Booking cancelled successfully!";
                   await populateTimeSlots();
                 } else {
-                  popupText.textContent = result.message || "Failed to cancel booking";
+                  popupText.textContent =
+                    result.message || "Failed to cancel booking";
                 }
                 popupMessage.classList.remove("hidden");
               } catch (error) {
@@ -269,23 +276,32 @@ if (navigator.onLine && window.location.hostname === "localhost") {
                 popupMessage.classList.remove("hidden");
               }
             };
+
             cancelConfirmNo.onclick = () => {
               cancelConfirmPopup.classList.add("hidden");
             };
           };
-          timeButton.appendChild(cancelBtn);
         }
+
         if (!isBooked) {
           timeButton.dataset.hour = slot.hour;
           timeButton.style.cursor = "pointer";
           timeButton.onclick = () => {
             if (selectedTimeSlots.has(slot.hour)) {
               selectedTimeSlots.delete(slot.hour);
-              timeButton.classList.remove("ring-2", "ring-green-500", "bg-green-200");
+              timeButton.classList.remove(
+                "ring-2",
+                "ring-green-500",
+                "bg-green-200"
+              );
               timeButton.classList.add("bg-green-50");
             } else {
               selectedTimeSlots.add(slot.hour);
-              timeButton.classList.add("ring-2", "ring-green-500", "bg-green-200");
+              timeButton.classList.add(
+                "ring-2",
+                "ring-green-500",
+                "bg-green-200"
+              );
               timeButton.classList.remove("bg-green-50");
             }
             updateCart();
@@ -296,10 +312,12 @@ if (navigator.onLine && window.location.hostname === "localhost") {
       });
 
       if (timeSlotsGrid.children.length === 0) {
-        timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-gray-500">No slots available for this day</div>';
+        timeSlotsGrid.innerHTML =
+          '<div class="col-span-4 text-center text-gray-500">No slots available for this day</div>';
       }
     } catch (error) {
-      timeSlotsGrid.innerHTML = '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
+      timeSlotsGrid.innerHTML =
+        '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
   const bookSlot = async () => {
