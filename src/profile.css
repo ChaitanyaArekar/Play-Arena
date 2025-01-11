@@ -96,6 +96,21 @@
     transition: all 0.2s;
 }
 
+.bookings-tabs .tab-button {
+    position: relative;
+}
+
+.bookings-tabs .tab-button .count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #ff5733;
+    color: white;
+    border-radius: 50%;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+}
+
 .tab-button:hover {
     color: #3B82F6;
     background: #F3F4F6;
@@ -220,7 +235,11 @@
 
     .bookings-tabs {
         flex-direction: column;
-        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .bookings-card {
+        flex-direction: column;
         padding-bottom: 0.5rem;
     }
 

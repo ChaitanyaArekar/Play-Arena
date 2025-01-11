@@ -60,30 +60,6 @@ function formatTime($hour)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="/src/profile.css">
-    <style>
-        header {
-            position: sticky;
-            z-index: 1000;
-        }
-
-        @media (max-width: 768px) {
-            .navbar ul li a {
-                color: white;
-            }
-        }
-
-        .user-details {
-            padding: 0.5rem;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 0.375rem;
-            margin-top: 0.5rem;
-        }
-
-        .user-details i {
-            margin-right: 0.5rem;
-            color: #4a5568;
-        }
-    </style>
 </head>
 
 <body class="bg-gradient-to-br from-green-50 to-blue-50 py-2 px-4">
@@ -119,8 +95,12 @@ function formatTime($hour)
                 </div>
 
                 <div class="bookings-tabs">
-                    <button class="tab-button active" onclick="showTab('upcoming')">Upcoming Bookings</button>
-                    <button class="tab-button" onclick="showTab('past')">Past Bookings</button>
+                    <button class="tab-button active" onclick="showTab('upcoming')">Upcoming Bookings
+                        <span class="count"><?php echo count($upcomingBookings); ?></span>
+                    </button>
+                    <button class="tab-button" onclick="showTab('past')">Past Bookings
+                        <span class="count"><?php echo count($pastBookings); ?></span>
+                    </button>
                 </div>
 
                 <!-- Upcoming Bookings Tab -->
