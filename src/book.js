@@ -1,11 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-let backendUrl;
-
-if (navigator.onLine && window.location.hostname === "localhost") {
-    backendUrl = "http://localhost:8000/db.php";
-} else {
-    backendUrl = "http://192.168.12.248:8000/db.php";
-}
+  const backendUrl = "http://localhost:8000/db.php";
   const sportSelect = document.getElementById("sport-select");
   const calendarGrid = document.getElementById("calendar-grid");
   const timeSlotsGrid = document.getElementById("time-slots-grid");
@@ -98,12 +92,14 @@ if (navigator.onLine && window.location.hostname === "localhost") {
     clearCartButton.disabled = false;
   };
 
-  const clearCart = () => {
+ const clearCart = () => {
     selectedTimeSlots.clear();
-    const timeButtons = timeSlotsGrid.querySelectorAll("button");
+    const timeButtons = timeSlotsGrid.querySelectorAll("button, div[data-hour]");
     timeButtons.forEach((btn) => {
-      btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
-      btn.classList.add("bg-green-50");
+      if (btn.dataset.hour) {
+        btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
+        btn.classList.add("bg-green-50", "hover:bg-green-100");
+      }
     });
     updateCart();
   };
@@ -122,6 +118,19 @@ if (navigator.onLine && window.location.hostname === "localhost") {
       if (parseInt(btn.dataset.hour) === slot) {
         btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
         btn.classList.add("bg-green-50");
+      }
+    });
+  };
+
+  window.removeTimeSlot = (slot) => {
+    selectedTimeSlots.delete(slot);
+    updateCart();
+    
+    const timeButtons = timeSlotsGrid.querySelectorAll("button, div[data-hour]");
+    timeButtons.forEach((btn) => {
+      if (parseInt(btn.dataset.hour) === slot) {
+        btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
+        btn.classList.add("bg-green-50", "hover:bg-green-100");
       }
     });
   };
