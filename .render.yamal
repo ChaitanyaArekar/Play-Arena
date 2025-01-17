@@ -1,0 +1,9 @@
+services:
+  - type: web  # Specifies a web service
+    name: Play-Arena  # Name of your service
+    env: php  # Use the PHP environment
+    region: oregon  # Deployment region (e.g., 'oregon' or 'frankfurt')
+    plan: free  # Service plan (free, standard, etc.)
+    runtime: php-8.1  # PHP version
+    buildCommand: composer install  # Build step
+    startCommand: php -S 0.0.0.0:3000 -t public  # Start the PHP server
