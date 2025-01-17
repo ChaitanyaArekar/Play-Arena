@@ -1,9 +1,10 @@
 <?php include 'src/home.php'; ?>
-<?php include 'src/booking.php';?>
+<?php include 'src/booking.php'; ?>
 <?php include 'src/contact.php'; ?>
 <?php include 'src/friend.php'; ?>
 <?php include 'src/faq.php'; ?>
 <?php include 'src/footer.php'; ?>
+<?php include 'Public/chatbot.php'; ?>
 
 
 <div id="toTopBtn" class="fixed bottom-5 right-5 w-12 h-12 bg-[linear-gradient(to_right,_#000000,_#434343)] text-white rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 cursor-pointer" onclick="scrollToTop()">

@@ -43,6 +43,18 @@ foreach ($userBookings as $booking) {
     }
 }
 
+usort($upcomingBookings, function ($a, $b) {
+    $aDateTime = new DateTime($a['date'] . ' ' . str_pad($a['hour'], 2, '0', STR_PAD_LEFT) . ':00:00');
+    $bDateTime = new DateTime($b['date'] . ' ' . str_pad($b['hour'], 2, '0', STR_PAD_LEFT) . ':00:00');
+    return $aDateTime <=> $bDateTime;
+});
+
+usort($pastBookings, function ($a, $b) {
+    $aDateTime = new DateTime($a['date'] . ' ' . str_pad($a['hour'], 2, '0', STR_PAD_LEFT) . ':00:00');
+    $bDateTime = new DateTime($b['date'] . ' ' . str_pad($b['hour'], 2, '0', STR_PAD_LEFT) . ':00:00');
+    return $bDateTime <=> $aDateTime;
+});
+
 function formatTime($hour)
 {
     return date('h:i A', strtotime("$hour:00"));
