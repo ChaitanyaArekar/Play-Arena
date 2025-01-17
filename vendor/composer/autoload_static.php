@@ -21,6 +21,7 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Stripe\\' => 7,
         ),
         'R' => 
         array (
@@ -63,6 +64,10 @@ class ComposerStaticInitc970f1a266f43a2118de462ce989b839
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Stripe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
         'Ritesh\\PlayArena\\Backend\\' => 
         array (

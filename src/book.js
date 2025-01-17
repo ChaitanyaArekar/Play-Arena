@@ -14,11 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginConfirm = document.getElementById("login-confirm");
   const loginCancel = document.getElementById("login-cancel");
   const isOwner = document.getElementById("user-type").value === "owner";
-    const cancelConfirmPopup = document.getElementById("cancel-confirm-popup");
+  const cancelConfirmPopup = document.getElementById("cancel-confirm-popup");
   const cancelConfirmDetails = document.getElementById("cancel-confirm-details");
   const cancelConfirmYes = document.getElementById("cancel-confirm-yes");
   const cancelConfirmNo = document.getElementById("cancel-confirm-no");
 
+  // Sport prices configuration
   const PRICES = {
     cricket: 1300,
     football: 1500,
@@ -27,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let selectedDate = null;
   let selectedTimeSlots = new Set();
+
+  // Image slider functionality
   const images = JSON.parse(document.getElementById("turf-images").value);
   let currentIndex = 0;
   const imgElement = document.getElementById("turf-image");
@@ -36,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     imgElement.src = images[currentIndex];
   }, 3000);
 
+  // Cart management
   const updateCart = () => {
     const clearCartButton = document.getElementById("clear-cart");
     const currentPrice = PRICES[sportSelect.value];
@@ -46,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="text-gray-400 mb-2">
                 <i class="fas fa-shopping-cart text-3xl"></i>
             </div>
-            <p class="text-gray-500 text-sm text-center">No slots selected</p>
+           <p class="text-gray-500 text-sm text-center">Pick a slot or we can't vibe</p>
         </div>`;
       totalSlots.textContent = "0";
       totalAmount.textContent = "₹0";
@@ -92,7 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
     clearCartButton.disabled = false;
   };
 
- const clearCart = () => {
+  // Clear cart functionality
+  const clearCart = () => {
     selectedTimeSlots.clear();
     const timeButtons = timeSlotsGrid.querySelectorAll("button, div[data-hour]");
     timeButtons.forEach((btn) => {
@@ -110,22 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Remove individual time slot
   window.removeTimeSlot = (slot) => {
     selectedTimeSlots.delete(slot);
     updateCart();
-    const timeButtons = timeSlotsGrid.querySelectorAll("button");
-    timeButtons.forEach((btn) => {
-      if (parseInt(btn.dataset.hour) === slot) {
-        btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
-        btn.classList.add("bg-green-50");
-      }
-    });
-  };
-
-  window.removeTimeSlot = (slot) => {
-    selectedTimeSlots.delete(slot);
-    updateCart();
-    
     const timeButtons = timeSlotsGrid.querySelectorAll("button, div[data-hour]");
     timeButtons.forEach((btn) => {
       if (parseInt(btn.dataset.hour) === slot) {
@@ -135,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  // Calendar functionality
   const populateCalendar = () => {
     calendarGrid.innerHTML = "";
     const today = new Date();
@@ -173,6 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateTimeSlots();
   };
 
+  // Time slots management
   const populateTimeSlots = async () => {
     if (!selectedDate) return;
 
@@ -183,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
                 <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
             </div>
-            <p class="text-gray-500 text-sm">Loading available slots...</p>
+            <p class="text-gray-500 text-sm">Hold up, we're on it</p>
         </div>`;
 
     try {
@@ -222,7 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isBooked && isOwner && slot.booking_info) {
           const bookingInfo = document.createElement("div");
           bookingInfo.className = "text-xs text-gray-600 mt-1";
-          // bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
           timeButton.appendChild(bookingInfo);
 
           timeButton.onclick = () => {
@@ -252,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     slot.booking_info.email || "N/A"
                   }</p>
                 </div>
-            `;
+              </div>`;
 
             cancelConfirmPopup.classList.remove("hidden");
 
@@ -329,6 +323,8 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
+
+  // Booking functionality with payment integration
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
@@ -342,37 +338,44 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    try {
-      const bookingPromises = Array.from(selectedTimeSlots).map((hour) =>
-        fetch(backendUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sport: sportSelect.value,
-            date: selectedDate,
-            hour: hour,
-          }),
-        })
-      );
+    // Calculate total amount
+    const currentPrice = PRICES[sportSelect.value];
+    const totalAmount = selectedTimeSlots.size * currentPrice;
+    
+    // Create booking details string
+    const slots = Array.from(selectedTimeSlots).map(hour => {
+      const hr = hour % 12 || 12;
+      const period = hour >= 12 ? "PM" : "AM";
+      return `${hr}:00 ${period}`;
+    }).join(", ");
+    
+    const bookingDetails = `${sportSelect.value} - ${new Date(selectedDate).toLocaleDateString()} (${slots})`;
 
-      const results = await Promise.all(bookingPromises);
-      const allSuccessful = results.every((r) => r.ok);
+    // Create form for payment page
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'payment.php';
 
-      if (allSuccessful) {
-        popupText.textContent = "Slots booked successfully!";
-        selectedTimeSlots.clear();
-        await populateTimeSlots();
-        updateCart();
-      } else {
-        popupText.textContent = "Some slots could not be booked. Please try again.";
-      }
-    } catch (error) {
-      popupText.textContent = "Error booking slots. Please try again.";
-    }
-    popupMessage.classList.remove("hidden");
+    // Add hidden fields
+    const addHiddenField = (name, value) => {
+      const field = document.createElement('input');
+      field.type = 'hidden';
+      field.name = name;
+      field.value = value;
+      form.appendChild(field);
+    };
+
+    addHiddenField('amount', totalAmount);
+    addHiddenField('product_info', bookingDetails);
+    addHiddenField('sport', sportSelect.value);
+    addHiddenField('date', selectedDate);
+    addHiddenField('slots', JSON.stringify(Array.from(selectedTimeSlots)));
+
+    document.body.appendChild(form);
+    form.submit();
   };
+
+  // Event listeners
   loginConfirm.addEventListener("click", () => {
     window.location.href = "../src/login.php";
   });
@@ -381,6 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loginPopup.classList.add("hidden");
   });
 
+  // Sport selection event listener
   sportSelect.addEventListener("change", () => {
     if (selectedDate) {
       selectedTimeSlots.clear();
@@ -389,11 +393,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Book slot button event listener
   bookSlotButton.addEventListener("click", bookSlot);
 
+  // Popup close button event listener
   popupClose.addEventListener("click", () => {
     popupMessage.classList.add("hidden");
   });
+
+  // Initialize the calendar and cart on page load
   populateCalendar();
   updateCart();
 });

@@ -10,6 +10,7 @@ return array(
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Stripe\\' => array($vendorDir . '/stripe/stripe-php/lib'),
     'Ritesh\\PlayArena\\Backend\\' => array($baseDir . '/backend'),
     'Ritesh\\PlayArena\\' => array($baseDir . '/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),

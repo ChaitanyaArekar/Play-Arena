@@ -5,13 +5,17 @@ require 'vendor/autoload.php';
 use MongoDB\Client;
 use Dotenv\Dotenv;
 
+// Start session at the beginning
 session_start();
 
-class Database {
+
+class Database
+{
     private $client;
     private $bookingsCollection;
 
-    public function __construct() {
+    public function __construct()
+    {
         try {
             $dotenv = Dotenv::createImmutable(__DIR__);
             $dotenv->load();
@@ -20,51 +24,66 @@ class Database {
             $this->client = new Client($uri);
             $this->bookingsCollection = $this->client->turf->bookings;
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => 'Failed to connect to database']);
-            exit;
+            error_log('Database connection error: ' . $e->getMessage());
+            throw new Exception('Failed to connect to database');
         }
     }
 
-    public function generateSlots($date, $sport) {
-        $slotsCollection = $this->client->turf->{$sport . '_slots'};
-        $existing = $slotsCollection->findOne(['date' => $date]);
-        
-        if ($existing) {
-            // If user is owner, add booking info to booked slots
-            if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] === 'owner') {
-                foreach ($existing['slots'] as &$slot) {
-                    if ($slot['status'] === 'booked') {
-                        $booking = $this->bookingsCollection->findOne([
-                            'date' => $date,
-                            'hour' => $slot['hour'],
-                            'sport' => $sport
-                        ]);
-                        if ($booking) {
-                            $slot['booking_info'] = [
-                                'full_name' => $booking['full_name'],
-                                'email' => $booking['email']
-                            ];
+    public function generateSlots($date, $sport)
+    {
+        try {
+            $slotsCollection = $this->client->turf->{$sport . '_slots'};
+            $existing = $slotsCollection->findOne(['date' => $date]);
+
+            if ($existing) {
+                $slots = $existing['slots'];
+
+                // If user is owner, add booking info to booked slots
+                if (
+                    isset($_SESSION['user']) &&
+                    is_array($_SESSION['user']) &&
+                    isset($_SESSION['user']['user_type']) &&
+                    $_SESSION['user']['user_type'] === 'owner'
+                ) {
+
+                    foreach ($slots as &$slot) {
+                        if (isset($slot['status']) && $slot['status'] === 'booked') {
+                            $booking = $this->bookingsCollection->findOne([
+                                'date' => $date,
+                                'hour' => $slot['hour'],
+                                'sport' => $sport
+                            ]);
+                            if ($booking) {
+                                $slot['booking_info'] = [
+                                    'full_name' => $booking['full_name'],
+                                    'email' => $booking['email']
+                                ];
+                            }
                         }
                     }
                 }
+                return ['date' => $date, 'slots' => $slots];
             }
-            return $existing;
+
+            // Generate new slots if none exist
+            $startHour = 8;
+            $endHour = 23;
+
+            $slots = [];
+            for ($hour = $startHour; $hour <= $endHour; $hour++) {
+                $slots[] = ['hour' => $hour, 'status' => 'available'];
+            }
+
+            $slotsCollection->insertOne([
+                'date' => $date,
+                'slots' => $slots
+            ]);
+
+            return ['date' => $date, 'slots' => $slots];
+        } catch (Exception $e) {
+            error_log('Error generating slots: ' . $e->getMessage());
+            throw new Exception('Error generating slots');
         }
-
-        $startHour = 8;
-        $endHour = 23;
-
-        $slots = [];
-        for ($hour = $startHour; $hour <= $endHour; $hour++) {
-            $slots[] = ['hour' => $hour, 'status' => 'available'];
-        }
-
-        $slotsCollection->insertOne([
-            'date' => $date,
-            'slots' => $slots
-        ]);
-
-        return ['date' => $date, 'slots' => $slots];
     }
 
     public function getSlots($date, $sport)
@@ -72,7 +91,12 @@ class Database {
         try {
             return $this->generateSlots($date, $sport);
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'Error fetching slots'];
+            error_log('Error in getSlots: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error fetching slots',
+                'error' => $e->getMessage()
+            ];
         }
     }
 

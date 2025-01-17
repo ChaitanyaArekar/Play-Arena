@@ -26,7 +26,7 @@ if ($_SESSION['user_type'] === 'owner') {
     // Get only user's bookings for regular users
     $userBookings = $bookingsCollection->find(
         ['email' => $_SESSION['email']],
-        ['sort' => ['date' => 1, 'hour' => 1]]
+        ['sort' => ['date' => -1, 'hour' => -1]]
     )->toArray();
 }
 
