@@ -53,8 +53,8 @@
 }
 
 .chat-header {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
+    background : linear-gradient(to right, #1d976c, #93f9b9);
+    color: black;
     padding: 20px;
     font-weight: 600;
     display: flex;
@@ -65,7 +65,7 @@
 .close-chat {
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: white;
+    color: black;
     cursor: pointer;
     font-size: 18px;
     width: 30px;
@@ -149,10 +149,11 @@
 }
 
 .chat-input button {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    background : linear-gradient(to right, #1d976c, #93f9b9);
     color: white;
     border: none;
-    padding: 12px 20px;
+    width: 90px;
+    padding: 12px;
     border-radius: 25px;
     cursor: pointer;
     font-weight: 500;
