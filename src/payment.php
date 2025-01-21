@@ -2,7 +2,6 @@
 //payment.php
 require '../vendor/autoload.php';
 session_start();
-
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
@@ -12,29 +11,31 @@ if (!isset($_SESSION['user'])) {
 }
 
 $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
-
 $sport = $_POST['sport'] ?? '';
 $date = $_POST['date'] ?? '';
 $slots = isset($_POST['slots']) ? json_decode($_POST['slots'], true) : [];
 $amount = $_POST['amount'] ?? 0;
-
-$userName = $_SESSION['user']['full_name'] ?? '';
+$userName = $_SESSION['user']['full_name'] ?? 'Guest';
 $userEmail = $_SESSION['user']['email'] ?? '';
 
 try {
-    $slotTimes = array_map(function ($hour) {
+    $slotTimes = array_map(function ($slot) {
+        $hour = intval($slot);
         $period = $hour >= 12 ? 'PM' : 'AM';
-        $displayHour = $hour % 12 || 12;
-        return $displayHour . ':00 ' . $period;
+        $displayHour = $hour % 12;
+        $displayHour = $displayHour == 0 ? 12 : $displayHour;
+        return sprintf("%d:00 %s", $displayHour, $period);
     }, $slots);
+
     $slotTimeStr = implode(', ', $slotTimes);
+
+
 
     $description = "Booking Details:\n" .
         "Name: {$userName}\n" .
         "Date: " . date('F j, Y', strtotime($date)) . "\n" .
         "Field: {$sport}\n" .
         "Time slots: " . $slotTimeStr;
-
 
     $checkout_session = $stripe->checkout->sessions->create([
         'payment_method_types' => ['card'],
@@ -59,7 +60,7 @@ try {
             'slots' => json_encode($slots),
             'user_email' => $userEmail,
             'user_name' => $userName,
-            'slot_times' => $slotTimeStr
+            'slot_times' => $slotTimeStr,
         ],
     ]);
 
