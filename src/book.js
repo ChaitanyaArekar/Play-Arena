@@ -15,11 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginCancel = document.getElementById("login-cancel");
   const isOwner = document.getElementById("user-type").value === "owner";
   const cancelConfirmPopup = document.getElementById("cancel-confirm-popup");
-  const cancelConfirmDetails = document.getElementById(
-    "cancel-confirm-details"
-  );
+  const cancelConfirmDetails = document.getElementById("cancel-confirm-details");
   const cancelConfirmYes = document.getElementById("cancel-confirm-yes");
   const cancelConfirmNo = document.getElementById("cancel-confirm-no");
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment_status');
 
   const PRICES = {
     cricket: 1300,
@@ -391,6 +391,61 @@ document.addEventListener("DOMContentLoaded", () => {
       popupMessage.classList.remove("hidden");
     }
   };
+
+  const showPaymentStatusMessage = () => {
+    if (paymentStatus) {
+      const messages = {
+        'success': {
+          text: 'Payment successful! Your slots have been booked.',
+          icon: '<i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>'
+        },
+        'error': {
+          text: 'Payment processing failed. Please try again.',
+          icon: '<i class="fas fa-times-circle text-red-500 text-4xl mb-4"></i>'
+        },
+        'booking_failed': {
+          text: 'Payment was successful but booking failed. A refund has been initiated.',
+          icon: '<i class="fas fa-exclamation-circle text-yellow-500 text-4xl mb-4"></i>'
+        }
+      };
+
+      const message = messages[paymentStatus];
+      if (message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'text-center';
+        messageDiv.innerHTML = `
+          ${message.icon}
+          <p class="text-lg font-semibold text-gray-800">${message.text}</p>
+        `;
+        
+        popupText.innerHTML = '';
+        popupText.appendChild(messageDiv);
+        popupMessage.classList.remove('hidden');
+        
+        // Remove the payment_status parameter from URL without reloading
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    }
+  };
+
+  // Call the function to check payment status
+  showPaymentStatusMessage();
+
+  // ... (keep rest of the existing code)
+
+  // Update the existing popup close handler
+  popupClose.addEventListener("click", () => {
+    popupMessage.classList.add("hidden");
+    if (paymentStatus === 'success') {
+      // Refresh the page to update slot availability
+      window.location.reload();
+    }
+  });
+
+  // ... (keep rest of the existing code)
+
+
   loginConfirm.addEventListener("click", () => {
     window.location.href = "../src/login.php";
   });
