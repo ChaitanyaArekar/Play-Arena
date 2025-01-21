@@ -18,12 +18,10 @@ $date = $_POST['date'] ?? '';
 $slots = isset($_POST['slots']) ? json_decode($_POST['slots'], true) : [];
 $amount = $_POST['amount'] ?? 0;
 
-// Get user details from session
-$userName = $_SESSION['user']['full_name'] ?? 'Guest';
+$userName = $_SESSION['user']['full_name'] ?? '';
 $userEmail = $_SESSION['user']['email'] ?? '';
 
 try {
-    // Format slots for display
     $slotTimes = array_map(function ($hour) {
         $period = $hour >= 12 ? 'PM' : 'AM';
         $displayHour = $hour % 12 || 12;
@@ -65,7 +63,6 @@ try {
         ],
     ]);
 
-    // Store booking details in session
     $_SESSION['pending_booking'] = [
         'sport' => $sport,
         'date' => $date,

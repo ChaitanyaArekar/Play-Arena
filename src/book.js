@@ -335,12 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
-  // Add this near the top with other constants
   const stripePublicKey =
     "pk_test_51Qi7qaHgsEGcE4nXSY6yxLOxIwzgeVpaj0Ep50VdxhhRLMKaRu9zP4DgXv3nlCaiedpj1myamctga3haK7jtqQHb006wD2Lgsw";
   const stripe = Stripe(stripePublicKey);
 
-  // Modify the bookSlot function
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
@@ -356,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Prepare booking data
       const formData = new FormData();
       formData.append("sport", sportSelect.value);
       formData.append("date", selectedDate);
@@ -366,7 +363,6 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedTimeSlots.size * PRICES[sportSelect.value]
       );
 
-      // Create Stripe checkout session
       const response = await fetch("payment.php", {
         method: "POST",
         body: formData,
@@ -378,7 +374,6 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(session.error);
       }
 
-      // Redirect to Stripe Checkout
       const result = await stripe.redirectToCheckout({
         sessionId: session.id,
       });
@@ -422,29 +417,17 @@ document.addEventListener("DOMContentLoaded", () => {
         popupText.appendChild(messageDiv);
         popupMessage.classList.remove('hidden');
         
-        // Remove the payment_status parameter from URL without reloading
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       }
     }
   };
 
-  // Call the function to check payment status
   showPaymentStatusMessage();
 
-  // ... (keep rest of the existing code)
-
-  // Update the existing popup close handler
   popupClose.addEventListener("click", () => {
     popupMessage.classList.add("hidden");
-    if (paymentStatus === 'success') {
-      // Refresh the page to update slot availability
-      window.location.reload();
-    }
   });
-
-  // ... (keep rest of the existing code)
-
 
   loginConfirm.addEventListener("click", () => {
     window.location.href = "../src/login.php";

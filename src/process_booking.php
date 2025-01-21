@@ -42,7 +42,8 @@ try {
         }
 
         unset($_SESSION['pending_booking']);
-        header('Location: book.php?payment_status=success');
+        $sport = $booking['sport'];
+        header("Location: book.php?sport=$sport&payment_status=success");
         exit;
 
     } catch (Exception $e) {
@@ -52,12 +53,14 @@ try {
         ]);
 
         error_log('Booking Error: ' . $e->getMessage());
-        header('Location: book.php?payment_status=booking_failed');
+        $sport = $booking['sport'];
+        header("Location: book.php?sport=$sport&payment_status=booking_failed");
         exit;
     }
 
 } catch(Exception $e) {
     error_log('Payment Processing Error: ' . $e->getMessage());
-    header('Location: book.php?payment_status=error');
+    $sport = $booking['sport'];
+    header("Location: book.php?sport=$sport&payment_status=error");
     exit;
 }
