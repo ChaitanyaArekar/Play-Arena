@@ -223,6 +223,11 @@
 }
 
 @media (max-width: 768px) {
+
+    .navbar ul li a {
+            color: white;
+        }
+        
     .profile-card {
         flex-direction: column;
         text-align: center;

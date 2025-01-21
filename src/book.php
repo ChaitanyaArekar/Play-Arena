@@ -51,6 +51,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
     <?php $textColor = 'text-black'; ?>
     <header class="<?php echo $textColor; ?>">
         <?php include 'navbar.php'; ?>
+        <script src="https://js.stripe.com/v3/"></script>
     </header>
 
     <div class="max-h-screen pt-7">
@@ -70,7 +71,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
                                     <i class="fas fa-map-marker-alt"></i>
                                     <a href="https://maps.app.goo.gl/TptvLJdU6ETJYhKR7"
                                         target="_blank"
-                                        class="text-sm text-blue-500 hover:text-blue-600">
+                                        class="text-sm hover:text-blue-500">
                                         <?php echo $turf['address']; ?>
                                     </a>
                                 </div>
@@ -162,7 +163,7 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
                         </div>
 
                         <div class="p-4">
-                            <div id="cart-items" class="space-y-3 max-h-[278px] overflow-y-auto mb-4">
+                            <div id="cart-items" class="space-y-3 max-h-[300px] overflow-y-auto mb-4">
                                 <div class="flex flex-col items-center justify-center py-8">
                                     <div class="text-gray-400 mb-2">
                                         <i class="fas fa-shopping-cart text-3xl"></i>
