@@ -3,7 +3,7 @@
         'name' => 'ritesh/play-arena',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '069b9986424ec2a48c4273c867fffa0ef2d92fda',
+        'reference' => '9453717e07d09bec1cc09402d2226f3dd453e07c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -37,6 +37,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v6.9.3',
+            'version' => '6.9.3.0',
+            'reference' => '2f5c94fe7493efc213f643c23b1b1c249d40f47e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'phpoption/phpoption' => array(
             'pretty_version' => '1.9.3',
             'version' => '1.9.3.0',
@@ -64,7 +73,7 @@
         'ritesh/play-arena' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '069b9986424ec2a48c4273c867fffa0ef2d92fda',
+            'reference' => '9453717e07d09bec1cc09402d2226f3dd453e07c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -96,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" name="password" id="loginPassword" placeholder="Password" required><br><br>
                     <i class="fas fa-eye" id="loginEye" onclick="togglePasswordVisibility('loginPassword', 'loginEye')"></i>
                 </div>
+                <div class="forgot-password">
+                    <p><a href="forgot-password.php">Forgot your password?</a></p>
+                </div>
                 <button type="submit" name="login" class="btn">Login</button>
             </form>
             <p>Don't have an account? <a href="javascript:void(0);" onclick="showRegisterForm()">Register here</a></p>
