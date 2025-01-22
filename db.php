@@ -8,6 +8,7 @@ class Database
 {
     private $client;
     private $bookingsCollection;
+    private $stripe;
 
     public function __construct()
     {
@@ -18,6 +19,7 @@ class Database
             $uri = $_ENV['MONGODB_URI'];
             $this->client = new Client($uri);
             $this->bookingsCollection = $this->client->turf->bookings;
+            $this->stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
         } catch (Exception $e) {
             throw new Exception('Failed to connect to database');
         }
@@ -29,7 +31,6 @@ class Database
         $existing = $slotsCollection->findOne(['date' => $date]);
 
         if ($existing) {
-            // If user is owner, add booking info to booked slots
             if (isset($_SESSION['user']) && $_SESSION['user']['user_type'] === 'owner') {
                 foreach ($existing['slots'] as &$slot) {
                     if ($slot['status'] === 'booked') {
@@ -41,7 +42,8 @@ class Database
                         if ($booking) {
                             $slot['booking_info'] = [
                                 'full_name' => $booking['full_name'],
-                                'email' => $booking['email']
+                                'email' => $booking['email'],
+                                'checkout_session_id' => $booking['checkout_session_id'] ?? null
                             ];
                         }
                     }
@@ -75,7 +77,7 @@ class Database
         }
     }
 
-    public function bookSlot($date, $hour, $sport)
+    public function bookSlot($date, $hour, $sport, $checkout_session_id = null)
     {
         try {
             $slotsCollection = $this->client->turf->{$sport . '_slots'};
@@ -106,7 +108,8 @@ class Database
                         'hour' => $hour,
                         'sport' => $sport,
                         'full_name' => $_SESSION['user']['full_name'],
-                        'email' => $_SESSION['user']['email']
+                        'email' => $_SESSION['user']['email'],
+                        'checkout_session_id' => $checkout_session_id
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -133,27 +136,60 @@ class Database
                 return ['success' => false, 'message' => 'Slots not available for this date'];
             }
 
+            $booking = $this->bookingsCollection->findOne([
+                'date' => $date,
+                'hour' => $hour,
+                'sport' => $sport
+            ]);
+
+            if (!$booking) {
+                return ['success' => false, 'message' => 'Booking not found'];
+            }
+
             foreach ($slotsData['slots'] as &$slot) {
                 if ($slot['hour'] == $hour && $slot['status'] === 'booked') {
-                    $slot['status'] = 'available';
+                    try {
+                        if (isset($booking['checkout_session_id'])) {
+                            $session = $this->stripe->checkout->sessions->retrieve(
+                                $booking['checkout_session_id'],
+                                ['expand' => ['payment_intent']]
+                            );
 
-                    $slotsCollection->updateOne(
-                        ['date' => $date],
-                        ['$set' => ['slots' => $slotsData['slots']]]
-                    );
+                            if ($session->payment_intent) {
+                                $refund = $this->stripe->refunds->create([
+                                    'payment_intent' => $session->payment_intent->id,
+                                    'reason' => 'requested_by_customer'
+                                ]);
+                            }
+                        }
 
-                    $this->bookingsCollection->deleteOne([
-                        'date' => $date,
-                        'hour' => $hour,
-                        'sport' => $sport
-                    ]);
+                        $slot['status'] = 'available';
 
-                    return ['success' => true, 'message' => 'Booking cancelled successfully'];
+                        $slotsCollection->updateOne(
+                            ['date' => $date],
+                            ['$set' => ['slots' => $slotsData['slots']]]
+                        );
+
+                        $this->bookingsCollection->deleteOne([
+                            'date' => $date,
+                            'hour' => $hour,
+                            'sport' => $sport
+                        ]);
+
+                        return [
+                            'success' => true,
+                            'message' => 'Booking cancelled and refund initiated successfully'
+                        ];
+                    } catch (Exception $e) {
+                        error_log('Refund Error: ' . $e->getMessage());
+                        return ['success' => false, 'message' => 'Failed to process refund'];
+                    }
                 }
             }
 
             return ['success' => false, 'message' => 'Slot not booked or invalid'];
         } catch (Exception $e) {
+            error_log('Error in cancelSlot: ' . $e->getMessage());
             return ['success' => false, 'message' => 'Error cancelling booking'];
         }
     }
