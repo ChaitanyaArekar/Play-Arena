@@ -110,203 +110,205 @@ function formatTime($hour)
                         <span><?php echo ucfirst(htmlspecialchars($_SESSION['user_type'])); ?></span>
                     </div>
                 </div>
-                <div>
-
+                <div class="profile-actions mt-4 flex justify-center">
+                    <a href="forgot-password.php" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
+                    </a>
                 </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div class="bookings-section">
+            <div class="bookings-header">
+                <h2><?php echo $_SESSION['user_type'] === 'owner' ? 'All Bookings' : 'Your Bookings'; ?></h2>
             </div>
 
-            <!-- Bookings Section -->
-            <div class="bookings-section">
-                <div class="bookings-header">
-                    <h2><?php echo $_SESSION['user_type'] === 'owner' ? 'All Bookings' : 'Your Bookings'; ?></h2>
-                </div>
+            <div class="bookings-tabs">
+                <button class="tab-button active" onclick="showTab('upcoming')">Upcoming Bookings
+                    <span class="count"><?php echo count($upcomingBookings); ?></span>
+                </button>
+                <button class="tab-button" onclick="showTab('past')">Past Bookings
+                    <span class="count"><?php echo count($pastBookings); ?></span>
+                </button>
+                <button class="tab-button" onclick="showTab('cancel-requests')">Cancellation Requests
+                    <span class="count"><?php echo count($cancelRequests); ?></span>
+                </button>
+            </div>
 
-                <div class="bookings-tabs">
-                    <button class="tab-button active" onclick="showTab('upcoming')">Upcoming Bookings
-                        <span class="count"><?php echo count($upcomingBookings); ?></span>
-                    </button>
-                    <button class="tab-button" onclick="showTab('past')">Past Bookings
-                        <span class="count"><?php echo count($pastBookings); ?></span>
-                    </button>
-                    <button class="tab-button" onclick="showTab('cancel-requests')">Cancellation Requests
-                        <span class="count"><?php echo count($cancelRequests); ?></span>
-                    </button>
-                </div>
-
-                <!-- Upcoming Bookings Tab -->
-                <div id="upcoming" class="tab-content active">
-                    <?php if (empty($upcomingBookings)): ?>
-                        <div class="empty-state">
-                            <i class="fas fa-calendar-plus"></i>
-                            <h3>No Upcoming Bookings</h3>
-                            <p>Book your next game session now!</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="bookings-grid">
-                            <?php foreach ($upcomingBookings as $booking): ?>
-                                <div class="booking-card">
-                                    <div class="booking-header">
-                                        <div class="booking-title">
-                                            <div class="sport-icon">
-                                                <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
-                                            </div>
-                                            <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
+            <!-- Upcoming Bookings Tab -->
+            <div id="upcoming" class="tab-content active">
+                <?php if (empty($upcomingBookings)): ?>
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-plus"></i>
+                        <h3>No Upcoming Bookings</h3>
+                        <p>Book your next game session now!</p>
+                    </div>
+                <?php else: ?>
+                    <div class="bookings-grid">
+                        <?php foreach ($upcomingBookings as $booking): ?>
+                            <div class="booking-card">
+                                <div class="booking-header">
+                                    <div class="booking-title">
+                                        <div class="sport-icon">
+                                            <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
                                         </div>
-                                        <span class="booking-status <?php
-                                                                    echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
-                                                                        ? 'status-cancel-request'
-                                                                        : 'status-upcoming';
-                                                                    ?>">
-                                            <?php
-                                            echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
-                                                ? 'Cancellation Request'
-                                                : 'Upcoming';
-                                            ?>
-                                        </span>
-                                        <?php if ($_SESSION['user_type'] === 'user' && !in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
-                                            <div class="cancel-booking-btn">
-                                                <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)" class="text-red-500 hover:text-red-600 items-center gap-2 px-3 py-1 rounded-lg hover:bg-red-50 disabled:opacity-50">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </div>
-                                        <?php endif; ?>
+                                        <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
                                     </div>
-                                    <div class="booking-info">
-                                        <div class="info-item">
-                                            <i class="far fa-calendar"></i>
-                                            <?php echo date('D, M j, Y', strtotime($booking['date'])); ?>
+                                    <span class="booking-status <?php
+                                                                echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
+                                                                    ? 'status-cancel-request'
+                                                                    : 'status-upcoming';
+                                                                ?>">
+                                        <?php
+                                        echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
+                                            ? 'Cancellation Request'
+                                            : 'Upcoming';
+                                        ?>
+                                    </span>
+                                    <?php if ($_SESSION['user_type'] === 'user' && !in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
+                                        <div class="cancel-booking-btn">
+                                            <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)" class="text-red-500 hover:text-red-600 items-center gap-2 px-3 py-1 rounded-lg hover:bg-red-50 disabled:opacity-50">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="far fa-clock"></i>
-                                            <?php echo formatTime($booking['hour']); ?>
-                                        </div>
-                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
-                                            <div class="user-details">
-                                                <div class="info-item">
-                                                    <i class="fas fa-user"></i>
-                                                    <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
-                                                </div>
-                                                <div class="info-item">
-                                                    <i class="fas fa-envelope"></i>
-                                                    <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                                <div class="booking-info">
+                                    <div class="info-item">
+                                        <i class="far fa-calendar"></i>
+                                        <?php echo date('D, M j, Y', strtotime($booking['date'])); ?>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="far fa-clock"></i>
+                                        <?php echo formatTime($booking['hour']); ?>
+                                    </div>
+                                    <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
 
-                <!-- Past Bookings Tab -->
-                <div id="past" class="tab-content">
-                    <?php if (empty($pastBookings)): ?>
-                        <div class="empty-state">
-                            <i class="fas fa-history"></i>
-                            <h3>No Past Bookings</h3>
-                            <p>Your booking history will appear here</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="bookings-grid">
-                            <?php foreach ($pastBookings as $booking): ?>
-                                <div class="booking-card">
-                                    <div class="booking-header">
-                                        <div class="booking-title">
-                                            <div class="sport-icon">
-                                                <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
-                                            </div>
-                                            <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
-                                        </div>
-                                        <span class="booking-status status-past">Past</span>
-                                    </div>
-                                    <div class="booking-info">
-                                        <div class="info-item">
-                                            <i class="far fa-calendar"></i>
-                                            <?php echo date('D, M j, Y', strtotime($booking['date'])); ?>
-                                        </div>
-                                        <div class="info-item">
-                                            <i class="far fa-clock"></i>
-                                            <?php echo formatTime($booking['hour']); ?>
-                                        </div>
-                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
-                                            <div class="user-details">
-                                                <div class="info-item">
-                                                    <i class="fas fa-user"></i>
-                                                    <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
-                                                </div>
-                                                <div class="info-item">
-                                                    <i class="fas fa-envelope"></i>
-                                                    <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <!-- Cancellation Requests Tab -->
-                <div id="cancel-requests" class="tab-content">
-                    <?php if (empty($cancelRequests)): ?>
-                        <div class="empty-state">
-                            <i class="fas fa-times-circle"></i>
-                            <h3>No Cancellation Requests</h3>
-                            <p><?php echo $_SESSION['user_type'] === 'owner' ? 'No pending cancellation requests' : 'You have no pending cancellation requests'; ?></p>
-                        </div>
-                    <?php else: ?>
-                        <div class="bookings-grid">
-                            <?php foreach ($cancelRequests as $request): ?>
-                                <div class="booking-card">
-                                    <div class="booking-header">
-                                        <div class="booking-title">
-                                            <div class="sport-icon">
-                                                <i class="fas fa-<?php echo $request['sport'] === 'cricket' ? 'baseball-ball' : ($request['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
-                                            </div>
-                                            <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
-                                        </div>
-                                        <span class="booking-status status-cancel-request">Cancellation Request</span>
-                                    </div>
-                                    <div class="booking-info">
-                                        <div class="info-item">
-                                            <i class="far fa-calendar"></i>
-                                            <?php echo date('D, M j, Y', strtotime($request['date'])); ?>
-                                        </div>
-                                        <div class="info-item">
-                                            <i class="far fa-clock"></i>
-                                            <?php echo formatTime($request['hour']); ?>
-                                        </div>
-                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
-                                            <div class="user-details">
-                                                <div class="info-item">
-                                                    <i class="fas fa-user"></i>
-                                                    <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
-                                                </div>
-                                                <div class="info-item">
-                                                    <i class="fas fa-envelope"></i>
-                                                    <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
-                                                </div>
-                                                <div class="info-item">
-                                                    <i class="fas fa-comment"></i>
-                                                    <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
-                                                </div>
-                                            </div>
-                                            <div class="cancel-actions m-2 mt-4 flex justify-between">
-                                                <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
-                                                <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
-                                            </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
 
-                                        <?php endif; ?>
+            <!-- Past Bookings Tab -->
+            <div id="past" class="tab-content">
+                <?php if (empty($pastBookings)): ?>
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No Past Bookings</h3>
+                        <p>Your booking history will appear here</p>
+                    </div>
+                <?php else: ?>
+                    <div class="bookings-grid">
+                        <?php foreach ($pastBookings as $booking): ?>
+                            <div class="booking-card">
+                                <div class="booking-header">
+                                    <div class="booking-title">
+                                        <div class="sport-icon">
+                                            <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
+                                        </div>
+                                        <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
                                     </div>
+                                    <span class="booking-status status-past">Past</span>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                                <div class="booking-info">
+                                    <div class="info-item">
+                                        <i class="far fa-calendar"></i>
+                                        <?php echo date('D, M j, Y', strtotime($booking['date'])); ?>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="far fa-clock"></i>
+                                        <?php echo formatTime($booking['hour']); ?>
+                                    </div>
+                                    <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <!-- Cancellation Requests Tab -->
+            <div id="cancel-requests" class="tab-content">
+                <?php if (empty($cancelRequests)): ?>
+                    <div class="empty-state">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>No Cancellation Requests</h3>
+                        <p><?php echo $_SESSION['user_type'] === 'owner' ? 'No pending cancellation requests' : 'You have no pending cancellation requests'; ?></p>
+                    </div>
+                <?php else: ?>
+                    <div class="bookings-grid">
+                        <?php foreach ($cancelRequests as $request): ?>
+                            <div class="booking-card">
+                                <div class="booking-header">
+                                    <div class="booking-title">
+                                        <div class="sport-icon">
+                                            <i class="fas fa-<?php echo $request['sport'] === 'cricket' ? 'baseball-ball' : ($request['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
+                                        </div>
+                                        <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
+                                    </div>
+                                    <span class="booking-status status-cancel-request">Cancellation Request</span>
+                                </div>
+                                <div class="booking-info">
+                                    <div class="info-item">
+                                        <i class="far fa-calendar"></i>
+                                        <?php echo date('D, M j, Y', strtotime($request['date'])); ?>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="far fa-clock"></i>
+                                        <?php echo formatTime($request['hour']); ?>
+                                    </div>
+                                    <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-comment"></i>
+                                                <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="cancel-actions m-2 mt-4 flex justify-between">
+                                            <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
+                                            <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
+                                        </div>
+
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
