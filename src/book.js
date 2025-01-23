@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const backendUrl = "http://localhost:8000/api.php";
+  const backendUrl = window.appConfig.backendUrl;
+  const stripePublicKey = window.appConfig.stripePublicKey;
   const sportSelect = document.getElementById("sport-select");
   const calendarGrid = document.getElementById("calendar-grid");
   const timeSlotsGrid = document.getElementById("time-slots-grid");
@@ -335,8 +336,6 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
-  const stripePublicKey =
-    "pk_test_51Qi7qaHgsEGcE4nXSY6yxLOxIwzgeVpaj0Ep50VdxhhRLMKaRu9zP4DgXv3nlCaiedpj1myamctga3haK7jtqQHb006wD2Lgsw";
   const stripe = Stripe(stripePublicKey);
 
   const bookSlot = async () => {

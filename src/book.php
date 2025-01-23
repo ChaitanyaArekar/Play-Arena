@@ -1,6 +1,10 @@
 <?php
 session_start();
+require_once __DIR__ . '/../vendor/autoload.php';
 
+// Load environment variables
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
 
 $turf = [
     'name' => 'City Sports Turf',
@@ -21,6 +25,13 @@ $turf = [
 $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : 'cricket';
 $isLoggedIn = isset($_SESSION['user']);
 $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
+
+$requiredEnvVars = ['BACKEND_URL', 'STRIPE_PUBLIC_KEY'];
+foreach ($requiredEnvVars as $var) {
+    if (!isset($_ENV[$var])) {
+        throw new RuntimeException("Missing required environment variable: $var");
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -238,6 +249,14 @@ $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
     <input type="hidden" id="user-logged-in" value="<?php echo $isLoggedIn ? 'true' : 'false'; ?>">
     <input type="hidden" id="user-type" value="<?php echo $userType; ?>">
     <input type="hidden" id="turf-images" value='<?php echo json_encode($turf['photos']); ?>'>
+
+    <script>
+        // Pass PHP environment variables to JavaScript
+        window.appConfig = {
+            backendUrl: <?php echo json_encode($_ENV['BACKEND_URL']); ?>,
+            stripePublicKey: <?php echo json_encode($_ENV['STRIPE_PUBLIC_KEY']); ?>
+        };
+    </script>
 
     <script src="../src/book.js"></script>
 </body>
