@@ -14,6 +14,7 @@ $dotenv->load();
 $uri = $_ENV['MONGODB_URI'];
 $client = new MongoDB\Client($uri);
 $bookingsCollection = $client->turf->bookings;
+$cancelRequestsCollection = $client->turf->cancel_requests;
 
 // Modified query based on user type
 if ($_SESSION['user_type'] === 'owner') {
@@ -22,13 +23,24 @@ if ($_SESSION['user_type'] === 'owner') {
         [],
         ['sort' => ['date' => 1, 'hour' => 1]]
     )->toArray();
+    $cancelRequests = $cancelRequestsCollection->find(
+        [],
+        ['sort' => ['date' => -1, 'hour' => -1]]
+    )->toArray();
 } else {
     // Get only user's bookings for regular users
     $userBookings = $bookingsCollection->find(
         ['email' => $_SESSION['email']],
         ['sort' => ['date' => -1, 'hour' => -1]]
     )->toArray();
+    $cancelRequests = $cancelRequestsCollection->find(
+        ['email' => $_SESSION['email']],
+        ['sort' => ['date' => -1, 'hour' => -1]]
+    )->toArray();
 }
+$cancelRequestBookingIds = array_map(function ($request) {
+    return (string)$request['bookingId'];
+}, $cancelRequests);
 
 $upcomingBookings = [];
 $pastBookings = [];
@@ -113,6 +125,9 @@ function formatTime($hour)
                     <button class="tab-button" onclick="showTab('past')">Past Bookings
                         <span class="count"><?php echo count($pastBookings); ?></span>
                     </button>
+                    <button class="tab-button" onclick="showTab('cancel-requests')">Cancellation Requests
+                        <span class="count"><?php echo count($cancelRequests); ?></span>
+                    </button>
                 </div>
 
                 <!-- Upcoming Bookings Tab -->
@@ -130,13 +145,21 @@ function formatTime($hour)
                                     <div class="booking-header">
                                         <div class="booking-title">
                                             <div class="sport-icon">
-                                                <i class="fas fa-<?php
-                                                                    echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball');
-                                                                    ?>"></i>
+                                                <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
                                             </div>
                                             <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
                                         </div>
-                                        <span class="booking-status status-upcoming">Upcoming</span>
+                                        <span class="booking-status <?php
+                                                                    echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
+                                                                        ? 'status-cancel-request'
+                                                                        : 'status-upcoming';
+                                                                    ?>">
+                                            <?php
+                                            echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
+                                                ? 'Cancellation Request'
+                                                : 'Upcoming';
+                                            ?>
+                                        </span>
                                     </div>
                                     <div class="booking-info">
                                         <div class="info-item">
@@ -157,6 +180,13 @@ function formatTime($hour)
                                                     <i class="fas fa-envelope"></i>
                                                     <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
                                                 </div>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['user_type'] === 'user' && !in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
+                                            <div class="cancel-booking-btn">
+                                                <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)">
+                                                    Cancel Booking
+                                                </button>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -181,9 +211,7 @@ function formatTime($hour)
                                     <div class="booking-header">
                                         <div class="booking-title">
                                             <div class="sport-icon">
-                                                <i class="fas fa-<?php
-                                                                    echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball');
-                                                                    ?>"></i>
+                                                <i class="fas fa-<?php echo $booking['sport'] === 'cricket' ? 'baseball-ball' : ($booking['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
                                             </div>
                                             <h3><?php echo ucfirst(htmlspecialchars($booking['sport'])); ?></h3>
                                         </div>
@@ -216,6 +244,62 @@ function formatTime($hour)
                         </div>
                     <?php endif; ?>
                 </div>
+                <!-- Cancellation Requests Tab -->
+                <div id="cancel-requests" class="tab-content">
+                    <?php if (empty($cancelRequests)): ?>
+                        <div class="empty-state">
+                            <i class="fas fa-times-circle"></i>
+                            <h3>No Cancellation Requests</h3>
+                            <p><?php echo $_SESSION['user_type'] === 'owner' ? 'No pending cancellation requests' : 'You have no pending cancellation requests'; ?></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="bookings-grid">
+                            <?php foreach ($cancelRequests as $request): ?>
+                                <div class="booking-card">
+                                    <div class="booking-header">
+                                        <div class="booking-title">
+                                            <div class="sport-icon">
+                                                <i class="fas fa-<?php echo $request['sport'] === 'cricket' ? 'baseball-ball' : ($request['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
+                                            </div>
+                                            <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
+                                        </div>
+                                        <span class="booking-status status-cancel-request">Cancellation Request</span>
+                                    </div>
+                                    <div class="booking-info">
+                                        <div class="info-item">
+                                            <i class="far fa-calendar"></i>
+                                            <?php echo date('D, M j, Y', strtotime($request['date'])); ?>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="far fa-clock"></i>
+                                            <?php echo formatTime($request['hour']); ?>
+                                        </div>
+                                        <?php if ($_SESSION['user_type'] === 'owner'): ?>
+                                            <div class="user-details">
+                                                <div class="info-item">
+                                                    <i class="fas fa-user"></i>
+                                                    <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <i class="fas fa-comment"></i>
+                                                    <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
+                                                </div>
+                                                <div class="cancel-actions">
+                                                    <button class="btn-approve" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
+                                                    <button class="btn-reject" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -235,6 +319,90 @@ function formatTime($hour)
                 button.classList.remove('active');
             });
             event.target.classList.add('active');
+        }
+
+        function initiateBookingCancel(bookingId, sport, date, hour) {
+            const reason = prompt('Please provide a reason for cancellation:');
+            if (reason) {
+                fetch('cancel_booking.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            bookingId: bookingId,
+                            sport: sport,
+                            date: date,
+                            hour: hour,
+                            reason: reason
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Cancellation request submitted');
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Failed to submit cancellation request');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                    });
+            }
+        }
+
+        function approveCancel(requestId) {
+            fetch('process_cancel_request.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        requestId: requestId,
+                        action: 'approve'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cancellation request approved');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to approve cancellation');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+        }
+
+        function rejectCancel(requestId) {
+            fetch('process_cancel_request.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        requestId: requestId,
+                        action: 'reject'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cancellation request rejected');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Failed to reject cancellation');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
         }
     </script>
 </body>

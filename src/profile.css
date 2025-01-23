@@ -63,6 +63,18 @@
     margin-top: 0.5rem;
 }
 
+.info-item-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: #4B5563;
+    margin-top: 0.5rem;
+}
+
+.info-item-message {
+    margin-top: 1rem;
+}
+
 .bookings-section {
     background: white;
     border-radius: 1rem;
@@ -188,6 +200,10 @@
     color: #6B7280;
 }
 
+.status-cancel-request {
+    background: #FFA500;;
+    color: #fff;
+}
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;
