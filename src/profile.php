@@ -16,7 +16,6 @@ $client = new MongoDB\Client($uri);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 
-// Modified query based on user type
 if ($_SESSION['user_type'] === 'owner') {
     // Get all bookings for owners
     $userBookings = $bookingsCollection->find(
@@ -83,6 +82,7 @@ function formatTime($hour)
     <title>Profile - Play Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/src/profile.css">
 </head>
 
@@ -109,6 +109,9 @@ function formatTime($hour)
                         <i class="fas fa-user-tag"></i>
                         <span><?php echo ucfirst(htmlspecialchars($_SESSION['user_type'])); ?></span>
                     </div>
+                </div>
+                <div>
+                    
                 </div>
             </div>
 
@@ -160,6 +163,13 @@ function formatTime($hour)
                                                 : 'Upcoming';
                                             ?>
                                         </span>
+                                        <?php if ($_SESSION['user_type'] === 'user' && !in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
+                                            <div class="cancel-booking-btn">
+                                                <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)" class="text-red-500 hover:text-red-600 items-center gap-2 px-3 py-1 rounded-lg hover:bg-red-50 disabled:opacity-50">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="booking-info">
                                         <div class="info-item">
@@ -182,13 +192,7 @@ function formatTime($hour)
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-                                        <?php if ($_SESSION['user_type'] === 'user' && !in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
-                                            <div class="cancel-booking-btn">
-                                                <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)">
-                                                    Cancel Booking
-                                                </button>
-                                            </div>
-                                        <?php endif; ?>
+
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -288,11 +292,12 @@ function formatTime($hour)
                                                     <i class="fas fa-comment"></i>
                                                     <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
                                                 </div>
-                                                <div class="cancel-actions">
-                                                    <button class="btn-approve" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
-                                                    <button class="btn-reject" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
-                                                </div>
                                             </div>
+                                            <div class="cancel-actions m-2 mt-4 flex justify-between">
+                                                <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
+                                                <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
+                                            </div>
+
                                         <?php endif; ?>
                                     </div>
                                 </div>

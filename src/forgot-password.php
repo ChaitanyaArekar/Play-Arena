@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="container">
         <div id="forgotPasswordForm">
-            <h2>Forgot Password</h2>
+            <h2>Reset Password</h2>
             <form action="forgot-password.php" method="POST">
                 <input type="email" name="email" placeholder="Enter your email" required><br><br>
                 <button type="submit" class="btn">Reset Password</button>
