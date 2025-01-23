@@ -24,9 +24,9 @@ $turf = [
 
 $selectedSport = isset($_GET['sport']) ? $_GET['sport'] : 'cricket';
 $isLoggedIn = isset($_SESSION['user']);
-$userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'customer';
+$userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'user';
 
-$requiredEnvVars = ['BACKEND_URL', 'STRIPE_PUBLIC_KEY'];
+$requiredEnvVars = ['BACKEND_URL', 'STRIPE_PUBLISHABLE_KEY'];
 foreach ($requiredEnvVars as $var) {
     if (!isset($_ENV[$var])) {
         throw new RuntimeException("Missing required environment variable: $var");
@@ -251,10 +251,9 @@ foreach ($requiredEnvVars as $var) {
     <input type="hidden" id="turf-images" value='<?php echo json_encode($turf['photos']); ?>'>
 
     <script>
-        // Pass PHP environment variables to JavaScript
         window.appConfig = {
             backendUrl: <?php echo json_encode($_ENV['BACKEND_URL']); ?>,
-            stripePublicKey: <?php echo json_encode($_ENV['STRIPE_PUBLIC_KEY']); ?>
+            stripePublicKey: <?php echo json_encode($_ENV['STRIPE_PUBLISHABLE_KEY']); ?>
         };
     </script>
 

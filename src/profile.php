@@ -111,7 +111,7 @@ function formatTime($hour)
                     </div>
                 </div>
                 <div>
-                    
+
                 </div>
             </div>
 
@@ -309,17 +309,25 @@ function formatTime($hour)
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        const swalOptions = {
+            width: '448px',
+            padding: '10px',
+            customClass: {
+                popup: 'small-swal',
+                title: 'text-lg',
+                content: 'text-lg',
+                confirmButton: 'bg-red-600 text-white px-8 py-2 rounded text-sm hover:bg-red-700',
+                cancelButton: 'bg-gray-400 text-white px-8 py-2 rounded text-sm hover:bg-gray-500'
+            }
+        };
+
         function showTab(tabName) {
-            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-
-            // Show selected tab content
             document.getElementById(tabName).classList.add('active');
-
-            // Update tab button states
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
@@ -327,89 +335,151 @@ function formatTime($hour)
         }
 
         function initiateBookingCancel(bookingId, sport, date, hour) {
-            const reason = prompt('Please provide a reason for cancellation:');
-            if (reason) {
-                fetch('cancel_booking.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            bookingId: bookingId,
-                            sport: sport,
-                            date: date,
-                            hour: hour,
-                            reason: reason
+            Swal.fire({
+                ...swalOptions,
+                title: 'Cancel Booking',
+                input: 'text',
+                inputLabel: 'Cancellation Reason',
+                inputPlaceholder: 'Why are you cancelling?',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => !value && 'Reason is required'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('cancel_booking.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                bookingId,
+                                sport,
+                                date,
+                                hour,
+                                reason: result.value
+                            })
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Cancellation request submitted');
-                            location.reload();
-                        } else {
-                            alert(data.message || 'Failed to submit cancellation request');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred');
-                    });
-            }
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: data.success ? 'success' : 'error',
+                                title: data.success ? 'Request Submitted' : 'Cancellation Failed',
+                                text: data.message || (data.success ? 'Cancellation request sent' : 'Unable to submit request'),
+                            }).then(() => data.success && location.reload());
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An unexpected error occurred'
+                            });
+                        });
+                }
+            });
         }
 
         function approveCancel(requestId) {
-            fetch('process_cancel_request.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        requestId: requestId,
-                        action: 'approve'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Cancellation request approved');
-                        location.reload();
-                    } else {
-                        alert(data.message || 'Failed to approve cancellation');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred');
-                });
+            Swal.fire({
+                ...swalOptions,
+                title: 'Approve Cancellation?',
+                text: 'This will cancel your slot and initiate refund.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('process_cancel_request.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                requestId,
+                                action: 'approve'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: data.success ? 'success' : 'error',
+                                title: data.success ? 'Approved' : 'Approval Failed',
+                                text: data.message
+                            }).then(() => data.success && location.reload());
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An unexpected error occurred'
+                            });
+                        });
+                }
+            });
         }
 
         function rejectCancel(requestId) {
-            fetch('process_cancel_request.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        requestId: requestId,
-                        action: 'reject'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Cancellation request rejected');
-                        location.reload();
-                    } else {
-                        alert(data.message || 'Failed to reject cancellation');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred');
-                });
+            Swal.fire({
+                ...swalOptions,
+                title: 'Reject Cancellation?',
+                text: 'This will remove the cancellation request by the user.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Reject',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('process_cancel_request.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                requestId,
+                                action: 'reject'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: data.success ? 'success' : 'error',
+                                title: data.success ? 'Rejected' : 'Rejection Failed',
+                                text: data.message
+                            }).then(() => data.success && location.reload());
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An unexpected error occurred'
+                            });
+                        });
+                }
+            });
         }
     </script>
+
+    <style>
+        .small-swal {
+            font-size: 14px;
+        }
+    </style>
+
+    <style>
+        .small-swal {
+            font-size: 14px;
+        }
+    </style>
 </body>
 
 </html>
