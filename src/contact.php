@@ -52,56 +52,62 @@
         </div>
     </section>
 
-
-
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        gsap.fromTo(
-            "#contact-title", {
-                opacity: 0,
-                x: -50
-            }, {
-                opacity: 1,
-                x: 0,
-                duration: 1,
-                ease: "power3.out",
-                delay: 0.2
+        // Animate title with dynamic scrolling
+        gsap.fromTo("#contact-title", {
+            opacity: 0,
+            x: -50
+        }, {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#contact-title",
+                start: "top 80%",
+                end: "top 30%",
+                scrub: true,
             }
-        );
+        });
 
-        gsap.fromTo(
-            "#contact-desc", {
-                opacity: 0,
-                x: -50
-            }, {
-                opacity: 1,
-                x: 0,
-                duration: 1,
-                ease: "power3.out",
-                delay: 0.4
+        // Animate description with dynamic scrolling
+        gsap.fromTo("#contact-desc", {
+            opacity: 0,
+            x: -50
+        }, {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#contact-desc",
+                start: "top 80%",
+                end: "top 30%",
+                scrub: true,
             }
-        );
+        });
 
-        gsap.fromTo(
-            "#contactForm input, #contactForm textarea, #contactForm button", {
-                scale: 0,
-                opacity: 0
-            }, {
-                scale: 1,
-                opacity: 1,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.75)",
-                stagger: 0.1,
-                scrollTrigger: {
-                    trigger: "#contactForm",
-                    start: "top 80%",
-                    toggleActions: "play none none none"
-                }
+        // Animate form elements dynamically while scrolling
+        gsap.fromTo("#contactForm input, #contactForm textarea, #contactForm button", {
+            scale: 0,
+            opacity: 0
+        }, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.8,
+            ease: "elastic.out(1, 0.75)",
+            stagger: 0.1,
+            scrollTrigger: {
+                trigger: "#contactForm",
+                start: "top 80%",
+                toggleActions: "play none none none",
+                scrub: true,
             }
-        );
+        });
 
-
+        // Validate email
         function validateEmail() {
             const email = document.getElementById('email').value;
             const messageDiv = document.getElementById('message');
@@ -140,6 +146,7 @@
             return true;
         }
 
+        // Send email function
         function sendEmail() {
             const isEmailValid = validateEmail();
             if (!isEmailValid) return;

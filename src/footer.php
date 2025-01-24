@@ -148,13 +148,29 @@
     </section>
 
     <script>
+        let lastScrollTop = 0;
+
         window.addEventListener('scroll', () => {
             const footer = document.querySelector('.footer-section');
             const windowHeight = window.innerHeight;
             const footerPosition = footer.getBoundingClientRect().top;
-            if (footerPosition < windowHeight) {
-                footer.classList.add('show');
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Detect whether the user is scrolling up or down
+            if (currentScroll > lastScrollTop) {
+                // Scrolling down
+                if (footerPosition < windowHeight / 1.5) {
+                    footer.classList.add('show');
+                }
+            } else {
+                // Scrolling up
+                if (footerPosition < windowHeight / 1.5) {
+                    footer.classList.add('show');
+                }
             }
+
+            // Update last scroll position
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         });
     </script>
 

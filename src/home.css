@@ -21,60 +21,6 @@ header {
     z-index: 1000;
 }
 
-/* .logo h1 {
-    margin-top: 15px;
-    margin-left: 30px;
-    margin-bottom: 10px;
-    color: white;
-    font-size: 2rem;
-}
-
-.navbar ul {
-    list-style: none;
-    display: flex;
-    margin-top: 15px    ;
-    margin-right: 55px;
-    gap: 20px;  
-}
-
-.navbar ul li {
-    display: inline-block;
-}
-
-.navbar ul li a {
-    text-decoration: none;
-    color: black;
-    font-size: 1.2rem;
-    transition: color 0.3s ease;    
-}
-
-.menu-icon {
-    display: none;
-    font-size: 2rem;
-    padding: 10px;
-    color: black;
-}
-
-.close-icon {
-    display: none;
-    font-size: 2rem;
-    padding: 10px;
-    color: white;
-}
-
-.navbar ul {
-    display: flex;
-}
-
-.navbar ul.active + .close-icon {
-    display: block;
-}
-
-
-.navbar ul.active + .close-icon + .menu-icon {
-    display: none;
-} */
-
 .home-page {
     position: relative;
     height: 100vh;
@@ -110,8 +56,8 @@ header {
 .home-page-content p {
     font-size: 1.5rem;
     margin-left: 7%;
-    background: linear-gradient(to right, #1d976c, #93f9b9); /* Gradient applied to text */
-    -webkit-background-clip: text; /* Clips the gradient to the text */
+    background: linear-gradient(to right, #1d976c, #93f9b9); 
+    -webkit-background-clip: text; 
     background-clip: text;
     color: transparent;    
     font-weight: bold;
@@ -131,40 +77,7 @@ header {
 }
 
 @media (max-width: 768px) {
-    /* 
-    .navbar ul {
-        display: none; 
-        flex-direction: column;
-        gap: 10px;
-        margin-right: 0;
-        margin-top: 20px;
-    }
 
-    .menu-icon {
-        display: block;
-        color: white;
-    }
-
-    .navbar ul.active {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.9);
-        position: absolute;
-        top: 60px;
-        left: 0;
-        padding: 10px;
-    }
-    
-    .navbar ul li a {
-        font-size: 1rem;
-        color: white;
-        text-align: center;
-        width: 100%;
-        padding: 10px;
-        display: block;
-    }*/
     .home-page-content h1{
        font-size: 2rem; 
     }

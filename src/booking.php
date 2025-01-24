@@ -88,7 +88,7 @@
             gsap.fromTo(
                 '#textSection', {
                     opacity: 0,
-                    x: -100
+                    x: -100,
                 }, {
                     opacity: 1,
                     x: 0,
@@ -97,15 +97,16 @@
                     scrollTrigger: {
                         trigger: '#heroSection',
                         start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
+                        scrub: true, // Smoothens animation based on scroll position
+                        toggleActions: 'play none none none',
+                    },
                 }
             );
 
             gsap.fromTo(
                 '#textParagraph', {
                     opacity: 0,
-                    x: -50
+                    x: -50,
                 }, {
                     opacity: 1,
                     x: 0,
@@ -115,8 +116,9 @@
                     scrollTrigger: {
                         trigger: '#heroSection',
                         start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
+                        scrub: true,
+                        toggleActions: 'play none none none',
+                    },
                 }
             );
 
@@ -125,7 +127,7 @@
                 '#heroImage', {
                     opacity: 0,
                     x: 100,
-                    scale: 0.8
+                    scale: 0.8,
                 }, {
                     opacity: 1,
                     x: 0,
@@ -135,15 +137,17 @@
                     scrollTrigger: {
                         trigger: '#heroSection',
                         start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
+                        scrub: true,
+                        toggleActions: 'play none none none',
+                    },
                 }
             );
 
+            // Card animations with dynamic stagger
             gsap.fromTo(
                 '.card', {
                     opacity: 0,
-                    y: 50
+                    y: 50,
                 }, {
                     opacity: 1,
                     y: 0,
@@ -153,12 +157,26 @@
                     scrollTrigger: {
                         trigger: '.grid',
                         start: 'top 80%',
-                        toggleActions: 'play none none none'
-                    }
+                        scrub: true,
+                        toggleActions: 'play none none none',
+                    },
                 }
             );
+
+            // Continuous parallax effect for hero background
+            gsap.to('#heroSection', {
+                backgroundPosition: '50% 100%', // Change background position
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#heroSection',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true,
+                },
+            });
         });
     </script>
+
 </body>
 
 </html>
