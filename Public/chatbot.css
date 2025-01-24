@@ -63,7 +63,7 @@
 }
 
 .close-chat {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(79, 79, 79, 0.15);
     border: none;
     color: black;
     cursor: pointer;
@@ -78,7 +78,7 @@
 }
 
 .close-chat:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(79, 79, 79, 0.5);
 }
 
 .chat-messages {

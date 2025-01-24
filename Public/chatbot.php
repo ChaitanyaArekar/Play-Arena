@@ -7,9 +7,7 @@
 </head>
 
 <body>
-    <button id="chat-button" class="chat-button" onclick="toggleChat()" data-title="How can I help you?">
-        🤖
-    </button>
+    <button id="chat-button" class="chat-button" onclick="toggleChat()">🤖</button>
 
     <div class=" chat-container" id="chatContainer">
         <div class="chat-header">
@@ -38,25 +36,6 @@
     </div>
 
     <script>
-        const chatBtn = document.getElementById('chat-button');
-
-        function updateChatButtonVisibility() {
-            if (window.scrollY > 200) {
-                chatBtn.style.opacity = '1';
-                chatBtn.style.visibility = 'visible';
-            } else {
-                chatBtn.style.opacity = '0';
-                chatBtn.style.visibility = 'hidden';
-            }
-        }
-
-        window.addEventListener('scroll', updateChatButtonVisibility);
-
-        chatBtn.style.opacity = '0';
-        chatBtn.style.visibility = 'hidden';
-
-
-
         const faqData = {
             'greeting': {
                 patterns: [

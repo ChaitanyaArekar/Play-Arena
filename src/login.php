@@ -40,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = strtolower($_POST['email']);
         $user_type = $_POST['user_type'];
         $password = $_POST['password'];
-
-        $user = $collection->findOne(['email' => $email, 'user_type' => $user_type]);
+        
+        $user = $collection->findOne(['email' => $email]);
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
@@ -88,10 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2>Login</h2>
             <form action="login.php" method="POST">
                 <input type="email" name="email" placeholder="Email" required><br><br>
-                <select name="user_type" required>
-                    <option value="user">User</option>
-                    <option value="owner">Owner</option>
-                </select><br><br>
                 <div class="password-field">
                     <input type="password" name="password" id="loginPassword" placeholder="Password" required><br><br>
                     <i class="fas fa-eye" id="loginEye" onclick="togglePasswordVisibility('loginPassword', 'loginEye')"></i>

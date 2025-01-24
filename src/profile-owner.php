@@ -236,8 +236,6 @@ function formatTime($hour)
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
-                </div>
-
                 <!-- Cancellation Requests Tab -->
                 <div id="cancel-requests" class="tab-content">
                     <?php if (empty($cancelRequests)): ?>
