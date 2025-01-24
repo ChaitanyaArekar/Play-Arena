@@ -22,6 +22,22 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 try {
     $db = new Database();
+
+    // Handle direct slot cancellation
+    if (isset($data['sport']) && isset($data['date']) && isset($data['hour'])) {
+        $cancelRequestsCollection->deleteMany([
+            'sport' => $data['sport'],
+            'date' => $data['date'],
+            'hour' => $data['hour']
+        ]);
+
+        $result = $db->cancelSlot($data['date'], $data['hour'], $data['sport']);
+
+        echo json_encode(['success' => $result['success']]);
+        exit;
+    }
+
+    // Handle existing cancellation request
     $request = $cancelRequestsCollection->findOne([
         '_id' => new ObjectId($data['requestId'])
     ]);
@@ -31,19 +47,24 @@ try {
     }
 
     if ($data['action'] === 'approve') {
-        // Perform slot cancellation
         $result = $db->cancelSlot($request['date'], $request['hour'], $request['sport']);
 
         if ($result['success']) {
-            // Remove the cancellation request
-            $cancelRequestsCollection->deleteOne(['_id' => $request['_id']]);
+            $cancelRequestsCollection->deleteMany([
+                'sport' => $request['sport'],
+                'date' => $request['date'],
+                'hour' => $request['hour']
+            ]);
             echo json_encode(['success' => true]);
         } else {
             throw new Exception('Failed to cancel slot');
         }
     } else {
-        // Reject request - simply delete the cancellation request
-        $cancelRequestsCollection->deleteOne(['_id' => $request['_id']]);
+        $cancelRequestsCollection->deleteMany([
+            'sport' => $request['sport'],
+            'date' => $request['date'],
+            'hour' => $request['hour']
+        ]);
         echo json_encode(['success' => true]);
     }
 } catch (Exception $e) {
