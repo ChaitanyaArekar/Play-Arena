@@ -19,7 +19,11 @@ $navLinks = [
 $isLoggedIn = isset($_SESSION['user']) || isset($_SESSION['owner']);
 
 if ($isLoggedIn) {
-    $navLinks[] = ["id" => "profile", "title" => "Profile", "url" => "../src/profile.php"];
+    if ($_SESSION['user_type'] === 'owner') {
+        $navLinks[] = ["id" => "profile", "title" => "Profile", "url" => "../src/profile-owner.php"];
+    } else {
+        $navLinks[] = ["id" => "profile", "title" => "Profile", "url" => "../src/profile.php"];
+    }
     $navLinks[] = [
         "id" => "logout",
         "title" => "Logout",

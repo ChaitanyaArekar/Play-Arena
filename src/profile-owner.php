@@ -3,7 +3,7 @@ date_default_timezone_set('Asia/Kolkata');
 session_start();
 require '../vendor/autoload.php';
 
-if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'user') {
+if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'owner') {
     header('Location: login.php');
     exit();
 }
@@ -16,13 +16,13 @@ $client = new MongoDB\Client($uri);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 
+// Get all bookings for owners
 $userBookings = $bookingsCollection->find(
-    ['email' => $_SESSION['email']],
-    ['sort' => ['date' => -1, 'hour' => -1]]
+    [],
+    ['sort' => ['date' => 1, 'hour' => 1]]
 )->toArray();
-
 $cancelRequests = $cancelRequestsCollection->find(
-    ['email' => $_SESSION['email']],
+    [],
     ['sort' => ['date' => -1, 'hour' => -1]]
 )->toArray();
 
@@ -67,7 +67,7 @@ function formatTime($hour)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - Play Arena</title>
+    <title>Owner Profile - Play Arena</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -95,7 +95,7 @@ function formatTime($hour)
                     </div>
                     <div class="info-item">
                         <i class="fas fa-user-tag"></i>
-                        <span>User</span>
+                        <span>Owner</span>
                     </div>
                 </div>
                 <div class="profile-actions mt-4 flex justify-center">
@@ -108,7 +108,7 @@ function formatTime($hour)
             <!-- Bookings Section -->
             <div class="bookings-section">
                 <div class="bookings-header">
-                    <h2>Your Bookings</h2>
+                    <h2>All Bookings</h2>
                 </div>
 
                 <div class="bookings-tabs">
@@ -129,7 +129,7 @@ function formatTime($hour)
                         <div class="empty-state">
                             <i class="fas fa-calendar-plus"></i>
                             <h3>No Upcoming Bookings</h3>
-                            <p class="book">Book your next game session now <a href="../index.php#booking">click here</a></p>
+                            <p>No bookings scheduled</p>
                         </div>
                     <?php else: ?>
                         <div class="bookings-grid">
@@ -153,13 +153,6 @@ function formatTime($hour)
                                                 : 'Upcoming';
                                             ?>
                                         </span>
-                                        <?php if (!in_array((string)$booking['_id'], $cancelRequestBookingIds)): ?>
-                                            <div class="cancel-booking-btn">
-                                                <button onclick="initiateBookingCancel('<?php echo $booking['_id']; ?>', '<?php echo $booking['sport']; ?>', '<?php echo $booking['date']; ?>', <?php echo $booking['hour']; ?>)" class="text-red-500 hover:text-red-600 items-center gap-2 px-3 py-1 rounded-lg hover:bg-red-50 disabled:opacity-50">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </div>
-                                        <?php endif; ?>
                                     </div>
                                     <div class="booking-info">
                                         <div class="info-item">
@@ -169,6 +162,16 @@ function formatTime($hour)
                                         <div class="info-item">
                                             <i class="far fa-clock"></i>
                                             <?php echo formatTime($booking['hour']); ?>
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -183,7 +186,7 @@ function formatTime($hour)
                         <div class="empty-state">
                             <i class="fas fa-history"></i>
                             <h3>No Past Bookings</h3>
-                            <p>Your booking history will appear here</p>
+                            <p>Booking history will appear here</p>
                         </div>
                     <?php else: ?>
                         <div class="bookings-grid">
@@ -207,6 +210,16 @@ function formatTime($hour)
                                             <i class="far fa-clock"></i>
                                             <?php echo formatTime($booking['hour']); ?>
                                         </div>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($booking['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($booking['email'] ?? 'N/A'); ?>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -220,7 +233,7 @@ function formatTime($hour)
                         <div class="empty-state">
                             <i class="fas fa-times-circle"></i>
                             <h3>No Cancellation Requests</h3>
-                            <p>You have no pending cancellation requests</p>
+                            <p>No pending cancellation requests</p>
                         </div>
                     <?php else: ?>
                         <div class="bookings-grid">
@@ -244,9 +257,23 @@ function formatTime($hour)
                                             <i class="far fa-clock"></i>
                                             <?php echo formatTime($request['hour']); ?>
                                         </div>
-                                        <div class="info-item">
-                                            <i class="fas fa-comment"></i>
-                                            <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-comment"></i>
+                                                <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
+                                            </div>
+                                            <div class="cancel-actions m-2 mt-4 flex justify-between">
+                                                <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
+                                                <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -330,7 +357,94 @@ function formatTime($hour)
                 }
             });
         }
+
+        function approveCancel(requestId) {
+            Swal.fire({
+                ...swalOptions,
+                title: 'Approve Cancellation?',
+                text: 'This will cancel your slot and initiate refund.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('process_cancel_request.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                requestId,
+                                action: 'approve'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: data.success ? 'success' : 'error',
+                                title: data.success ? 'Approved' : 'Approval Failed',
+                                text: data.message
+                            }).then(() => data.success && location.reload());
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An unexpected error occurred'
+                            });
+                        });
+                }
+            });
+        }
+
+        function rejectCancel(requestId) {
+            Swal.fire({
+                ...swalOptions,
+                title: 'Reject Cancellation?',
+                text: 'This will remove the cancellation request by the user.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Reject',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('process_cancel_request.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                requestId,
+                                action: 'reject'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: data.success ? 'success' : 'error',
+                                title: data.success ? 'Rejected' : 'Rejection Failed',
+                                text: data.message
+                            }).then(() => data.success && location.reload());
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                ...swalOptions,
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An unexpected error occurred'
+                            });
+                        });
+                }
+            });
+        }
     </script>
+
 
     <style>
         .small-swal {

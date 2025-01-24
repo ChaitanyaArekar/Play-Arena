@@ -201,7 +201,7 @@
 }
 
 .status-cancel-request {
-    background: #FFA500;;
+    background: #FFA500;
     color: #fff;
 }
 .empty-state {
@@ -238,12 +238,17 @@
     border: 1px solid #E5E7EB;
 }
 
+.book a {
+    text-decoration: underline;
+    color: blue;
+}
+
 @media (max-width: 768px) {
 
     .navbar ul li a {
-            color: white;
-        }
-        
+        color: white;
+    }
+
     .profile-card {
         flex-direction: column;
         text-align: center;
