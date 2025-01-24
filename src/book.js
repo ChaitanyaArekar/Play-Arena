@@ -212,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const timeButton = document.createElement("div");
         const isBooked = slot.status === "booked";
+        const isRestricted = slot.status === "restricted";
         const hour = slot.hour % 12 || 12;
         const period = slot.hour >= 12 ? "PM" : "AM";
 
@@ -219,6 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
           isBooked
             ? "bg-red-50 text-red-600 " +
               (isOwner ? "cursor-pointer hover:bg-red-100" : "")
+            : isRestricted
+            ? "bg-gray-50 text-gray-600 cursor-not-allowed"
             : "bg-green-50 text-green-600 hover:bg-green-100"
         }`;
 
@@ -317,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
           };
         }
 
-        if (!isBooked) {
+        if (!isBooked && !isRestricted) {
           timeButton.dataset.hour = slot.hour;
           timeButton.style.cursor = "pointer";
           timeButton.onclick = () => {
@@ -339,6 +342,73 @@ document.addEventListener("DOMContentLoaded", () => {
               timeButton.classList.remove("bg-green-50");
             }
             updateCart();
+          };
+        }
+
+        if (isOwner && !isBooked && !isRestricted) {
+          timeButton.onclick = () => {
+            const formattedDate = new Date(selectedDate).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
+
+            const confirmDetails = `
+      <div class="space-y-3">
+        <div class="text-lg font-semibold text-red-600 mb-4">Confirm Slot Restriction</div>
+        <div class="space-y-2 text-gray-700">
+          <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+          <p><span class="font-medium">Date:</span> ${formattedDate}</p>
+          <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">
+          This slot will be unavailable for booking. Are you sure?
+        </p>
+      </div>
+    `;
+
+            cancelConfirmDetails.innerHTML = confirmDetails;
+            cancelConfirmPopup.classList.remove("hidden");
+
+            cancelConfirmYes.onclick = async () => {
+              try {
+                const response = await fetch(backendUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    sport: sportSelect.value,
+                    date: selectedDate,
+                    hour: slot.hour,
+                    action: "restrict",
+                  }),
+                });
+
+                const result = await response.json();
+                cancelConfirmPopup.classList.add("hidden");
+
+                if (result.success) {
+                  await populateTimeSlots();
+                  popupText.textContent = "Slot restricted successfully";
+                  popupMessage.classList.remove("hidden");
+                } else {
+                  popupText.textContent =
+                    result.message || "Failed to restrict slot";
+                  popupMessage.classList.remove("hidden");
+                }
+              } catch (error) {
+                cancelConfirmPopup.classList.add("hidden");
+                popupText.textContent = "Error restricting slot";
+                popupMessage.classList.remove("hidden");
+              }
+            };
+
+            cancelConfirmNo.onclick = () => {
+              cancelConfirmPopup.classList.add("hidden");
+            };
           };
         }
 

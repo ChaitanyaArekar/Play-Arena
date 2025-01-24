@@ -77,7 +77,7 @@ class Database
         }
     }
 
-    public function bookSlot($date, $hour, $sport, $checkout_session_id = null)
+    public function bookSlot($date, $hour, $sport, $checkout_session_id = null, $action = null)
     {
         try {
             $slotsCollection = $this->client->turf->{$sport . '_slots'};
@@ -89,9 +89,29 @@ class Database
 
             foreach ($slotsData['slots'] as &$slot) {
                 if ($slot['hour'] == $hour) {
-                    if ($slot['status'] === 'booked') {
-                        return ['success' => false, 'message' => 'Slot already booked'];
+                    if (isset($action) && $action === 'restrict') {
+                        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
+                            return ['success' => false, 'message' => 'Unauthorized to restrict slots'];
+                        }
+
+                        if ($slot['status'] === 'booked') {
+                            return ['success' => false, 'message' => 'Cannot restrict already booked slots'];
+                        }
+
+                        $slot['status'] = 'restricted';
+
+                        $slotsCollection->updateOne(
+                            ['date' => $date],
+                            ['$set' => ['slots' => $slotsData['slots']]]
+                        );
+
+                        return ['success' => true, 'message' => 'Slot restricted successfully'];
                     }
+
+                    if ($slot['status'] === 'booked' || $slot['status'] === 'restricted') {
+                        return ['success' => false, 'message' => 'Slot not available'];
+                    }
+
                     $slot['status'] = 'booked';
 
                     $slotsCollection->updateOne(
@@ -118,7 +138,7 @@ class Database
 
             return ['success' => false, 'message' => 'Invalid slot'];
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'Error booking slot'];
+            return ['success' => false, 'message' => 'Error processing slot'];
         }
     }
 

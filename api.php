@@ -25,9 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date = $data['date'] ?? null;
     $hour = $data['hour'] ?? null;
     $sport = $data['sport'] ?? null;
+    $action = $data['action'] ?? null;
 
     if ($date && $hour !== null && $sport) {
-        $result = $db->bookSlot($date, $hour, $sport);
+        $result = $db->bookSlot($date, $hour, $sport, null, $action);
         echo json_encode($result);
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid data']);

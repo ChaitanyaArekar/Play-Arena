@@ -238,10 +238,10 @@ foreach ($requiredEnvVars as $var) {
             </div>
             <div class="flex gap-4">
                 <button id="cancel-confirm-no" class="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg">
-                    Keep Booking
+                    No
                 </button>
                 <button id="cancel-confirm-yes" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg">
-                    Cancel Booking
+                    Yes
                 </button>
             </div>
         </div>
