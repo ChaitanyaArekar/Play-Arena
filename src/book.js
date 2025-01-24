@@ -259,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     slot.booking_info.email || "N/A"
                   }</p>
                 </div>
+              </div>
             `;
 
             cancelConfirmPopup.classList.remove("hidden");
@@ -281,6 +282,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (result.success) {
                   popupText.textContent = "Booking cancelled successfully!";
                   await populateTimeSlots();
+                  // Remove associated cancellation request
+                  try {
+                    await fetch("process_cancel_request.php", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        sport: sportSelect.value,
+                        date: selectedDate,
+                        hour: slot.hour,
+                      }),
+                    });
+                  } catch (removeError) {
+                    console.error(
+                      "Error removing cancellation request:",
+                      removeError
+                    );
+                  }
                 } else {
                   popupText.textContent =
                     result.message || "Failed to cancel booking";
