@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         timeButton.className = `relative p-3 rounded-lg text-center transition-all ${
           isBooked
-            ? "bg-red-50 text-red-600 " +
+            ? "bg-red-50 text-red-600 cursor-not-allowed" +
               (isOwner ? "cursor-pointer hover:bg-red-100" : "")
             : isRestricted
             ? "bg-gray-50 text-gray-600 cursor-not-allowed"
@@ -344,7 +344,75 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCart();
           };
         }
+        //unrestrict slot
+        if (isOwner && isRestricted) {
+          timeButton.style.cursor = "pointer";
+          timeButton.onclick = () => {
+            const formattedDate = new Date(selectedDate).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
 
+            const confirmDetails = `
+                    <div class="space-y-3">
+                      <div class="text-lg font-semibold text-green-600 mb-4">Unrestrict Slot</div>
+                      <div class="space-y-2 text-gray-700">
+                        <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+                        <p><span class="font-medium">Date:</span> ${formattedDate}</p>
+                        <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
+                      </div>
+                      <p class="text-md text-gray-600 mt-2">
+                        This slot will become available for booking. Are you sure?
+                      </p>
+                    </div>
+                  `;
+
+            cancelConfirmDetails.innerHTML = confirmDetails;
+            cancelConfirmPopup.classList.remove("hidden");
+
+            cancelConfirmYes.onclick = async () => {
+              try {
+                const response = await fetch(backendUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    sport: sportSelect.value,
+                    date: selectedDate,
+                    hour: slot.hour,
+                    action: "unrestrict",
+                  }),
+                });
+
+                const result = await response.json();
+                cancelConfirmPopup.classList.add("hidden");
+
+                if (result.success) {
+                  await populateTimeSlots();
+                  popupText.textContent = "Slot unrestricted successfully";
+                  popupMessage.classList.remove("hidden");
+                } else {
+                  popupText.textContent =
+                    result.message || "Failed to unrestrict slot";
+                  popupMessage.classList.remove("hidden");
+                }
+              } catch (error) {
+                cancelConfirmPopup.classList.add("hidden");
+                popupText.textContent = "Error unrestricting slot";
+                popupMessage.classList.remove("hidden");
+              }
+            };
+
+            cancelConfirmNo.onclick = () => {
+              cancelConfirmPopup.classList.add("hidden");
+            };
+          };
+        }
+        //restrict slot
         if (isOwner && !isBooked && !isRestricted) {
           timeButton.onclick = () => {
             const formattedDate = new Date(selectedDate).toLocaleDateString(
@@ -358,18 +426,18 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             const confirmDetails = `
-      <div class="space-y-3">
-        <div class="text-lg font-semibold text-red-600 mb-4">Confirm Slot Restriction</div>
-        <div class="space-y-2 text-gray-700">
-          <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
-          <p><span class="font-medium">Date:</span> ${formattedDate}</p>
-          <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
-        </div>
-        <p class="text-sm text-gray-600 mt-2">
-          This slot will be unavailable for booking. Are you sure?
-        </p>
-      </div>
-    `;
+                    <div class="space-y-3">
+                      <div class="text-lg font-semibold text-red-600 mb-4">Confirm Slot Restriction</div>
+                      <div class="space-y-2 text-gray-700">
+                        <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+                        <p><span class="font-medium">Date:</span> ${formattedDate}</p>
+                        <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
+                      </div>
+                      <p class="text-md text-gray-600 mt-2">
+                        This slot will be unavailable for booking. Are you sure?
+                      </p>
+                    </div>
+                  `;
 
             cancelConfirmDetails.innerHTML = confirmDetails;
             cancelConfirmPopup.classList.remove("hidden");

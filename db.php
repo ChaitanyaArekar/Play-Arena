@@ -108,6 +108,26 @@ class Database
                         return ['success' => true, 'message' => 'Slot restricted successfully'];
                     }
 
+                    if (isset($action) && $action === 'unrestrict') {
+                        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
+                            return ['success' => false, 'message' => 'Unauthorized to unrestrict slots'];
+                        }
+
+                        if ($slot['status'] !== 'restricted'
+                        ) {
+                            return ['success' => false, 'message' => 'Slot is not currently restricted'];
+                        }
+
+                        $slot['status'] = 'available';
+
+                        $slotsCollection->updateOne(
+                            ['date' => $date],
+                            ['$set' => ['slots' => $slotsData['slots']]]
+                        );
+
+                        return ['success' => true, 'message' => 'Slot unrestricted successfully'];
+                    }
+
                     if ($slot['status'] === 'booked' || $slot['status'] === 'restricted') {
                         return ['success' => false, 'message' => 'Slot not available'];
                     }
