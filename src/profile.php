@@ -273,6 +273,7 @@ function formatTime($hour)
             }
         };
 
+        // Tab switching function
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -284,6 +285,7 @@ function formatTime($hour)
             event.target.classList.add('active');
         }
 
+        // User-specific booking cancellation function
         function initiateBookingCancel(bookingId, sport, date, hour) {
             Swal.fire({
                 ...swalOptions,
@@ -294,10 +296,15 @@ function formatTime($hour)
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
                 cancelButtonText: 'Cancel',
-                inputValidator: (value) => !value && 'Reason is required'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('cancel_booking.php', {
+                showLoaderOnConfirm: true,
+                showCancelButton: false,
+                preConfirm: (reason) => {
+                    if (!reason) {
+                        Swal.showValidationMessage('Reason is required');
+                        return false;
+                    }
+
+                    return fetch('cancel_booking.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -307,27 +314,29 @@ function formatTime($hour)
                                 sport,
                                 date,
                                 hour,
-                                reason: result.value
+                                reason
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
-                            Swal.fire({
-                                ...swalOptions,
-                                icon: data.success ? 'success' : 'error',
-                                title: data.success ? 'Request Submitted' : 'Cancellation Failed',
-                                text: data.message || (data.success ? 'Cancellation request sent' : 'Unable to submit request'),
-                            }).then(() => data.success && location.reload());
+                            if (!data.success) {
+                                throw new Error(data.message || 'Unable to submit request');
+                            }
+                            return data;
                         })
                         .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                ...swalOptions,
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'An unexpected error occurred'
-                            });
+                            Swal.showValidationMessage(error.message);
                         });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        ...swalOptions,
+                        icon: 'success',
+                        title: 'Request Submitted',
+                        text: result.value.message || 'Cancellation request sent'
+                    }).then(() => location.reload());
                 }
             });
         }
