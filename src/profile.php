@@ -150,7 +150,7 @@ function formatTime($hour)
                                                                     ?>">
                                             <?php
                                             echo in_array((string)$booking['_id'], $cancelRequestBookingIds)
-                                                ? 'Cancellation Request'
+                                                ? 'Pending'
                                                 : 'Upcoming';
                                             ?>
                                         </span>
@@ -234,7 +234,7 @@ function formatTime($hour)
                                             </div>
                                             <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
                                         </div>
-                                        <span class="booking-status status-cancel-request">Cancellation Request</span>
+                                        <span class="booking-status status-cancel-request">Pending</span>
                                     </div>
                                     <div class="booking-info">
                                         <div class="info-item">
