@@ -53,7 +53,7 @@ try {
         ]],
         'mode' => 'payment',
         'success_url' => 'http://localhost:8000/src/process_booking.php?session_id={CHECKOUT_SESSION_ID}',
-        'cancel_url' => 'http://localhost:8000/src/book.php',
+        'cancel_url' => 'http://localhost:8000/src/book.php?sport='.$sport,
         'metadata' => [
             'sport' => $sport,
             'date' => $date,

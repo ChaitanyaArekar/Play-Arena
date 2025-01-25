@@ -233,70 +233,70 @@ function formatTime($hour)
                                         </div>
                                     </div>
                                 </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-            <!-- Cancellation Requests Tab -->
-            <div id="cancel-requests" class="tab-content">
-                <?php if (empty($cancelRequests)): ?>
-                    <div class="empty-state">
-                        <i class="fas fa-times-circle"></i>
-                        <h3>No Cancellation Requests</h3>
-                        <p>No pending cancellation requests</p>
-                    </div>
-                <?php else: ?>
-                    <div class="bookings-grid">
-                        <?php foreach ($cancelRequests as $request): ?>
-                            <div class="booking-card">
-                                <div class="booking-header">
-                                    <div class="booking-title">
-                                        <div class="sport-icon">
-                                            <i class="fas fa-<?php echo $request['sport'] === 'cricket' ? 'baseball-ball' : ($request['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
-                                        </div>
-                                        <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
-                                    </div>
-                                    <span class="booking-status status-cancel-request">Cancellation Request</span>
-                                </div>
-                                <div class="booking-info">
-                                    <div class="info-item">
-                                        <i class="far fa-calendar"></i>
-                                        <?php echo date('D, M j, Y', strtotime($request['date'])); ?>
-                                    </div>
-                                    <div class="info-item">
-                                        <i class="far fa-clock"></i>
-                                        <?php echo formatTime($request['hour']); ?>
-                                    </div>
-                                    <div class="user-details">
-                                        <div class="info-item">
-                                            <i class="fas fa-user"></i>
-                                            <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
-                                        </div>
-                                        <div class="info-item">
-                                            <i class="fas fa-envelope"></i>
-                                            <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
-                                        </div>
-                                        <!-- <div class="info-item overflow-hidden">
-                                                <i class="fas fa-receipt"></i>
-                                                <span class="text-s break-words max-w-full inline-block">
-                                                    <?php echo htmlspecialchars($booking['checkout_session_id'] ?? 'N/A'); ?>
-                                                </span>
-                                            </div> -->
-                                        <div class="info-item">
-                                            <i class="fas fa-comment"></i>
-                                            <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
-                                        </div>
-                                        <div class="cancel-actions m-2 mt-4 flex justify-between">
-                                            <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
-                                            <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            </div>
+                <!-- Cancellation Requests Tab -->
+                <div id="cancel-requests" class="tab-content">
+                    <?php if (empty($cancelRequests)): ?>
+                        <div class="empty-state">
+                            <i class="fas fa-times-circle"></i>
+                            <h3>No Cancellation Requests</h3>
+                            <p>No pending cancellation requests</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="bookings-grid">
+                            <?php foreach ($cancelRequests as $request): ?>
+                                <div class="booking-card">
+                                    <div class="booking-header">
+                                        <div class="booking-title">
+                                            <div class="sport-icon">
+                                                <i class="fas fa-<?php echo $request['sport'] === 'cricket' ? 'baseball-ball' : ($request['sport'] === 'football' ? 'futbol' : 'basketball-ball'); ?>"></i>
+                                            </div>
+                                            <h3><?php echo ucfirst(htmlspecialchars($request['sport'])); ?></h3>
+                                        </div>
+                                        <span class="booking-status status-cancel-request">Cancellation Request</span>
+                                    </div>
+                                    <div class="booking-info">
+                                        <div class="info-item">
+                                            <i class="far fa-calendar"></i>
+                                            <?php echo date('D, M j, Y', strtotime($request['date'])); ?>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="far fa-clock"></i>
+                                            <?php echo formatTime($request['hour']); ?>
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="info-item">
+                                                <i class="fas fa-user"></i>
+                                                <?php echo htmlspecialchars($request['full_name'] ?? 'N/A'); ?>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
+                                            </div>
+                                            <!-- <div class="info-item overflow-hidden">
+                                                    <i class="fas fa-receipt"></i>
+                                                    <span class="text-s break-words max-w-full inline-block">
+                                                        <?php echo htmlspecialchars($booking['checkout_session_id'] ?? 'N/A'); ?>
+                                                    </span>
+                                                </div> -->
+                                            <div class="info-item">
+                                                <i class="fas fa-comment"></i>
+                                                <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
+                                            </div>
+                                            <div class="cancel-actions m-2 mt-4 flex justify-between">
+                                                <button class="btn-approve bg-green-500 text-white rounded-md p-2 px-4" onclick="approveCancel('<?php echo $request['_id']; ?>')">Approve</button>
+                                                <button class="btn-reject bg-red-500 text-white rounded-md p-2 px-4" onclick="rejectCancel('<?php echo $request['_id']; ?>')">Reject</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
