@@ -75,7 +75,7 @@ function formatTime($hour)
     <link rel="stylesheet" href="/src/profile.css">
 </head>
 
-<body class="bg-gradient-to-br from-green-50 to-blue-50 py-2 px-4">
+<body class="bg-gradient-to-br from-green-50 to-blue-50 p-2">
     <?php $textColor = 'text-black'; ?>
     <header class="<?php echo $textColor; ?>">
         <?php include 'navbar.php'; ?>

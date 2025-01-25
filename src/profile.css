@@ -266,9 +266,12 @@
         padding-bottom: 0.5rem;
     }
 
-    .bookings-card {
-        flex-direction: column;
-        padding-bottom: 0.5rem;
+    .booking-card {
+        padding: 1rem;
+    }
+
+    .bookings-section{
+        padding:1rem
     }
 
     .tab-button {
