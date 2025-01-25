@@ -87,78 +87,74 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script>
-    gsap.registerPlugin(ScrollTrigger);
+        gsap.registerPlugin(ScrollTrigger);
 
-    let openIndex = null;
+        let openIndex = null;
 
-    function toggleAnswer(index) {
-        const answer = document.getElementById('answer-' + index);
-        const arrow = document.querySelectorAll('.faq-question')[index].querySelector('.arrow');
+        function toggleAnswer(index) {
+            const answer = document.getElementById('answer-' + index);
+            const arrow = document.querySelectorAll('.faq-question')[index].querySelector('.arrow');
 
-        if (openIndex === index) {
-            answer.classList.remove("active");
-            arrow.classList.remove("rotate");
-            openIndex = null;
-        } else {
-            if (openIndex !== null) {
-                const previousAnswer = document.getElementById('answer-' + openIndex);
-                const previousArrow = document.querySelectorAll('.faq-question')[openIndex].querySelector('.arrow');
-                previousAnswer.classList.remove("active");
-                previousArrow.classList.remove("rotate");
+            if (openIndex === index) {
+                answer.classList.remove("active");
+                arrow.classList.remove("rotate");
+                openIndex = null;
+            } else {
+                if (openIndex !== null) {
+                    const previousAnswer = document.getElementById('answer-' + openIndex);
+                    const previousArrow = document.querySelectorAll('.faq-question')[openIndex].querySelector('.arrow');
+                    previousAnswer.classList.remove("active");
+                    previousArrow.classList.remove("rotate");
+                }
+
+                answer.classList.add("active");
+                arrow.classList.add("rotate");
+                openIndex = index;
             }
-
-            answer.classList.add("active");
-            arrow.classList.add("rotate");
-            openIndex = index;
         }
-    }
 
-    // Animate FAQ items dynamically on scroll
-    document.querySelectorAll('[id^="faq-item-"]').forEach((faqItem, index) => {
+        // Animate FAQ items dynamically on scroll
+        document.querySelectorAll('[id^="faq-item-"]').forEach((faqItem, index) => {
+            gsap.fromTo(
+                faqItem, {
+                    opacity: 0,
+                    y: 20,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: faqItem,
+                        start: 'top 80%',
+                        end: 'bottom top',
+                        toggleActions: 'play none none none',
+                        scrub: true, // Enable scrub to make the animation follow the scroll
+                    },
+                }
+            );
+        });
+
+        // Add dynamic animations for the FAQ header
         gsap.fromTo(
-            faqItem,
-            {
+            'h2', {
                 opacity: 0,
-                y: 20,
-            },
-            {
+                y: -20,
+            }, {
                 opacity: 1,
                 y: 0,
-                duration: 0.8,
+                duration: 1,
                 ease: 'power3.out',
                 scrollTrigger: {
-                    trigger: faqItem,
-                    start: 'top 80%',
+                    trigger: 'h2',
+                    start: 'top 90%',
                     end: 'bottom top',
+                    scrub: true, // Enable scrub to make the animation follow the scroll
                     toggleActions: 'play none none none',
-                    scrub: true,  // Enable scrub to make the animation follow the scroll
                 },
             }
         );
-    });
-
-    // Add dynamic animations for the FAQ header
-    gsap.fromTo(
-        'h2',
-        {
-            opacity: 0,
-            y: -20,
-        },
-        {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: 'h2',
-                start: 'top 90%',
-                end: 'bottom top',
-                scrub: true,  // Enable scrub to make the animation follow the scroll
-                toggleActions: 'play none none none',
-            },
-        }
-    );
-</script>
+    </script>
 
 
 

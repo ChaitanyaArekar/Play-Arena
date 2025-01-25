@@ -96,8 +96,8 @@
                     ease: 'power3.out',
                     scrollTrigger: {
                         trigger: '#heroSection',
-                        start: 'top 80%',
-                        scrub: true, // Smoothens animation based on scroll position
+                        start: 'top 100%',
+                        scrub: true,
                         toggleActions: 'play none none none',
                     },
                 }
@@ -115,7 +115,7 @@
                     delay: 0.5,
                     scrollTrigger: {
                         trigger: '#heroSection',
-                        start: 'top 80%',
+                        start: 'top 100%',
                         scrub: true,
                         toggleActions: 'play none none none',
                     },
@@ -132,11 +132,11 @@
                     opacity: 1,
                     x: 0,
                     scale: 1,
-                    duration: 1.5,
+                    duration: 1,
                     ease: 'power3.out',
                     scrollTrigger: {
                         trigger: '#heroSection',
-                        start: 'top 80%',
+                        start: 'top 100%',
                         scrub: true,
                         toggleActions: 'play none none none',
                     },
@@ -165,7 +165,7 @@
 
             // Continuous parallax effect for hero background
             gsap.to('#heroSection', {
-                backgroundPosition: '50% 100%', // Change background position
+                backgroundPosition: '50% 100%',
                 ease: 'none',
                 scrollTrigger: {
                     trigger: '#heroSection',

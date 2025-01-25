@@ -1,6 +1,10 @@
 <?php
 require '../vendor/autoload.php';
 require_once dirname(__DIR__) . '/db.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 session_start();
 
 if (!isset($_SESSION['user'])) {
@@ -12,6 +16,53 @@ $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
 $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
+
+function sendBookingConfirmationEmail($booking, $session)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['SMTP_HOST'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['SMTP_USERNAME'];
+        $mail->Password   = $_ENV['SMTP_PASSWORD'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $_ENV['SMTP_PORT'];
+
+        // Recipients
+        $mail->setFrom($_ENV['SMTP_FROM_ADDRESS'], $_ENV['SMTP_FROM_NAME']);
+        $mail->addAddress($booking['user_email'], $booking['user_name']);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Booking Confirmation - ' . ucfirst($booking['sport']) . ' Turf';
+
+        $slotTimes = array_map(function ($slot) {
+            $hour = intval($slot);
+            $period = $hour >= 12 ? 'PM' : 'AM';
+            $displayHour = $hour % 12;
+            $displayHour = $displayHour == 0 ? 12 : $displayHour;
+            return sprintf("%d:00 %s", $displayHour, $period);
+        }, $booking['slots']);
+
+        $mail->Body = "
+        <h2>Booking Confirmation</h2>
+        <p>Dear {$booking['user_name']},</p>
+        <p>Your booking for {$booking['sport']} turf has been confirmed.</p>
+        <strong>Booking Details:</strong>
+        <ul>
+            <li>Date: " . date('F j, Y', strtotime($booking['date'])) . "</li>
+            <li>Sport: " . ucfirst($booking['sport']) . "</li>
+            <li>Time Slots: " . implode(', ', $slotTimes) . "</li>
+            <li>Total Amount: ₹{$booking['amount']}</li>
+        </ul>
+        <p>Thank you for choosing Your Turf!</p>";
+
+        $mail->send();
+    } catch (Exception $e) {
+        error_log("Email sending failed: {$mail->ErrorInfo}");
+    }
+}
 
 try {
     if (
@@ -44,6 +95,9 @@ try {
                 throw new Exception('Failed to book slot: ' . $hour);
             }
         }
+
+        // Send booking confirmation email
+        sendBookingConfirmationEmail($booking, $session);
 
         unset($_SESSION['pending_booking']);
         $sport = $booking['sport'];
