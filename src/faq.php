@@ -83,7 +83,6 @@
         </div>
     </section>
 
-    <!-- GSAP CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script>
@@ -113,7 +112,6 @@
             }
         }
 
-        // Animate FAQ items dynamically on scroll
         document.querySelectorAll('[id^="faq-item-"]').forEach((faqItem, index) => {
             gsap.fromTo(
                 faqItem, {
@@ -129,13 +127,12 @@
                         start: 'top 80%',
                         end: 'bottom top',
                         toggleActions: 'play none none none',
-                        scrub: true, // Enable scrub to make the animation follow the scroll
+                        scrub: true, 
                     },
                 }
             );
         });
 
-        // Add dynamic animations for the FAQ header
         gsap.fromTo(
             'h2', {
                 opacity: 0,
@@ -149,7 +146,7 @@
                     trigger: 'h2',
                     start: 'top 90%',
                     end: 'bottom top',
-                    scrub: true, // Enable scrub to make the animation follow the scroll
+                    scrub: true, 
                     toggleActions: 'play none none none',
                 },
             }
