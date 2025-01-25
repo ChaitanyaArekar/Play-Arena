@@ -26,7 +26,7 @@
 
 <body class="bg-gray-100">
     <section id="booking">
-        <h1 class="text-2xl font-semibold m-10 ml-8 sm:ml-20 mt-16">Start Your Adventure &rarr;</h1>
+        <h2 class="text-4xl font-bold text-center m-2 my-14" id="h2">Start Your Adventure</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-5 sm:px-16 py-6">
             <a href="/src/book.php?sport=football" class="block card">
@@ -104,6 +104,24 @@
             );
 
             gsap.fromTo(
+                '#h2', {
+                    opacity: 0,
+                    y: 50,
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power3.out',
+                    stagger: 0.2,
+                    scrollTrigger: {
+                        trigger: '.grid',
+                        start: 'top 100%',
+                        scrub: true,
+                        toggleActions: 'play none none none',
+                    },
+                }
+            );
+            gsap.fromTo(
                 '#textParagraph', {
                     opacity: 0,
                     x: -50,
@@ -122,7 +140,6 @@
                 }
             );
 
-            // Hero section image animations
             gsap.fromTo(
                 '#heroImage', {
                     opacity: 0,
@@ -143,7 +160,6 @@
                 }
             );
 
-            // Card animations with dynamic stagger
             gsap.fromTo(
                 '.card', {
                     opacity: 0,
@@ -162,8 +178,6 @@
                     },
                 }
             );
-
-            // Continuous parallax effect for hero background
             gsap.to('#heroSection', {
                 backgroundPosition: '50% 100%',
                 ease: 'none',
