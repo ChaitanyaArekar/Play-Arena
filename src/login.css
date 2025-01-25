@@ -63,6 +63,7 @@ select {
 button {
     background: linear-gradient(to right, #1d976c, #93f9b9);
     color: white;
+    margin-top: 20px;
     padding: 14px;
     border: none;
     border-radius: 8px;

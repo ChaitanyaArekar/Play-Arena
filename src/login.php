@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email'] = $user['email'];
             $_SESSION['user_full_name'] = $user['full_name'];
             $_SESSION['user_type'] = $user['user_type'];
-            $_SESSION['message'] = "Login successful! Welcome back, " . ucfirst($user['user_type']) . ".";
-            $_SESSION['message_type'] = "success";
+            // $_SESSION['message'] = "Login successful! Welcome back, " . ucfirst($user['user_type']) . ".";
+            // $_SESSION['message_type'] = "success";
             header("Location: /index.php");
             exit();
         } else {
