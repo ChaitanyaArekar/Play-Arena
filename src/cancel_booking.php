@@ -78,7 +78,7 @@ try {
         'reason' => $data['reason'],
         'email' => $_SESSION['user']['email'],
         'full_name' => $_SESSION['user']['full_name'],
-        'timestamp' => new UTCDateTime(time() * 1000)
+        'timestamp' => time()
     ]);
 
     // Send cancellation request email

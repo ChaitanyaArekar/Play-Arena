@@ -53,7 +53,7 @@ function sendCancellationResponseEmail($request, $action)
             <li>Time Slot: {$displayHour}:00 {$period}</li>
         </ul>
         " . ($action === 'reject' ? "<p>Please contact support if you have any questions.</p>" : "") . "
-        <p>Thank you for using Your Turf!</p>";
+        <p>Thank you for using Play Arena!</p>";
 
         $mail->send();
     } catch (Exception $e) {

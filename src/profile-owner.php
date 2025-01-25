@@ -16,6 +16,7 @@ $client = new MongoDB\Client($uri);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 
+// Get all bookings for owners
 $userBookings = $bookingsCollection->find(
     [],
     ['sort' => ['date' => 1, 'hour' => 1]]
@@ -229,14 +230,16 @@ function formatTime($hour)
                                                 <i class="fas fa-receipt"></i>
                                                 <span class="text-s break-words max-w-full inline-block">
                                                     <?php echo htmlspecialchars($booking['checkout_session_id'] ?? 'N/A'); ?>
-                                                </span> -->
+                                                </span> 
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <!-- Cancellation Requests Tab -->
                 <div id="cancel-requests" class="tab-content">
                     <?php if (empty($cancelRequests)): ?>
@@ -276,12 +279,6 @@ function formatTime($hour)
                                                 <i class="fas fa-envelope"></i>
                                                 <?php echo htmlspecialchars($request['email'] ?? 'N/A'); ?>
                                             </div>
-                                            <!-- <div class="info-item overflow-hidden">
-                                                    <i class="fas fa-receipt"></i>
-                                                    <span class="text-s break-words max-w-full inline-block">
-                                                        <?php echo htmlspecialchars($booking['checkout_session_id'] ?? 'N/A'); ?>
-                                                    </span>
-                                                </div> -->
                                             <div class="info-item">
                                                 <i class="fas fa-comment"></i>
                                                 <?php echo htmlspecialchars($request['reason'] ?? 'No reason provided'); ?>
