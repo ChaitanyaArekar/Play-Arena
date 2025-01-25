@@ -22,7 +22,9 @@ $turf = [
     ]
 ];
 
-$selectedSport = isset($_GET['sport']) ? $_GET['sport'] : 'cricket';
+$selectedSport = isset($_GET['sport']) ? $_GET['sport'] : 
+                 (isset($_SESSION['last_selected_sport']) ? $_SESSION['last_selected_sport'] : 'cricket');
+$_SESSION['last_selected_sport'] = $selectedSport;
 $isLoggedIn = isset($_SESSION['user']);
 $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'user';
 

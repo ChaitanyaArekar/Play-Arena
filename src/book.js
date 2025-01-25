@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     imgElement.src = images[currentIndex];
   }, 3000);
 
+  //cart details
   const updateCart = () => {
     const clearCartButton = document.getElementById("clear-cart");
     const currentPrice = PRICES[sportSelect.value];
@@ -142,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  //calender view of slots
   const populateCalendar = () => {
     calendarGrid.innerHTML = "";
     const today = new Date();
@@ -180,6 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateTimeSlots();
   };
 
+  //showing details of slot
   const populateTimeSlots = async () => {
     if (!selectedDate) return;
 
@@ -230,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         timeButton.appendChild(timeDisplay);
 
         if (isBooked && isOwner && slot.booking_info) {
+          timeButton.style.cursor = "pointer";
           const bookingInfo = document.createElement("div");
           bookingInfo.className = "text-xs text-gray-600 mt-1";
           // bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
@@ -494,6 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const stripe = Stripe(stripePublicKey);
 
+  //slot booking
   const bookSlot = async () => {
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
@@ -542,6 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  //payment status
   const showPaymentStatusMessage = () => {
     if (paymentStatus) {
       const messages = {
@@ -592,7 +598,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loginPopup.classList.add("hidden");
   });
 
+  //update browser url based on drop down
   sportSelect.addEventListener("change", () => {
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("sport", sportSelect.value);
+    window.history.pushState({}, "", newUrl);
+
     if (selectedDate) {
       selectedTimeSlots.clear();
       updateCart();
