@@ -56,7 +56,7 @@ function sendBookingConfirmationEmail($booking, $session)
             <li>Time Slots: " . implode(', ', $slotTimes) . "</li>
             <li>Total Amount: ₹{$booking['amount']}</li>
         </ul>
-        <p>Thank you for choosing Your Turf!</p>";
+        <p>Thank you for choosing Play Arena!</p>";
 
         $mail->send();
     } catch (Exception $e) {
