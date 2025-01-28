@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once '../dbhandler/db.php';
 session_start();
 
 $db = new Database();

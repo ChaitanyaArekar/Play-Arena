@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use MongoDB\Client;
 use Dotenv\Dotenv;
@@ -13,7 +13,7 @@ class Database
     public function __construct()
     {
         try {
-            $dotenv = Dotenv::createImmutable(__DIR__);
+            $dotenv = Dotenv::createImmutable(__DIR__."/../");
             $dotenv->load();
 
             $uri = $_ENV['MONGODB_URI'];
