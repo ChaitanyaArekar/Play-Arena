@@ -35,7 +35,6 @@ foreach ($requiredEnvVars as $var) {
     }
 }
 ?>
-<?php include '../Public/chatbot.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">

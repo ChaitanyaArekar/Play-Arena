@@ -60,8 +60,6 @@ function formatTime($hour)
     return date('h:i A', strtotime("$hour:00"));
 }
 ?>
-<?php include '../Public/chatbot.php'; ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
