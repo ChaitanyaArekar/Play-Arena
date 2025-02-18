@@ -156,16 +156,6 @@ foreach ($requiredEnvVars as $var) {
                                 <i class="far fa-clock mr-2"></i>Select Time Slots
                             </label>
                             <div id="time-slots-grid" class="grid grid-cols-4 gap-3"></div>
-                            <?php if ($userType==='owner'): ?>
-                                <div class="flex justify-center gap-2 mt-4">
-                                    <button id="restrict-selected" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all">
-                                        Restrict Selected
-                                    </button>
-                                    <button id="unrestrict-selected" class="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all">
-                                        Unrestrict Selected
-                                    </button>
-                                </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -211,6 +201,21 @@ foreach ($requiredEnvVars as $var) {
                                     <i class="fas fa-check-circle"></i>
                                     Book Now
                                 </button>
+
+                                <?php if ($userType==='owner'): ?>
+                                    <div class="flex gap-2 mt-4">
+                                        <button id="restrict-selected" 
+                                            class="flex-1 bg-red-500 text-white py-4 rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
+                                            <i class="fas fa-ban"></i>
+                                            Restrict Selected
+                                        </button>
+                                        <button id="unrestrict-selected" 
+                                            class="flex-1 bg-green-500 text-white py-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
+                                            <i class="fas fa-check"></i>
+                                            Unrestrict Selected
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

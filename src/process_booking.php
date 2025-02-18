@@ -88,7 +88,14 @@ try {
 
     try {
         foreach ($booking['slots'] as $hour) {
-            $result = $db->bookSlot($booking['date'], $hour, $booking['sport'], $session->id);
+            $result = $db->bookSlot(
+                $booking['date'], 
+                $hour, 
+                $booking['sport'], 
+                $session->id,
+                null,
+                $booking['amount'] / count($booking['slots']) // Add amount per slot
+            );
             if ($result['success']) {
                 $booked_slots[] = $hour;
             } else {

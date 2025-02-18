@@ -77,7 +77,7 @@ class Database
         }
     }
 
-    public function bookSlot($date, $hour, $sport, $checkout_session_id = null, $action = null)
+    public function bookSlot($date, $hour, $sport, $checkout_session_id = null, $action = null, $amount_per_slot = null)
     {
         try {
             $slotsCollection = $this->client->turf->{$sport . '_slots'};
@@ -140,7 +140,8 @@ class Database
                         'sport' => $sport,
                         'full_name' => $_SESSION['user']['full_name'],
                         'email' => $_SESSION['user']['email'],
-                        'checkout_session_id' => $checkout_session_id
+                        'checkout_session_id' => $checkout_session_id,
+                        'amount_per_slot' => $amount_per_slot // Store amount per slot
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -191,8 +192,14 @@ class Database
                             );
 
                             if ($session->payment_intent) {
+                                // Calculate refund amount for this specific slot
+                                $refundAmount = isset($booking['amount_per_slot']) 
+                                    ? $booking['amount_per_slot'] * 100 // Convert to cents for Stripe
+                                    : null;
+
                                 $refund = $this->stripe->refunds->create([
                                     'payment_intent' => $session->payment_intent->id,
+                                    'amount' => $refundAmount, // Specify the amount to refund
                                     'reason' => 'requested_by_customer'
                                 ]);
                             }
@@ -213,7 +220,7 @@ class Database
 
                         return [
                             'success' => true,
-                            'message' => 'Booking cancelled and refund initiated successfully'
+                            'message' => 'Booking cancelled and partial refund initiated successfully'
                         ];
                     } catch (Exception $e) {
                         error_log('Refund Error: ' . $e->getMessage());
