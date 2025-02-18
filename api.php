@@ -23,12 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $date = $data['date'] ?? null;
-    $hour = $data['hour'] ?? null;
     $sport = $data['sport'] ?? null;
     $action = $data['action'] ?? null;
 
-    if ($date && $hour !== null && $sport) {
-        $result = $db->bookSlot($date, $hour, $sport, null, $action);
+    $hours = isset($data['hours']) ? $data['hours'] : (isset($data['hour']) ? [$data['hour']] : null);
+
+    if ($date && $hours && $sport) {
+        $result = ['success' => true, 'message' => ''];
+        foreach ($hours as $hour) {
+            $slotResult = $db->bookSlot($date, $hour, $sport, null, $action);
+            if (!$slotResult['success']) {
+                $result = $slotResult;
+                break;
+            }
+        }
         echo json_encode($result);
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid data']);

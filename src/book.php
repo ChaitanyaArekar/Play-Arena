@@ -2,7 +2,6 @@
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
@@ -157,6 +156,16 @@ foreach ($requiredEnvVars as $var) {
                                 <i class="far fa-clock mr-2"></i>Select Time Slots
                             </label>
                             <div id="time-slots-grid" class="grid grid-cols-4 gap-3"></div>
+                            <?php if ($userType==='owner'): ?>
+                                <div class="flex justify-center gap-2 mt-4">
+                                    <button id="restrict-selected" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all">
+                                        Restrict Selected
+                                    </button>
+                                    <button id="unrestrict-selected" class="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all">
+                                        Unrestrict Selected
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

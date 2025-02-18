@@ -228,6 +228,22 @@ document.addEventListener("DOMContentLoaded", () => {
             : "bg-green-50 text-green-600 hover:bg-green-100"
         }`;
 
+        if (isOwner && !isBooked) {
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "absolute top-2 right-2 h-4 w-4 cursor-pointer";
+          checkbox.dataset.hour = slot.hour;
+          checkbox.dataset.status = isRestricted ? "restricted" : "available";
+          
+          checkbox.onclick = (e) => {
+            e.stopPropagation();
+          };
+          
+          timeButton.appendChild(checkbox);
+          timeButton.style.cursor = "default";
+          
+        }
+
         const timeDisplay = document.createElement("div");
         timeDisplay.textContent = `${hour}:00 ${period}`;
         timeButton.appendChild(timeDisplay);
@@ -324,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
           };
         }
 
-        if (!isBooked && !isRestricted) {
+        if (!isBooked && !isRestricted && !isOwner) {
           timeButton.dataset.hour = slot.hour;
           timeButton.style.cursor = "pointer";
           timeButton.onclick = () => {
@@ -348,142 +364,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCart();
           };
         }
-        //unrestrict slot
-        if (isOwner && isRestricted) {
-          timeButton.style.cursor = "pointer";
-          timeButton.onclick = () => {
-            const formattedDate = new Date(selectedDate).toLocaleDateString(
-              "en-US",
-              {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            );
-
-            const confirmDetails = `
-                    <div class="space-y-3">
-                      <div class="text-lg font-semibold text-green-600 mb-4">Unrestrict Slot</div>
-                      <div class="space-y-2 text-gray-700">
-                        <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
-                        <p><span class="font-medium">Date:</span> ${formattedDate}</p>
-                        <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
-                      </div>
-                      <p class="text-md text-gray-600 mt-2">
-                        This slot will become available for booking. Are you sure?
-                      </p>
-                    </div>
-                  `;
-
-            cancelConfirmDetails.innerHTML = confirmDetails;
-            cancelConfirmPopup.classList.remove("hidden");
-
-            cancelConfirmYes.onclick = async () => {
-              try {
-                const response = await fetch(backendUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    sport: sportSelect.value,
-                    date: selectedDate,
-                    hour: slot.hour,
-                    action: "unrestrict",
-                  }),
-                });
-
-                const result = await response.json();
-                cancelConfirmPopup.classList.add("hidden");
-
-                if (result.success) {
-                  await populateTimeSlots();
-                  popupText.textContent = "Slot unrestricted successfully";
-                  popupMessage.classList.remove("hidden");
-                } else {
-                  popupText.textContent =
-                    result.message || "Failed to unrestrict slot";
-                  popupMessage.classList.remove("hidden");
-                }
-              } catch (error) {
-                cancelConfirmPopup.classList.add("hidden");
-                popupText.textContent = "Error unrestricting slot";
-                popupMessage.classList.remove("hidden");
-              }
-            };
-
-            cancelConfirmNo.onclick = () => {
-              cancelConfirmPopup.classList.add("hidden");
-            };
-          };
-        }
-        //restrict slot
-        if (isOwner && !isBooked && !isRestricted) {
-          timeButton.onclick = () => {
-            const formattedDate = new Date(selectedDate).toLocaleDateString(
-              "en-US",
-              {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            );
-
-            const confirmDetails = `
-                    <div class="space-y-3">
-                      <div class="text-lg font-semibold text-red-600 mb-4">Confirm Slot Restriction</div>
-                      <div class="space-y-2 text-gray-700">
-                        <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
-                        <p><span class="font-medium">Date:</span> ${formattedDate}</p>
-                        <p><span class="font-medium">Time:</span> ${hour}:00 ${period}</p>
-                      </div>
-                      <p class="text-md text-gray-600 mt-2">
-                        This slot will be unavailable for booking. Are you sure?
-                      </p>
-                    </div>
-                  `;
-
-            cancelConfirmDetails.innerHTML = confirmDetails;
-            cancelConfirmPopup.classList.remove("hidden");
-
-            cancelConfirmYes.onclick = async () => {
-              try {
-                const response = await fetch(backendUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    sport: sportSelect.value,
-                    date: selectedDate,
-                    hour: slot.hour,
-                    action: "restrict",
-                  }),
-                });
-
-                const result = await response.json();
-                cancelConfirmPopup.classList.add("hidden");
-
-                if (result.success) {
-                  await populateTimeSlots();
-                  popupText.textContent = "Slot restricted successfully";
-                  popupMessage.classList.remove("hidden");
-                } else {
-                  popupText.textContent =
-                    result.message || "Failed to restrict slot";
-                  popupMessage.classList.remove("hidden");
-                }
-              } catch (error) {
-                cancelConfirmPopup.classList.add("hidden");
-                popupText.textContent = "Error restricting slot";
-                popupMessage.classList.remove("hidden");
-              }
-            };
-
-            cancelConfirmNo.onclick = () => {
-              cancelConfirmPopup.classList.add("hidden");
-            };
-          };
-        }
-
         timeSlotsGrid.appendChild(timeButton);
       });
 
@@ -496,6 +376,94 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="col-span-4 text-center text-red-500">Error loading slots</div>';
     }
   };
+
+  const handleMultipleSlotAction = async (action) => {
+    const selectedCheckboxes = timeSlotsGrid.querySelectorAll('input[type="checkbox"]:checked');
+    if (selectedCheckboxes.length === 0) {
+      popupText.textContent = "Please select at least one slot";
+      popupMessage.classList.remove("hidden");
+      return;
+    }
+
+    const slots = Array.from(selectedCheckboxes).map(cb => ({
+      hour: parseInt(cb.dataset.hour),
+      status: cb.dataset.status
+    }));
+
+    // Filter slots based on action
+    const validSlots = slots.filter(slot => 
+      (action === "restrict" && slot.status === "available") ||
+      (action === "unrestrict" && slot.status === "restricted")
+    );
+
+    if (validSlots.length === 0) {
+      popupText.textContent = `No slots available to ${action}`;
+      popupMessage.classList.remove("hidden");
+      return;
+    }
+
+    const formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const confirmDetails = `
+      <div class="space-y-3">
+        <div class="text-lg font-semibold ${action === 'restrict' ? 'text-red-600' : 'text-green-600'} mb-4">
+          Confirm ${action === 'restrict' ? 'Restriction' : 'Unrestriction'} of Multiple Slots
+        </div>
+        <div class="space-y-2 text-gray-700">
+          <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
+          <p><span class="font-medium">Date:</span> ${formattedDate}</p>
+          <p><span class="font-medium">Selected Slots:</span> ${validSlots.length}</p>
+        </div>
+        <p class="text-md text-gray-600 mt-2">
+          Are you sure you want to ${action} the selected slots?
+        </p>
+      </div>
+    `;
+
+    cancelConfirmDetails.innerHTML = confirmDetails;
+    cancelConfirmPopup.classList.remove("hidden");
+
+    cancelConfirmYes.onclick = async () => {
+      try {
+        const response = await fetch(backendUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sport: sportSelect.value,
+            date: selectedDate,
+            hours: validSlots.map(s => s.hour),
+            action: action,
+          }),
+        });
+
+        const result = await response.json();
+        cancelConfirmPopup.classList.add("hidden");
+
+        if (result.success) {
+          await populateTimeSlots();
+          popupText.textContent = `Slots ${action}ed successfully`;
+          popupMessage.classList.remove("hidden");
+        } else {
+          popupText.textContent = result.message || `Failed to ${action} slots`;
+          popupMessage.classList.remove("hidden");
+        }
+      } catch (error) {
+        cancelConfirmPopup.classList.add("hidden");
+        popupText.textContent = `Error ${action}ing slots`;
+        popupMessage.classList.remove("hidden");
+      }
+    };
+
+    cancelConfirmNo.onclick = () => {
+      cancelConfirmPopup.classList.add("hidden");
+    };
+  };
+
   const stripe = Stripe(stripePublicKey);
 
   //slot booking
@@ -616,6 +584,12 @@ document.addEventListener("DOMContentLoaded", () => {
   popupClose.addEventListener("click", () => {
     popupMessage.classList.add("hidden");
   });
+
+  if (isOwner) {
+    document.getElementById('restrict-selected').addEventListener('click', () => handleMultipleSlotAction('restrict'));
+    document.getElementById('unrestrict-selected').addEventListener('click', () => handleMultipleSlotAction('unrestrict'));
+  }
+
   populateCalendar();
   updateCart();
 });

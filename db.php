@@ -87,42 +87,37 @@ class Database
                 return ['success' => false, 'message' => 'Slots not available for this date'];
             }
 
+            $slotFound = false;
             foreach ($slotsData['slots'] as &$slot) {
                 if ($slot['hour'] == $hour) {
-                    if (isset($action) && $action === 'restrict') {
-                        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
-                            return ['success' => false, 'message' => 'Unauthorized to restrict slots'];
-                        }
+                    $slotFound = true;
+                    if (isset($action)) {
+                        if ($action === 'restrict') {
+                            if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
+                                return ['success' => false, 'message' => 'Unauthorized to restrict slots'];
+                            }
 
-                        if ($slot['status'] === 'booked') {
-                            return ['success' => false, 'message' => 'Cannot restrict already booked slots'];
-                        }
+                            if ($slot['status'] === 'booked') {
+                                return ['success' => false, 'message' => 'Cannot restrict already booked slots'];
+                            }
 
-                        $slot['status'] = 'restricted';
+                            $slot['status'] = 'restricted';
+                        } elseif ($action === 'unrestrict') {
+                            if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
+                                return ['success' => false, 'message' => 'Unauthorized to unrestrict slots'];
+                            }
+                            if ($slot['status'] !== 'restricted') {
+                                return ['success' => false, 'message' => 'Slot is not currently restricted'];
+                            }
+                            $slot['status'] = 'available';
+                        }
 
                         $slotsCollection->updateOne(
                             ['date' => $date],
                             ['$set' => ['slots' => $slotsData['slots']]]
                         );
 
-                        return ['success' => true, 'message' => 'Slot restricted successfully'];
-                    }
-
-                    if (isset($action) && $action === 'unrestrict') {
-                        if (!isset($_SESSION['user']) || $_SESSION['user']['user_type'] !== 'owner') {
-                            return ['success' => false, 'message' => 'Unauthorized to unrestrict slots'];
-                        }
-                        if (
-                            $slot['status'] !== 'restricted'
-                        ) {
-                            return ['success' => false, 'message' => 'Slot is not currently restricted'];
-                        }
-                        $slot['status'] = 'available';
-                        $slotsCollection->updateOne(
-                            ['date' => $date],
-                            ['$set' => ['slots' => $slotsData['slots']]]
-                        );
-                        return ['success' => true, 'message' => 'Slot unrestricted successfully'];
+                        return ['success' => true, 'message' => "Slot {$action}ed successfully"];
                     }
                     if ($slot['status'] === 'booked' || $slot['status'] === 'restricted') {
                         return ['success' => false, 'message' => 'Slot not available'];
@@ -152,7 +147,11 @@ class Database
                 }
             }
 
-            return ['success' => false, 'message' => 'Invalid slot'];
+            if (!$slotFound) {
+                return ['success' => false, 'message' => 'Invalid slot'];
+            }
+
+            return ['success' => true, 'message' => 'Operation completed successfully'];
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Error processing slot'];
         }
