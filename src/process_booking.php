@@ -5,7 +5,9 @@ require_once dirname(__DIR__) . '/db.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');

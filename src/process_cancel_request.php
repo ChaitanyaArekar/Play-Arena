@@ -61,7 +61,9 @@ function sendCancellationResponseEmail($request, $action)
     }
 }
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'owner') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);

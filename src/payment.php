@@ -1,7 +1,9 @@
 <?php
 //payment.php
 require '../vendor/autoload.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 

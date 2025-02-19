@@ -1,6 +1,8 @@
 <?php
 date_default_timezone_set('Asia/Kolkata');
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require '../vendor/autoload.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'owner') {

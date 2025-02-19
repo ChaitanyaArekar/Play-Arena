@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require '../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -38,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Login functionality
     elseif (isset($_POST['login'])) {
         $email = strtolower($_POST['email']);
-        $user_type = $_POST['user_type'];
         $password = $_POST['password'];
         
         $user = $collection->findOne(['email' => $email]);

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
@@ -206,13 +208,13 @@ foreach ($requiredEnvVars as $var) {
                                     <div class="flex gap-2 mt-4">
                                         <button id="restrict-selected" 
                                             class="flex-1 bg-red-500 text-white py-4 rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
-                                            <i class="fas fa-ban"></i>
-                                            Restrict Selected
+                                            <i class="fas fa-lock"></i>
+                                            Restrict
                                         </button>
                                         <button id="unrestrict-selected" 
                                             class="flex-1 bg-green-500 text-white py-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
-                                            <i class="fas fa-check"></i>
-                                            Unrestrict Selected
+                                            <i class="fas fa-unlock"></i>
+                                            Unrestrict
                                         </button>
                                     </div>
                                 <?php endif; ?>

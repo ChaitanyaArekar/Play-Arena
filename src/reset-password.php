@@ -1,6 +1,9 @@
 <?php
 // reset-password.php
-session_start();
+if (session_status() === PHP_SESSION_NONE
+) {
+    session_start();
+}
 require '../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
