@@ -7,7 +7,7 @@ require '../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-$uri = $_ENV['MONGODB_URI'];
+$uri = getenv('MONGODB_URI') ?: ($_ENV['MONGODB_URI'] ?? null);
 $client = new MongoDB\Client($uri);
 $collection = $client->Play_Arena->users;
 
