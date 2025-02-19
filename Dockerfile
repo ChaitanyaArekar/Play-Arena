@@ -16,6 +16,8 @@ RUN composer install --no-dev --prefer-dist
 
 COPY . /app
 
+COPY .env /app/.env
+
 EXPOSE $PORT
 
 CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8000}"]
