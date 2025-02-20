@@ -4,8 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+//Get environment variablefrom config.php file
+$config = require __DIR__ . '/../config.php';
 
 $turf = [
     'name' => 'City Sports Turf',
@@ -23,8 +23,7 @@ $turf = [
     ]
 ];
 
-$selectedSport = isset($_GET['sport']) ? $_GET['sport'] : 
-                 (isset($_SESSION['last_selected_sport']) ? $_SESSION['last_selected_sport'] : 'cricket');
+$selectedSport = isset($_GET['sport']) ? $_GET['sport'] : (isset($_SESSION['last_selected_sport']) ? $_SESSION['last_selected_sport'] : 'cricket');
 $_SESSION['last_selected_sport'] = $selectedSport;
 $isLoggedIn = isset($_SESSION['user']);
 $userType = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'user';
@@ -204,14 +203,14 @@ foreach ($requiredEnvVars as $var) {
                                     Book Now
                                 </button>
 
-                                <?php if ($userType==='owner'): ?>
+                                <?php if ($userType === 'owner'): ?>
                                     <div class="flex gap-2 mt-4">
-                                        <button id="restrict-selected" 
+                                        <button id="restrict-selected"
                                             class="flex-1 bg-red-500 text-white py-4 rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
                                             <i class="fas fa-lock"></i>
                                             Restrict
                                         </button>
-                                        <button id="unrestrict-selected" 
+                                        <button id="unrestrict-selected"
                                             class="flex-1 bg-green-500 text-white py-4 rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium">
                                             <i class="fas fa-unlock"></i>
                                             Unrestrict
@@ -270,8 +269,8 @@ foreach ($requiredEnvVars as $var) {
 
     <script>
         window.appConfig = {
-            backendUrl: <?php echo json_encode($_ENV['BACKEND_URL']); ?>,
-            stripePublicKey: <?php echo json_encode($_ENV['STRIPE_PUBLISHABLE_KEY']); ?>
+            backendUrl: <?php echo json_encode($config['BACKEND_URL']); ?>,
+            stripePublicKey: <?php echo json_encode($config['STRIPE_PUBLISHABLE_KEY']); ?>
         };
     </script>
 
