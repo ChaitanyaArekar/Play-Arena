@@ -9,9 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script>
-        emailjs.init("IpqCjFQL0NXP14LQ7");
-    </script>
     <style>
         body {
             overflow-x: hidden;
@@ -36,7 +33,7 @@
         <div class="max-w-6xl mx-auto py-12 mt-4 mb-4 sm:mb-8 md:mb-16 px-5 flex lg:items-center flex-col lg:flex-row lg:gap-16 gap-8">
             <div class="max-w-[300px]">
                 <h2 class="text-4xl font-bold opacity-0" id="contact-title">Contact Us</h2>
-                <p class="py-5 text-lg opacity-0" id="contact-desc">We’d love your feedback, ideas, or anything else you’d like to share! Let us know!</p>
+                <p class="py-5 text-lg opacity-0" id="contact-desc">We'd love your feedback, ideas, or anything else you'd like to share! Let us know!</p>
             </div>
             <form id="contactForm" class="w-full lg:w-[600px] py-10 grid grid-cols-1 md:grid-cols-2 gap-5 pb-4 sm:pb-8 md:pb-12">
                 <div id="message" class="hidden"></div>
@@ -53,59 +50,100 @@
     </section>
 
     <script>
-        gsap.registerPlugin(ScrollTrigger);
+        // Default configuration
+        const DEFAULT_CONFIG = {
+            EMAILJS_PUBLIC_KEY: 'IpqCjFQL0NXP14LQ7',
+            EMAILJS_SERVICE_ID: 'service_l052khs',
+            EMAILJS_TEMPLATE_ID: 'template_0mr0ckf'
+        };
 
-        // Animate title with dynamic scrolling
-        gsap.fromTo("#contact-title", {
-            opacity: 0,
-            x: -50
-        }, {
-            opacity: 1,
-            x: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: "#contact-title",
-                start: "top 80%",
-                end: "top 30%",
-                scrub: true,
+        // Load environment variables with fallback to default config
+        async function loadConfig() {
+            try {
+                const response = await fetch('/.env.public.json');
+                if (!response.ok) throw new Error('Config file not found');
+                const envVars = await response.json();
+                return {
+                    EMAILJS_PUBLIC_KEY: envVars.EMAILJS_PUBLIC_KEY || DEFAULT_CONFIG.EMAILJS_PUBLIC_KEY,
+                    EMAILJS_SERVICE_ID: envVars.EMAILJS_SERVICE_ID || DEFAULT_CONFIG.EMAILJS_SERVICE_ID,
+                    EMAILJS_TEMPLATE_ID: envVars.EMAILJS_TEMPLATE_ID || DEFAULT_CONFIG.EMAILJS_TEMPLATE_ID
+                };
+            } catch (error) {
+                console.log('Using default configuration');
+                return DEFAULT_CONFIG;
             }
-        });
+        }
 
-        // Animate description with dynamic scrolling
-        gsap.fromTo("#contact-desc", {
-            opacity: 0,
-            x: -50
-        }, {
-            opacity: 1,
-            x: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: "#contact-desc",
-                start: "top 80%",
-                end: "top 30%",
-                scrub: true,
-            }
-        });
+        // Initialize EmailJS
+        async function initEmailJS() {
+            const config = await loadConfig();
+            emailjs.init(config.EMAILJS_PUBLIC_KEY);
+            return config;
+        }
 
-        // Animate form elements dynamically while scrolling
-        gsap.fromTo("#contactForm input, #contactForm textarea, #contactForm button", {
-            scale: 0,
-            opacity: 0
-        }, {
-            scale: 1,
-            opacity: 1,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.75)",
-            stagger: 0.1,
-            scrollTrigger: {
-                trigger: "#contactForm",
-                start: "top 80%",
-                toggleActions: "play none none none",
-                scrub: true,
-            }
-        });
+        let CONFIG = null;
+
+        // Initialize animations and EmailJS
+        async function initialize() {
+            CONFIG = await initEmailJS();
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Animate title with dynamic scrolling
+            gsap.fromTo("#contact-title", {
+                opacity: 0,
+                x: -50
+            }, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#contact-title",
+                    start: "top 80%",
+                    end: "top 30%",
+                    scrub: true,
+                }
+            });
+
+            // Animate description with dynamic scrolling
+            gsap.fromTo("#contact-desc", {
+                opacity: 0,
+                x: -50
+            }, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#contact-desc",
+                    start: "top 80%",
+                    end: "top 30%",
+                    scrub: true,
+                }
+            });
+
+            // Animate form elements dynamically while scrolling
+            gsap.fromTo("#contactForm input, #contactForm textarea, #contactForm button", {
+                scale: 0,
+                opacity: 0
+            }, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.8,
+                ease: "elastic.out(1, 0.75)",
+                stagger: 0.1,
+                scrollTrigger: {
+                    trigger: "#contactForm",
+                    start: "top 80%",
+                    toggleActions: "play none none none",
+                    scrub: true,
+                }
+            });
+        }
+
+        // Initialize on page load
+        initialize();
 
         // Validate email
         function validateEmail() {
@@ -115,73 +153,54 @@
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (!email.match(emailPattern)) {
-                messageDiv.textContent = "Please enter a valid email address.";
-                messageDiv.className = "bg-red-600 text-white mb-4";
-                messageDiv.style.display = "block";
-
-                gsap.fromTo(
-                    "#message", {
-                        opacity: 0,
-                        y: -30
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.5,
-                        ease: "power3.out"
-                    }
-                );
-
-                setTimeout(() => {
-                    gsap.to("#message", {
-                        opacity: 0,
-                        y: -30,
-                        duration: 0.5,
-                        ease: "power3.out",
-                        onComplete: () => messageDiv.style.display = "none"
-                    });
-                }, 3000);
+                showMessage("Please enter a valid email address.", "error");
                 return false;
             }
 
             return true;
         }
 
+        // Show message helper function
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type === 'error' ? "bg-red-600 text-white mb-4" : "bg-green-600 text-white mb-4";
+            messageDiv.style.display = "block";
+
+            gsap.fromTo(
+                "#message", {
+                    opacity: 0,
+                    y: -30
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    ease: "power3.out"
+                }
+            );
+
+            setTimeout(() => {
+                gsap.to("#message", {
+                    opacity: 0,
+                    y: -30,
+                    duration: 0.5,
+                    ease: "power3.out",
+                    onComplete: () => messageDiv.style.display = "none"
+                });
+            }, 3000);
+        }
+
         // Send email function
-        function sendEmail() {
+        async function sendEmail() {
             const isEmailValid = validateEmail();
             if (!isEmailValid) return;
 
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const message = document.getElementById('messageText').value;
-            const messageDiv = document.getElementById('message');
 
             if (!name || !message || !email) {
-                messageDiv.textContent = "C’mon, don’t leave us hanging. Fill all the fields! 😑";
-                messageDiv.className = "bg-red-600 text-white mb-4";
-                messageDiv.style.display = "block";
-
-                gsap.fromTo(
-                    "#message", {
-                        opacity: 0,
-                        y: -30
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.5,
-                        ease: "power3.out"
-                    }
-                );
-
-                setTimeout(() => {
-                    gsap.to("#message", {
-                        opacity: 0,
-                        y: -30,
-                        duration: 0.5,
-                        ease: "power3.out",
-                        onComplete: () => messageDiv.style.display = "none"
-                    });
-                }, 3000);
+                showMessage("C'mon, don't leave us hanging. Fill all the fields! 😑", "error");
                 return;
             }
 
@@ -191,63 +210,18 @@
                 message: message
             };
 
-            emailjs.send("service_l052khs", "template_0mr0ckf", templateParams)
-                .then(response => {
-                    messageDiv.textContent = "Thank you so much! 😊";
-                    messageDiv.className = "bg-green-600 text-white mb-4";
-                    messageDiv.style.display = "block";
-
-                    gsap.fromTo(
-                        "#message", {
-                            opacity: 0,
-                            y: -30
-                        }, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.5,
-                            ease: "power3.out"
-                        }
-                    );
-
-                    setTimeout(() => {
-                        gsap.to("#message", {
-                            opacity: 0,
-                            y: -30,
-                            duration: 0.5,
-                            ease: "power3.out",
-                            onComplete: () => messageDiv.style.display = "none"
-                        });
-                    }, 3000);
-
-                    document.getElementById('contactForm').reset();
-                })
-                .catch(error => {
-                    messageDiv.textContent = "An error occurred. Please try again later.";
-                    messageDiv.className = "bg-red-600 text-white mb-4";
-                    messageDiv.style.display = "block";
-
-                    gsap.fromTo(
-                        "#message", {
-                            opacity: 0,
-                            y: -30
-                        }, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.5,
-                            ease: "power3.out"
-                        }
-                    );
-
-                    setTimeout(() => {
-                        gsap.to("#message", {
-                            opacity: 0,
-                            y: -30,
-                            duration: 0.5,
-                            ease: "power3.out",
-                            onComplete: () => messageDiv.style.display = "none"
-                        });
-                    }, 3000);
-                });
+            try {
+                await emailjs.send(
+                    CONFIG.EMAILJS_SERVICE_ID,
+                    CONFIG.EMAILJS_TEMPLATE_ID,
+                    templateParams
+                );
+                showMessage("Thank you so much! 😊", "success");
+                document.getElementById('contactForm').reset();
+            } catch (error) {
+                showMessage("An error occurred. Please try again later.", "error");
+                console.error('Error sending email:', error);
+            }
         }
     </script>
 </body>

@@ -3,7 +3,7 @@
         'name' => 'ritesh/play-arena',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '9453717e07d09bec1cc09402d2226f3dd453e07c',
+        'reference' => '8e77be7bab2182fa9f9f60dbeb9ad74ba62370dd',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -73,7 +73,7 @@
         'ritesh/play-arena' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9453717e07d09bec1cc09402d2226f3dd453e07c',
+            'reference' => '8e77be7bab2182fa9f9f60dbeb9ad74ba62370dd',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
