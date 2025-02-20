@@ -2,7 +2,6 @@
 require 'vendor/autoload.php';
 
 use MongoDB\Client;
-use Dotenv\Dotenv;
 
 class Database
 {
@@ -13,13 +12,12 @@ class Database
     public function __construct()
     {
         try {
-            $dotenv = Dotenv::createImmutable(__DIR__);
-            $dotenv->load();
+            $config = require __DIR__ . '/config.php';
 
-            $uri = $_ENV['MONGODB_URI'];
+            $uri = $config['MONGODB_URI'];
             $this->client = new Client($uri);
             $this->bookingsCollection = $this->client->turf->bookings;
-            $this->stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
+            $this->stripe = new \Stripe\StripeClient($config['STRIPE_SECRET_KEY']);
         } catch (Exception $e) {
             throw new Exception('Failed to connect to database');
         }
@@ -141,7 +139,7 @@ class Database
                         'full_name' => $_SESSION['user']['full_name'],
                         'email' => $_SESSION['user']['email'],
                         'checkout_session_id' => $checkout_session_id,
-                        'amount_per_slot' => $amount_per_slot // Store amount per slot
+                        'amount_per_slot' => $amount_per_slot
                     ]);
 
                     return ['success' => true, 'message' => 'Slot booked successfully'];
@@ -192,14 +190,13 @@ class Database
                             );
 
                             if ($session->payment_intent) {
-                                // Calculate refund amount for this specific slot
-                                $refundAmount = isset($booking['amount_per_slot']) 
-                                    ? $booking['amount_per_slot'] * 100 // Convert to cents for Stripe
+                                $refundAmount = isset($booking['amount_per_slot'])
+                                    ? $booking['amount_per_slot'] * 100
                                     : null;
 
                                 $refund = $this->stripe->refunds->create([
                                     'payment_intent' => $session->payment_intent->id,
-                                    'amount' => $refundAmount, // Specify the amount to refund
+                                    'amount' => $refundAmount,
                                     'reason' => 'requested_by_customer'
                                 ]);
                             }

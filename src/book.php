@@ -10,7 +10,7 @@ $config = require __DIR__ . '/../config.php';
 $turf = [
     'name' => 'City Sports Turf',
     'photos' => [
-        '/Public/img/football.jpg',
+        '/Public/img/Football.jpg',
         '/Public/img/cricket.jpg',
         '/Public/img/tennis.jpg'
     ],
