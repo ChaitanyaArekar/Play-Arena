@@ -35,7 +35,7 @@
 
      
         <div class="sm:mt-10 items-center hidden md:block">
-            <img src="public/img/friend.png" alt="friend"
+            <img src="Public/img/friend.png" alt="friend"
                 class="absolute 
                     w-[200px] sm:w-[300px] md:w-[450px] 
                     h-[150px] sm:h-[250px] md:h-[371px] 

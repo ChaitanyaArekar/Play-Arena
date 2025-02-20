@@ -14,4 +14,4 @@
 </div>
 
 
-<script src="public/taptoup.js"></script>
+<script src="Public/taptoup.js"></script>

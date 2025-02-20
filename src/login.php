@@ -4,10 +4,20 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require '../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+//Get env from either localhost or render env variables
+function getEnvVar($key) {
+    if (file_exists(__DIR__ . '/../.env')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
+    }
+    return $_ENV[$key] ?? getenv($key) ?? null;
+}
 
-$uri = getenv('MONGODB_URI') ?: ($_ENV['MONGODB_URI'] ?? null);
+$uri = getEnvVar('MONGODB_URI');
+if (!$uri) {
+    die('MongoDB URI not found');
+}
+
 $client = new MongoDB\Client($uri);
 $collection = $client->Play_Arena->users;
 

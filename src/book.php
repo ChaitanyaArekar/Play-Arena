@@ -10,9 +10,9 @@ $dotenv->load();
 $turf = [
     'name' => 'City Sports Turf',
     'photos' => [
-        '/public/img/football.jpg',
-        '/public/img/cricket.jpg',
-        '/public/img/tennis.jpg'
+        '/Public/img/football.jpg',
+        '/Public/img/cricket.jpg',
+        '/Public/img/tennis.jpg'
     ],
     'address' => '123 Turf Lane, Vadodara',
     'sports' => ['Cricket', 'Football', 'Tennis'],

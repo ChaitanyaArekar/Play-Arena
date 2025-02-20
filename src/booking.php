@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-5 sm:px-16 py-6">
             <a href="/src/book.php?sport=football" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
-                    <img src="public/img/Football.jpg" alt="Box Football" class="w-full h-64 object-cover transition-transform duration-300">
+                    <img src="Public/img/Football.jpg" alt="Box Football" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
                         <p class="text-white text-lg font-bold">Football</p>
                         <p class="text-gray-300 text-sm">United Sports Arena</p>
@@ -43,7 +43,7 @@
 
             <a href="/src/book.php?sport=cricket" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
-                    <img src="public/img/cricket.jpg" alt="Box Cricket" class="w-full h-64 object-cover transition-transform duration-300">
+                    <img src="Public/img/cricket.jpg" alt="Box Cricket" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
                         <p class="text-white text-lg font-bold">Cricket</p>
                         <p class="text-white text-sm">United Sports Arena</p>
@@ -54,7 +54,7 @@
 
             <a href="/src/book.php?sport=tennis" class="block card">
                 <div class="relative overflow-hidden rounded-lg shadow-md">
-                    <img src="public/img/tennis.jpg" alt="Tennis Turf" class="w-full h-64 object-cover transition-transform duration-300">
+                    <img src="Public/img/tennis.jpg" alt="Tennis Turf" class="w-full h-64 object-cover transition-transform duration-300">
                     <div class="absolute inset-0 card-overlay transition-opacity duration-300 flex flex-col justify-end p-4">
                         <p class="text-white text-lg font-bold">Tennis Turf</p>
                         <p class="text-white text-sm">United Sports Arena</p>
@@ -75,7 +75,7 @@
             </div>
 
             <div class="booking flex flex-row flex-wrap sm:mt-10 mt-4 items-center justify-center sm:w-auto w-full">
-                <img src="public/img/booking.png" alt="Children playing" class="w-[250px] sm:w-[500px] h-auto object-contain mr-5 m-2" id="heroImage">
+                <img src="Public/img/booking.png" alt="Children playing" class="w-[250px] sm:w-[500px] h-auto object-contain mr-5 m-2" id="heroImage">
             </div>
         </div>
     </section>
