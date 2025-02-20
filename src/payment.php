@@ -1,18 +1,17 @@
 <?php
-//payment.php
 require '../vendor/autoload.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+
+$config = require __DIR__ . '/../config.php';
 
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
 }
 
-$stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
+$stripe = new \Stripe\StripeClient($config['STRIPE_SECRET_KEY']);
 $sport = $_POST['sport'] ?? '';
 $date = $_POST['date'] ?? '';
 $slots = isset($_POST['slots']) ? json_decode($_POST['slots'], true) : [];
@@ -31,13 +30,13 @@ try {
 
     $slotTimeStr = implode(', ', $slotTimes);
 
-
-
     $description = "Booking Details:\n" .
         "Name: {$userName}\n" .
         "Date: " . date('F j, Y', strtotime($date)) . "\n" .
         "Field: {$sport}\n" .
         "Time slots: " . $slotTimeStr;
+
+    $host = $config['HOST'];
 
     $checkout_session = $stripe->checkout->sessions->create([
         'payment_method_types' => ['card'],
@@ -54,8 +53,8 @@ try {
             'quantity' => 1,
         ]],
         'mode' => 'payment',
-        'success_url' => 'http://localhost:8000/src/process_booking.php?session_id={CHECKOUT_SESSION_ID}',
-        'cancel_url' => 'http://localhost:8000/src/book.php?sport='.$sport,
+        'success_url' => $host . '/src/process_booking.php?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url' => $host . '/src/book.php?sport=' . $sport,
         'metadata' => [
             'sport' => $sport,
             'date' => $date,

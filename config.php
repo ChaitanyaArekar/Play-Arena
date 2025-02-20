@@ -33,6 +33,7 @@ function getEnvVar($key)
 // Load all environment variables
 $config = [
     'MONGODB_URI' => getEnvVar('MONGODB_URI'),
+    'HOST' => getEnvVar('HOST'),
 
     'STRIPE_SECRET_KEY' => getEnvVar('STRIPE_SECRET_KEY'),
     'STRIPE_PUBLISHABLE_KEY' => getEnvVar('STRIPE_PUBLISHABLE_KEY'),
@@ -54,6 +55,7 @@ $config = [
 // Check for required environment variables
 $requiredVars = [
     'MONGODB_URI',
+    'HOST',
     'STRIPE_SECRET_KEY',
     'STRIPE_PUBLISHABLE_KEY',
     'SMTP_HOST',
