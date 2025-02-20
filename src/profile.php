@@ -10,13 +10,13 @@ if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'user') {
     exit();
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+                    // Load configuration
+                    $config = require __DIR__ . '/../config.php';
 
-$uri = $_ENV['MONGODB_URI'];
-$client = new MongoDB\Client($uri);
-$bookingsCollection = $client->turf->bookings;
-$cancelRequestsCollection = $client->turf->cancel_requests;
+                    // Initialize MongoDB connection using config
+                    $client = new MongoDB\Client($config['MONGODB_URI']);
+                    $bookingsCollection = $client->turf->bookings;
+                    $cancelRequestsCollection = $client->turf->cancel_requests;
 
 $userBookings = $bookingsCollection->find(
     ['email' => $_SESSION['email']],
