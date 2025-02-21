@@ -32,7 +32,7 @@ function sendCancellationResponseEmail($request, $action)
         // Determine email subject and body based on action
         if ($action === 'approve') {
             $mail->Subject = 'Cancellation Request Approved - ' . ucfirst($request['sport']) . ' Turf';
-            $statusMessage = 'Your cancellation request has been <strong style="color: green;">APPROVED</strong>.';
+            $statusMessage = 'Your cancellation request has been <strong style="color: green;">APPROVED</strong>.<br>The slot has been cancelled and the amount will be refunded to your account shortly.';
         } else {
             $mail->Subject = 'Cancellation Request Rejected - ' . ucfirst($request['sport']) . ' Turf';
             $statusMessage = 'Your cancellation request has been <strong style="color: red;">REJECTED</strong>.';
