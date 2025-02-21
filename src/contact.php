@@ -1,3 +1,17 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Load config
+$config = require dirname(__DIR__) . '/config.php';
+
+$jsConfig = json_encode([
+    'EMAILJS_PUBLIC_KEY' => $config['EMAILJS_PUBLIC_KEY'],
+    'EMAILJS_SERVICE_ID' => $config['EMAILJS_SERVICE_ID'],
+    'EMAILJS_TEMPLATE_ID' => $config['EMAILJS_TEMPLATE_ID']
+]);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,42 +64,9 @@
     </section>
 
     <script>
-        // Default configuration
-        const DEFAULT_CONFIG = {
-            EMAILJS_PUBLIC_KEY: 'IpqCjFQL0NXP14LQ7',
-            EMAILJS_SERVICE_ID: 'service_l052khs',
-            EMAILJS_TEMPLATE_ID: 'template_0mr0ckf'
-        };
-
-        // Load environment variables with fallback to default config
-        async function loadConfig() {
-            try {
-                const response = await fetch('/.env.public.json');
-                if (!response.ok) throw new Error('Config file not found');
-                const envVars = await response.json();
-                return {
-                    EMAILJS_PUBLIC_KEY: envVars.EMAILJS_PUBLIC_KEY || DEFAULT_CONFIG.EMAILJS_PUBLIC_KEY,
-                    EMAILJS_SERVICE_ID: envVars.EMAILJS_SERVICE_ID || DEFAULT_CONFIG.EMAILJS_SERVICE_ID,
-                    EMAILJS_TEMPLATE_ID: envVars.EMAILJS_TEMPLATE_ID || DEFAULT_CONFIG.EMAILJS_TEMPLATE_ID
-                };
-            } catch (error) {
-                console.log('Using default configuration');
-                return DEFAULT_CONFIG;
-            }
-        }
-
-        // Initialize EmailJS
-        async function initEmailJS() {
-            const config = await loadConfig();
-            emailjs.init(config.EMAILJS_PUBLIC_KEY);
-            return config;
-        }
-
-        let CONFIG = null;
-
-        // Initialize animations and EmailJS
-        async function initialize() {
-            CONFIG = await initEmailJS();
+        const CONFIG = <?php echo $jsConfig; ?>;
+        function initialize() {
+            emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
 
             gsap.registerPlugin(ScrollTrigger);
 
