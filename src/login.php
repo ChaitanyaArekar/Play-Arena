@@ -4,14 +4,49 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require '../vendor/autoload.php';
 
-//Get environment variablefrom config.php file
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Get environment variables from config.php file
 $config = require dirname(__DIR__) . '/config.php';
 
 $client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
+$pendingCollection = $client->Play_Arena->pending_registrations;
+
+function generateOTP()
+{
+    return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+}
+
+function sendOTP($email, $otp, $config)
+{
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = $config['SMTP_HOST'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $config['SMTP_USERNAME'];
+        $mail->Password   = $config['SMTP_PASSWORD'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $config['SMTP_PORT'];
+
+        $mail->setFrom($config['SMTP_USERNAME'], 'Play Arena');
+        $mail->addAddress($email);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Email Verification OTP';
+        $mail->Body = "Your OTP for Play Arena registration is: <b>$otp</b><br>This OTP will expire in 10 minutes.";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Registration functionality
+    //Registration Functionality
     if (isset($_POST['register'])) {
         $full_name = $_POST['full_name'];
         $email = strtolower($_POST['email']);
@@ -23,16 +58,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message'] = "Email already exists. Please choose another.";
             $_SESSION['message_type'] = "error";
         } else {
-            $collection->insertOne([
-                'full_name' => $full_name,
-                'email' => $email,
-                'user_type' => 'user',
-                'password' => $password
-            ]);
-            $_SESSION['message'] = "Registration successful! You can now login.";
-            $_SESSION['message_type'] = "success";
-            header('Location: login.php');
-            exit();
+            // Generate and send OTP
+            $otp = generateOTP();
+            if (sendOTP($email, $otp, $config)) {
+                // Store pending registration with timestamp
+                $pendingCollection->insertOne([
+                    'full_name' => $full_name,
+                    'email' => $email,
+                    'password' => $password,
+                    'otp' => $otp,
+                    'created_at' => time() // Using Unix timestamp
+                ]);
+
+                $_SESSION['pending_email'] = $email;
+                $_SESSION['message'] = "Please check your email for OTP verification.";
+                $_SESSION['message_type'] = "success";
+                header('Location: verify-otp.php');
+                exit();
+            } else {
+                $_SESSION['message'] = "Failed to send verification email. Please try again.";
+                $_SESSION['message_type'] = "error";
+            }
         }
     }
 
@@ -48,8 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email'] = $user['email'];
             $_SESSION['user_full_name'] = $user['full_name'];
             $_SESSION['user_type'] = $user['user_type'];
-            // $_SESSION['message'] = "Login successful! Welcome back, " . ucfirst($user['user_type']) . ".";
-            // $_SESSION['message_type'] = "success";
             header("Location: /index.php");
             exit();
         } else {
