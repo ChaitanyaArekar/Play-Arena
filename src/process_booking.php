@@ -21,10 +21,10 @@ $stripe = new \Stripe\StripeClient($config['STRIPE_SECRET_KEY']);
 
 function sendBookingConfirmationEmail($booking, $session)
 {
+    global $config;
     $mail = new PHPMailer(true);
 
     try {
-        $config = require dirname(__DIR__) . '/config.php';
         $mail->isSMTP();
         $mail->Host       = $config['SMTP_HOST'];
         $mail->SMTPAuth   = true;
@@ -97,7 +97,7 @@ try {
                 $booking['sport'],
                 $session->id,
                 null,
-                $booking['amount'] / count($booking['slots'])
+                $booking['amount'] / count($booking['slots']) // Add amount per slot
             );
             if ($result['success']) {
                 $booked_slots[] = $hour;
