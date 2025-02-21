@@ -291,7 +291,7 @@ function formatTime($hour)
                 ...swalOptions,
                 title: 'Cancel Booking',
                 input: 'text',
-                inputLabel: 'Cancellation Reason',
+                inputLabel: 'You cannot revert this action!\nPlease specify the reason for cancellation',
                 inputPlaceholder: 'Why are you cancelling?',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
@@ -345,6 +345,9 @@ function formatTime($hour)
     <style>
         .small-swal {
             font-size: 14px;
+        }
+        .swal2-input-label {
+            text-align: center;
         }
     </style>
 </body>

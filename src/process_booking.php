@@ -14,26 +14,27 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+// Load config instead of directly using dotenv
+$config = require dirname(__DIR__) . '/config.php';
 
-$stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
+$stripe = new \Stripe\StripeClient($config['STRIPE_SECRET_KEY']);
 
 function sendBookingConfirmationEmail($booking, $session)
 {
+    global $config;
     $mail = new PHPMailer(true);
 
     try {
         $mail->isSMTP();
-        $mail->Host       = $_ENV['SMTP_HOST'];
+        $mail->Host       = $config['SMTP_HOST'];
         $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['SMTP_USERNAME'];
-        $mail->Password   = $_ENV['SMTP_PASSWORD'];
+        $mail->Username   = $config['SMTP_USERNAME'];
+        $mail->Password   = $config['SMTP_PASSWORD'];
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = $_ENV['SMTP_PORT'];
+        $mail->Port       = $config['SMTP_PORT'];
 
         // Recipients
-        $mail->setFrom($_ENV['SMTP_FROM_ADDRESS'], $_ENV['SMTP_FROM_NAME']);
+        $mail->setFrom($config['SMTP_FROM_ADDRESS'], $config['SMTP_FROM_NAME']);
         $mail->addAddress($booking['user_email'], $booking['user_name']);
 
         $mail->isHTML(true);
@@ -91,9 +92,9 @@ try {
     try {
         foreach ($booking['slots'] as $hour) {
             $result = $db->bookSlot(
-                $booking['date'], 
-                $hour, 
-                $booking['sport'], 
+                $booking['date'],
+                $hour,
+                $booking['sport'],
                 $session->id,
                 null,
                 $booking['amount'] / count($booking['slots']) // Add amount per slot
