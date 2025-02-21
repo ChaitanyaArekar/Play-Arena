@@ -1,33 +1,35 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-function getEnvVar($key)
-{
-    static $envLoaded = false;
+if (!function_exists('getEnvVar')) {
+    function getEnvVar($key)
+    {
+        static $envLoaded = false;
 
-    if (!$envLoaded) {
-        if (file_exists(__DIR__ . '/.env')) {
-            $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-            try {
-                $dotenv->load();
-            } catch (Exception $e) {
+        if (!$envLoaded) {
+            if (file_exists(__DIR__ . '/.env')) {
+                $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+                try {
+                    $dotenv->load();
+                } catch (Exception $e) {
+                }
             }
+            $envLoaded = true;
         }
-        $envLoaded = true;
-    }
 
-    // First try .env loaded variables
-    if (isset($_ENV[$key])) {
-        return $_ENV[$key];
-    }
+        // First try .env loaded variables
+        if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+        }
 
-    // Then try system environment variables (including Render env vars)
-    $systemEnv = getenv($key);
-    if ($systemEnv !== false) {
-        return $systemEnv;
-    }
+        // Then try system environment variables (including Render env vars)
+        $systemEnv = getenv($key);
+        if ($systemEnv !== false) {
+            return $systemEnv;
+        }
 
-    return null;
+        return null;
+    }
 }
 
 // Load all environment variables
@@ -77,4 +79,3 @@ foreach ($requiredVars as $var) {
 }
 
 return $config;
-?>
