@@ -16,11 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginCancel = document.getElementById("login-cancel");
   const isOwner = document.getElementById("user-type").value === "owner";
   const cancelConfirmPopup = document.getElementById("cancel-confirm-popup");
-  const cancelConfirmDetails = document.getElementById("cancel-confirm-details");
+  const cancelConfirmDetails = document.getElementById(
+    "cancel-confirm-details"
+  );
   const cancelConfirmYes = document.getElementById("cancel-confirm-yes");
   const cancelConfirmNo = document.getElementById("cancel-confirm-no");
   const urlParams = new URLSearchParams(window.location.search);
-  const paymentStatus = urlParams.get('payment_status');
+  const paymentStatus = urlParams.get("payment_status");
+
+  // Add loading state variables
+  let isBookingInProgress = false;
+  let isCancellingInProgress = false;
 
   const PRICES = {
     cricket: 1300,
@@ -34,12 +40,25 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   const imgElement = document.getElementById("turf-image");
 
+  // Loading animation template
+  const getLoadingAnimation = (text) => `
+    <div class="flex items-center justify-center gap-3">
+      <div class="flex space-x-1">
+        <div class="h-2 w-2 bg-white rounded-full animate-[bounce_0.7s_infinite]"></div>
+        <div class="h-2 w-2 bg-white rounded-full animate-[bounce_0.7s_infinite_0.2s]"></div>
+        <div class="h-2 w-2 bg-white rounded-full animate-[bounce_0.7s_infinite_0.4s]"></div>
+      </div>
+      <span>${text}</span>
+    </div>
+  `;
+
+  // Image slider
   setInterval(() => {
     currentIndex = (currentIndex + 1) % images.length;
     imgElement.src = images[currentIndex];
   }, 3000);
 
-  //cart details
+  // Cart updates
   const updateCart = () => {
     const clearCartButton = document.getElementById("clear-cart");
     const currentPrice = PRICES[sportSelect.value];
@@ -119,19 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.removeTimeSlot = (slot) => {
     selectedTimeSlots.delete(slot);
     updateCart();
-    const timeButtons = timeSlotsGrid.querySelectorAll("button");
-    timeButtons.forEach((btn) => {
-      if (parseInt(btn.dataset.hour) === slot) {
-        btn.classList.remove("ring-2", "ring-green-500", "bg-green-200");
-        btn.classList.add("bg-green-50");
-      }
-    });
-  };
-
-  window.removeTimeSlot = (slot) => {
-    selectedTimeSlots.delete(slot);
-    updateCart();
-
     const timeButtons = timeSlotsGrid.querySelectorAll(
       "button, div[data-hour]"
     );
@@ -143,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  //calender view of slots
+  // Calendar functionality
   const populateCalendar = () => {
     calendarGrid.innerHTML = "";
     const today = new Date();
@@ -182,19 +188,19 @@ document.addEventListener("DOMContentLoaded", () => {
     populateTimeSlots();
   };
 
-  //showing details of slot
+  // Time slots functionality with loading animation
   const populateTimeSlots = async () => {
     if (!selectedDate) return;
 
     timeSlotsGrid.innerHTML = `
-        <div class="col-span-4 flex flex-col items-center justify-center space-y-4">
-            <div class="flex space-x-2">
-                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"></div>
-                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-                <div class="h-3 w-3 bg-blue-500 rounded-full animate-bounce delay-200"></div>
-            </div>
-            <p class="text-gray-500 text-sm">Loading available slots...</p>
-        </div>`;
+      <div class="col-span-4 flex flex-col items-center justify-center space-y-4 py-8">
+        <div class="flex space-x-2">
+          <div class="w-3 h-3 bg-blue-500 rounded-full animate-[bounce_0.7s_infinite]"></div>
+          <div class="w-3 h-3 bg-blue-500 rounded-full animate-[bounce_0.7s_infinite_0.2s]"></div>
+          <div class="w-3 h-3 bg-blue-500 rounded-full animate-[bounce_0.7s_infinite_0.4s]"></div>
+        </div>
+        <p class="text-gray-500 text-sm">Loading available slots...</p>
+      </div>`;
 
     try {
       const response = await fetch(
@@ -229,19 +235,34 @@ document.addEventListener("DOMContentLoaded", () => {
         }`;
 
         if (isOwner && !isBooked) {
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.className = "absolute top-2 right-2 h-4 w-4 cursor-pointer";
-          checkbox.dataset.hour = slot.hour;
-          checkbox.dataset.status = isRestricted ? "restricted" : "available";
-          
-          checkbox.onclick = (e) => {
-            e.stopPropagation();
+          timeButton.dataset.hour = slot.hour;
+          timeButton.dataset.status = isRestricted ? "restricted" : "available";
+          timeButton.style.cursor = "pointer";
+
+          timeButton.onclick = () => {
+            const hour = parseInt(timeButton.dataset.hour);
+            if (selectedTimeSlots.has(hour)) {
+              selectedTimeSlots.delete(hour);
+              timeButton.classList.remove(
+                "ring-2",
+                "ring-green-500",
+                "bg-green-200"
+              );
+              timeButton.classList.add(
+                isRestricted ? "bg-gray-50" : "bg-green-50"
+              );
+            } else {
+              selectedTimeSlots.add(hour);
+              timeButton.classList.add(
+                "ring-2",
+                "ring-green-500",
+                "bg-green-200"
+              );
+              timeButton.classList.remove(
+                isRestricted ? "bg-gray-50" : "bg-green-50"
+              );
+            }
           };
-          
-          timeButton.appendChild(checkbox);
-          timeButton.style.cursor = "default";
-          
         }
 
         const timeDisplay = document.createElement("div");
@@ -252,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
           timeButton.style.cursor = "pointer";
           const bookingInfo = document.createElement("div");
           bookingInfo.className = "text-xs text-gray-600 mt-1";
-          // bookingInfo.textContent = `Booked by: ${slot.booking_info.full_name}`;
           timeButton.appendChild(bookingInfo);
 
           timeButton.onclick = () => {
@@ -282,13 +302,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     slot.booking_info.email || "N/A"
                   }</p>
                 </div>
-              </div>
-            `;
+              </div>`;
 
             cancelConfirmPopup.classList.remove("hidden");
 
             cancelConfirmYes.onclick = async () => {
+              if (isCancellingInProgress) return;
+
               try {
+                isCancellingInProgress = true;
+                cancelConfirmYes.innerHTML = getLoadingAnimation("Cancelling");
+                cancelConfirmYes.disabled = true;
+                cancelConfirmNo.disabled = true;
+
                 const response = await fetch(backendUrl, {
                   method: "DELETE",
                   headers: { "Content-Type": "application/json" },
@@ -305,7 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (result.success) {
                   popupText.textContent = "Booking cancelled successfully!";
                   await populateTimeSlots();
-                  // Remove associated cancellation request
                   try {
                     await fetch("process_cancel_request.php", {
                       method: "POST",
@@ -331,6 +356,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelConfirmPopup.classList.add("hidden");
                 popupText.textContent = "Error cancelling booking";
                 popupMessage.classList.remove("hidden");
+              } finally {
+                isCancellingInProgress = false;
+                cancelConfirmYes.innerHTML = "Yes";
+                cancelConfirmYes.disabled = false;
+                cancelConfirmNo.disabled = false;
               }
             };
 
@@ -378,22 +408,23 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const handleMultipleSlotAction = async (action) => {
-    const selectedCheckboxes = timeSlotsGrid.querySelectorAll('input[type="checkbox"]:checked');
-    if (selectedCheckboxes.length === 0) {
+    if (isCancellingInProgress) return;
+
+    if (selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one slot";
       popupMessage.classList.remove("hidden");
       return;
     }
 
-    const slots = Array.from(selectedCheckboxes).map(cb => ({
-      hour: parseInt(cb.dataset.hour),
-      status: cb.dataset.status
+    const slots = Array.from(selectedTimeSlots).map((hour) => ({
+      hour: hour,
+      status: document.querySelector(`[data-hour="${hour}"]`).dataset.status,
     }));
 
-    // Filter slots based on action
-    const validSlots = slots.filter(slot => 
-      (action === "restrict" && slot.status === "available") ||
-      (action === "unrestrict" && slot.status === "restricted")
+    const validSlots = slots.filter(
+      (slot) =>
+        (action === "restrict" && slot.status === "available") ||
+        (action === "unrestrict" && slot.status === "restricted")
     );
 
     if (validSlots.length === 0) {
@@ -406,18 +437,24 @@ document.addEventListener("DOMContentLoaded", () => {
       weekday: "long",
       year: "numeric",
       month: "long",
-      day: "numeric"
+      day: "numeric",
     });
 
-    const confirmDetails = `
+    cancelConfirmDetails.innerHTML = `
       <div class="space-y-3">
-        <div class="text-lg font-semibold ${action === 'restrict' ? 'text-red-600' : 'text-green-600'} mb-4">
-          Confirm ${action === 'restrict' ? 'Restriction' : 'Unrestriction'} of Multiple Slots
+        <div class="text-lg font-semibold ${
+          action === "restrict" ? "text-red-600" : "text-green-600"
+        } mb-4">
+          Confirm ${
+            action === "restrict" ? "Restriction" : "Unrestriction"
+          } of Multiple Slots
         </div>
         <div class="space-y-2 text-gray-700">
           <p><span class="font-medium">Sport:</span> ${sportSelect.value}</p>
           <p><span class="font-medium">Date:</span> ${formattedDate}</p>
-          <p><span class="font-medium">Selected Slots:</span> ${validSlots.length}</p>
+          <p><span class="font-medium">Selected Slots:</span> ${
+            validSlots.length
+          }</p>
         </div>
         <p class="text-md text-gray-600 mt-2">
           Are you sure you want to ${action} the selected slots?
@@ -425,18 +462,25 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    cancelConfirmDetails.innerHTML = confirmDetails;
     cancelConfirmPopup.classList.remove("hidden");
 
     cancelConfirmYes.onclick = async () => {
+      if (isCancellingInProgress) return;
+
       try {
+        isCancellingInProgress = true;
+        // Update button UI
+        cancelConfirmYes.innerHTML = getLoadingAnimation("Processing");
+        cancelConfirmYes.disabled = true;
+        cancelConfirmNo.disabled = true;
+
         const response = await fetch(backendUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             sport: sportSelect.value,
             date: selectedDate,
-            hours: validSlots.map(s => s.hour),
+            hours: validSlots.map((s) => s.hour),
             action: action,
           }),
         });
@@ -456,6 +500,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelConfirmPopup.classList.add("hidden");
         popupText.textContent = `Error ${action}ing slots`;
         popupMessage.classList.remove("hidden");
+      } finally {
+        isCancellingInProgress = false;
+        // Restore button UI
+        cancelConfirmYes.innerHTML = "Yes";
+        cancelConfirmYes.disabled = false;
+        cancelConfirmNo.disabled = false;
       }
     };
 
@@ -466,8 +516,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const stripe = Stripe(stripePublicKey);
 
-  //slot booking
+  // Slot booking with loading state
   const bookSlot = async () => {
+    if (isBookingInProgress) return;
+
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
       popupMessage.classList.remove("hidden");
@@ -482,6 +534,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      isBookingInProgress = true;
+      // Update button UI to show loading state
+      bookSlotButton.innerHTML = getLoadingAnimation("Processing");
+      bookSlotButton.disabled = true;
+
       const formData = new FormData();
       formData.append("sport", sportSelect.value);
       formData.append("date", selectedDate);
@@ -512,46 +569,54 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       popupText.textContent = "Error processing payment. Please try again.";
       popupMessage.classList.remove("hidden");
+    } finally {
+      isBookingInProgress = false;
+      // Restore button UI
+      bookSlotButton.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        Book Now
+      `;
+      bookSlotButton.disabled = false;
     }
   };
 
-  //payment status
   const showPaymentStatusMessage = () => {
     if (paymentStatus) {
       const messages = {
-        'success': {
-          text: 'Payment successful! Your slots have been booked.',
-          icon: '<i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>'
+        success: {
+          text: "Payment successful! Your slots have been booked.",
+          icon: '<i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>',
         },
-        'error': {
-          text: 'Payment processing failed. Please try again.',
-          icon: '<i class="fas fa-times-circle text-red-500 text-4xl mb-4"></i>'
+        error: {
+          text: "Payment processing failed. Please try again.",
+          icon: '<i class="fas fa-times-circle text-red-500 text-4xl mb-4"></i>',
         },
-        'booking_failed': {
-          text: 'Payment was successful but booking failed. A refund has been initiated.',
-          icon: '<i class="fas fa-exclamation-circle text-yellow-500 text-4xl mb-4"></i>'
-        }
+        booking_failed: {
+          text: "Payment was successful but booking failed. A refund has been initiated.",
+          icon: '<i class="fas fa-exclamation-circle text-yellow-500 text-4xl mb-4"></i>',
+        },
       };
 
       const message = messages[paymentStatus];
       if (message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'text-center';
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "text-center";
         messageDiv.innerHTML = `
           ${message.icon}
           <p class="text-lg font-semibold text-gray-800">${message.text}</p>
         `;
-        
-        popupText.innerHTML = '';
+
+        popupText.innerHTML = "";
         popupText.appendChild(messageDiv);
-        popupMessage.classList.remove('hidden');
-        
+        popupMessage.classList.remove("hidden");
+
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       }
     }
   };
 
+  // Initialize and set up event listeners
   showPaymentStatusMessage();
 
   popupClose.addEventListener("click", () => {
@@ -566,7 +631,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loginPopup.classList.add("hidden");
   });
 
-  //update browser url based on drop down
   sportSelect.addEventListener("change", () => {
     const newUrl = new URL(window.location.href);
     newUrl.searchParams.set("sport", sportSelect.value);
@@ -581,13 +645,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   bookSlotButton.addEventListener("click", bookSlot);
 
-  popupClose.addEventListener("click", () => {
-    popupMessage.classList.add("hidden");
-  });
-
   if (isOwner) {
-    document.getElementById('restrict-selected').addEventListener('click', () => handleMultipleSlotAction('restrict'));
-    document.getElementById('unrestrict-selected').addEventListener('click', () => handleMultipleSlotAction('unrestrict'));
+    document
+      .getElementById("restrict-selected")
+      .addEventListener("click", () => handleMultipleSlotAction("restrict"));
+    document
+      .getElementById("unrestrict-selected")
+      .addEventListener("click", () => handleMultipleSlotAction("unrestrict"));
   }
 
   populateCalendar();
