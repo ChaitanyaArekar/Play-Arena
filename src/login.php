@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: /index.php");
             exit();
         } else {
-            $_SESSION['message'] = "Invalid credentials or user type mismatch.";
+            $_SESSION['message'] = "Invalid credentials.";
             $_SESSION['message_type'] = "error";
         }
     }
