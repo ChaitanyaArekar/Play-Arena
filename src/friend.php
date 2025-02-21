@@ -58,7 +58,7 @@
             scrollTrigger: {
                 trigger: '#bookSection',
                 start: 'top 80%',
-                end: 'bottom 20%',
+                end: 'bottom 80%',
                 scrub: true,
             }
         });
@@ -74,7 +74,7 @@
             scrollTrigger: {
                 trigger: '#bookSection',
                 start: 'top 80%',
-                end: 'bottom 20%',
+                end: 'bottom 80%',
                 scrub: true,
             }
         });
@@ -94,7 +94,7 @@
             scrollTrigger: {
                 trigger: '#bookSection',
                 start: 'top 80%',
-                end: 'bottom 20%',
+                end: 'bottom 80%',
                 scrub: true,
                 toggleActions: 'play none none none',
             }

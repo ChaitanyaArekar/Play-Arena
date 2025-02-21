@@ -115,7 +115,7 @@
                     stagger: 0.2,
                     scrollTrigger: {
                         trigger: '.grid',
-                        start: 'top 100%',
+                        start: 'top 140%',
                         scrub: true,
                         toggleActions: 'play none none none',
                     },
@@ -133,7 +133,7 @@
                     delay: 0.5,
                     scrollTrigger: {
                         trigger: '#heroSection',
-                        start: 'top 100%',
+                        start: 'top 140%',
                         scrub: true,
                         toggleActions: 'play none none none',
                     },
@@ -153,7 +153,7 @@
                     ease: 'power3.out',
                     scrollTrigger: {
                         trigger: '#heroSection',
-                        start: 'top 100%',
+                        start: 'top 140%',
                         scrub: true,
                         toggleActions: 'play none none none',
                     },

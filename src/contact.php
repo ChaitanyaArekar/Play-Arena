@@ -101,7 +101,7 @@
                 scrollTrigger: {
                     trigger: "#contact-title",
                     start: "top 80%",
-                    end: "top 30%",
+                    end: "top 80%",
                     scrub: true,
                 }
             });
@@ -118,7 +118,7 @@
                 scrollTrigger: {
                     trigger: "#contact-desc",
                     start: "top 80%",
-                    end: "top 30%",
+                    end: "top 80%",
                     scrub: true,
                 }
             });
