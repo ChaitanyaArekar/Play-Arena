@@ -10,11 +10,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'owner') {
     exit();
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+//Get environment variablefrom config.php file
+$config = require dirname(__DIR__) . '/config.php';
 
-$uri = $_ENV['MONGODB_URI'];
-$client = new MongoDB\Client($uri);
+$client = new MongoDB\Client($config['MONGODB_URI']);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 

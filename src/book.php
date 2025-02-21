@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../vendor/autoload.php';
 
 //Get environment variablefrom config.php file
-$config = require __DIR__ . '/../config.php';
+$config = require dirname(__DIR__) . '/config.php';
 
 $turf = [
     'name' => 'City Sports Turf',
