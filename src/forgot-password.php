@@ -7,7 +7,7 @@ require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$config = require __DIR__ . '/../config.php';
+$config = require __DIR__ . '/config.php';
 $client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
 
@@ -48,9 +48,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Content
             $mail->isHTML(true);
-            $mail->Subject = "Password Reset - Play Arena";
-            $mail->Body    = "Click the following link to reset your password: <br><br><a href='" . $reset_link . "'>" . $reset_link . "</a><br><br>This link will expire in 1 hour.";
-            $mail->AltBody = "Click the following link to reset your password: \n\n" . $reset_link . "\n\nThis link will expire in 1 hour.";
+            $mail->Subject = "Reset Your Play Arena Password";
+            $mail->Body = '
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .notice {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello from Play Arena!</h2>
+        <p>We received a request to reset your password. If you didn\'t make this request, you can safely ignore this email.</p>
+        
+        <p>To reset your password, click the button below:</p>
+        
+        <p style="text-align: center;">
+            <a href="' . $reset_link . '" class="button" style="color: white;">Reset My Password</a>
+        </p>
+        
+        <p class="notice">
+            ⚠️ This link will expire in 1 hour for security reasons.<br>
+            If you need assistance, please contact our support team.
+        </p>
+        
+        <hr>
+        <p style="font-size: 12px; color: #666;">
+            This email was sent by Play Arena.<br>
+            If you didn\'t request a password reset, please ignore this email or contact support if you have concerns.
+        </p>
+    </div>
+</body>
+</html>';
+            $mail->AltBody = "
+Hello from Play Arena!
+
+We received a request to reset your password. If you didn't make this request, you can safely ignore this email.
+
+To reset your password, copy and paste this link into your browser:
+" . $reset_link . "
+
+⚠️ This link will expire in 1 hour for security reasons.
+
+If you need assistance, please contact our support team.
+
+---
+This email was sent by Play Arena.
+If you didn't request a password reset, please ignore this email or contact support if you have concerns.";
+
 
             $mail->send();
             $_SESSION['message'] = "Password reset instructions have been sent to your email.";
