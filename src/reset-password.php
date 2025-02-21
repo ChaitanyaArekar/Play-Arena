@@ -5,11 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require '../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+$config = require __DIR__ . '/../config.php';
 
-$uri = $_ENV['MONGODB_URI'];
-$client = new MongoDB\Client($uri);
+$client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
 
 if (!isset($_GET['token'])) {

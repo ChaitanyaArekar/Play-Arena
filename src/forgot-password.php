@@ -10,8 +10,8 @@ use PHPMailer\PHPMailer\Exception;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-$uri = $_ENV['MONGODB_URI'];
-$client = new MongoDB\Client($uri);
+$config = require __DIR__ . '/../config.php';
+$client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -33,20 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         // Send reset email
-        $reset_link = "http://localhost:8000/src/reset-password.php?token=" . $token;
+        $reset_link = $config['HOST'] . "/src/reset-password.php?token=" . $token;
         $mail = new PHPMailer(true);
 
         try {
             $mail->isSMTP();
-            $mail->Host       = $_ENV['SMTP_HOST'];
+            $mail->Host       = $config['SMTP_HOST'];
             $mail->SMTPAuth   = true;
-            $mail->Username   = $_ENV['SMTP_USERNAME'];
-            $mail->Password   = $_ENV['SMTP_PASSWORD'];
+            $mail->Username   = $config['SMTP_USERNAME'];
+            $mail->Password   = $config['SMTP_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = $_ENV['SMTP_PORT'];
+            $mail->Port       = $config['SMTP_PORT'];
 
             // Recipients
-            $mail->setFrom($_ENV['SMTP_FROM_ADDRESS'], $_ENV['SMTP_FROM_NAME']);
+            $mail->setFrom($config['SMTP_FROM_ADDRESS'], $config['SMTP_FROM_NAME']);
             $mail->addAddress($email);
 
             // Content
