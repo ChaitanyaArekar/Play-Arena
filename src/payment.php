@@ -4,7 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$config = require __DIR__ . '/../config.php';
+//Get environment variablefrom config.php file
+$config = require dirname(__DIR__) . '/config.php';
 
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');

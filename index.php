@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
+    header("Location: /index.php");
+    exit();
+}
 include 'src/home.php';
 include 'src/booking.php';
 include 'src/contact.php';
@@ -17,6 +24,5 @@ include 'Public/chatbot.php';
         <path fill-rule="evenodd" d="M10 18a1 1 0 01-1-1V5.414L5.707 8.707a1 1 0 11-1.414-1.414l5-5a1 1 0 011.414 0l5 5a1 1 0 11-1.414 1.414L11 5.414V17a1 1 0 01-1 1z" clip-rule="evenodd" />
     </svg>
 </div>
-
 
 <script src="Public/taptoup.js"></script>

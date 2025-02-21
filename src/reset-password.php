@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require '../vendor/autoload.php';
 
-$config = require __DIR__ . '/../config.php';
+//Get environment variablefrom config.php file
+$config = require dirname(__DIR__) . '/config.php';
 
 $client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;

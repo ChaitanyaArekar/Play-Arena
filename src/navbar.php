@@ -236,7 +236,7 @@ if ($isLoggedIn) {
         }
 
         function confirmLogout() {
-            window.location.href = '?logout=true';
+            window.location.href = '/index.php?logout=true';
         }
 
         logoutModal.addEventListener('click', function(event) {

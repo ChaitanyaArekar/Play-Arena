@@ -71,7 +71,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'owner') {
     exit;
 }
 
-// Load config instead of directly using dotenv
+//Get environment variablefrom config.php file
 $config = require dirname(__DIR__) . '/config.php';
 
 $client = new MongoDB\Client($config['MONGODB_URI']);
