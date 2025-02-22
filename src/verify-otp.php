@@ -1,5 +1,6 @@
 <?php
 // verify-otp.php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,9 +14,10 @@ $client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
 $pendingCollection = $client->Play_Arena->pending_registrations;
 
-$pendingCollection->createIndex([
-    'created_at' => 1
-], ['expireAfterSeconds' => 600]);
+$expirationThreshold = time() - 600;
+$pendingCollection->deleteMany([
+    'created_at' => ['$lt' => $expirationThreshold]
+]);
 
 function sendOTPEmail($email, $otp)
 {
@@ -31,7 +33,7 @@ function sendOTPEmail($email, $otp)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = $config['SMTP_PORT'];
 
-        $mail->setFrom('your-email@gmail.com', 'Play Arena');
+        $mail->setFrom($config['SMTP_USERNAME'], 'Play Arena');
         $mail->addAddress($email);
 
         $mail->isHTML(true);
@@ -59,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $email = $_SESSION['pending_email'] ?? '';
 
     if (empty($email)) {
-        echo json_encode(['status' => 'error', 'message' => 'Session expired. Please register again.']);
+        $_SESSION['message'] = "Session expired. Please register again.";
+        $_SESSION['message_type'] = "error";
+        echo json_encode(['status' => 'error']);
         exit();
     }
 
@@ -80,16 +84,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             );
 
             if ($result->getModifiedCount() > 0 || $result->getUpsertedCount() > 0) {
-                echo json_encode(['status' => 'success', 'message' => 'New OTP has been sent to your email.']);
+                $_SESSION['message'] = "New OTP has been sent to your email.";
+                $_SESSION['message_type'] = "success";
+                echo json_encode(['status' => 'success']);
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Failed to update OTP. Please try again.']);
+                $_SESSION['message'] = "Failed to update OTP. Please try again.";
+                $_SESSION['message_type'] = "error";
+                echo json_encode(['status' => 'error']);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to send email. Please try again.']);
+            $_SESSION['message'] = "Failed to send email. Please try again.";
+            $_SESSION['message_type'] = "error";
+            echo json_encode(['status' => 'error']);
         }
     } catch (Exception $e) {
         error_log("Error in resend OTP: " . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => 'An error occurred. Please try again.']);
+        $_SESSION['message'] = "An error occurred. Please try again.";
+        $_SESSION['message_type'] = "error";
+        echo json_encode(['status' => 'error']);
     }
     exit();
 }
@@ -159,6 +171,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_otp'])) {
             color: #666;
             margin-left: 10px;
         }
+
+        @keyframes dotAnimation {
+            0%, 20% { content: "." }
+            40% { content: ".." }
+            60%, 100% { content: "..." }
+        }
+
+        .loading::after {
+            content: "";
+            animation: dotAnimation 1.5s infinite;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
@@ -183,8 +211,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_otp'])) {
         </form>
         <p>
             Didn't receive OTP?
-            <a href="#" id="resendOtp">Resend OTP</a>
-            <span id="countdown" class="countdown"></span>
+            <span id="resendWrapper">
+                <a href="#" id="resendOtp">Resend OTP</a>
+                <span id="countdown" class="countdown"></span>
+            </span>
         </p>
     </div>
 
@@ -210,7 +240,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_otp'])) {
                 duration: 0.5,
                 ease: "power3.out"
             });
-
             setTimeout(() => {
                 gsap.to(messageDiv, {
                     opacity: 0,
@@ -222,24 +251,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_otp'])) {
             }, 3000);
         }
 
-        const resendLink = document.getElementById('resendOtp');
-        const countdownSpan = document.getElementById('countdown');
         let countdownInterval;
 
         function startCountdown(seconds) {
-            resendLink.classList.add('disabled');
-            let remainingTime = seconds;
-
-            countdownInterval = setInterval(() => {
-                remainingTime--;
-                countdownSpan.textContent = `(${remainingTime}s)`;
-
-                if (remainingTime <= 0) {
+            const resendLink = document.getElementById('resendOtp');
+            const countdownSpan = document.getElementById('countdown');
+            
+            if (resendLink && countdownSpan) {
+                resendLink.classList.add('disabled');
+                let remainingTime = seconds;
+                
+                // Clear any existing interval
+                if (countdownInterval) {
                     clearInterval(countdownInterval);
-                    resendLink.classList.remove('disabled');
-                    countdownSpan.textContent = '';
                 }
-            }, 1000);
+                
+                countdownInterval = setInterval(() => {
+                    remainingTime--;
+                    countdownSpan.textContent = `(${remainingTime}s)`;
+                    if (remainingTime <= 0) {
+                        clearInterval(countdownInterval);
+                        resendLink.classList.remove('disabled');
+                        countdownSpan.textContent = '';
+                    }
+                }, 1000);
+            }
+        }
+
+        function showLoadingState() {
+            const resendWrapper = document.getElementById('resendWrapper');
+            const loadingSpan = document.createElement('span');
+            loadingSpan.id = 'loadingText';
+            loadingSpan.className = 'loading';
+            loadingSpan.textContent = 'Sending';
+            resendWrapper.innerHTML = '';
+            resendWrapper.appendChild(loadingSpan);
+        }
+
+        function restoreResendLink() {
+            const resendWrapper = document.getElementById('resendWrapper');
+            resendWrapper.innerHTML = `
+                <a href="#" id="resendOtp">Resend OTP</a>
+                <span id="countdown" class="countdown"></span>
+            `;
+            attachResendListener();
+        }
+
+        function attachResendListener() {
+            const resendLink = document.getElementById('resendOtp');
+            if (resendLink) {
+                resendLink.addEventListener('click', handleResendClick);
+            }
+        }
+
+        async function handleResendClick(e) {
+            e.preventDefault();
+            const resendLink = document.getElementById('resendOtp');
+            
+            if (resendLink.classList.contains('disabled')) {
+                return;
+            }
+
+            showLoadingState();
+
+            try {
+                const response = await fetch('verify-otp.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'action=resend'
+                });
+                const data = await response.json();
+                
+                restoreResendLink();
+                
+                // Reload the page to show the session message
+                window.location.reload();
+            } catch (error) {
+                restoreResendLink();
+                showMessage('An error occurred. Please try again.', 'error');
+            }
         }
 
         const initialMessage = document.getElementById('message');
@@ -255,32 +347,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_otp'])) {
             }, 3000);
         }
 
-        resendLink.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            if (resendLink.classList.contains('disabled')) {
-                return;
-            }
-
-            fetch('verify-otp.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'action=resend'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    showMessage(data.message, data.status);
-                    if (data.status === 'success') {
-                        startCountdown(60);
-                    }
-                })
-                .catch(error => {
-                    showMessage('An error occurred. Please try again.', 'error');
-                });
-        });
-
+        // Initial setup
+        attachResendListener();
         startCountdown(60);
     </script>
 </body>

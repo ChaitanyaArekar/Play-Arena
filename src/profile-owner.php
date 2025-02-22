@@ -101,7 +101,7 @@ function formatTime($hour)
                     </div>
                 </div>
                 <div class="profile-actions mt-4 flex justify-center">
-                    <a href="forgot-password.php" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <a href="edit-profile.php" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                         <i class="fas fa-edit mr-2"></i>Edit Profile
                     </a>
                 </div>
