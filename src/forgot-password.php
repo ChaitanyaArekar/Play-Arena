@@ -7,7 +7,7 @@ require '../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$config = require __DIR__ . '/config.php';
+$config = require dirname(__DIR__) . '/config.php';
 $client = new MongoDB\Client($config['MONGODB_URI']);
 $collection = $client->Play_Arena->users;
 

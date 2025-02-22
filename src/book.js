@@ -469,7 +469,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         isCancellingInProgress = true;
-        // Update button UI
         cancelConfirmYes.innerHTML = getLoadingAnimation("Processing");
         cancelConfirmYes.disabled = true;
         cancelConfirmNo.disabled = true;
@@ -486,13 +485,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const result = await response.json();
-        cancelConfirmPopup.classList.add("hidden");
 
         if (result.success) {
-          await populateTimeSlots();
-          popupText.textContent = `Slots ${action}ed successfully`;
-          popupMessage.classList.remove("hidden");
+          // Get current URL and sport
+          const currentUrl = new URL(window.location.href);
+          const currentSport = sportSelect.value;
+
+          // Update the sport parameter and reload
+          currentUrl.searchParams.set("sport", currentSport);
+          window.location.href = currentUrl.toString();
         } else {
+          cancelConfirmPopup.classList.add("hidden");
           popupText.textContent = result.message || `Failed to ${action} slots`;
           popupMessage.classList.remove("hidden");
         }
@@ -502,7 +505,6 @@ document.addEventListener("DOMContentLoaded", () => {
         popupMessage.classList.remove("hidden");
       } finally {
         isCancellingInProgress = false;
-        // Restore button UI
         cancelConfirmYes.innerHTML = "Yes";
         cancelConfirmYes.disabled = false;
         cancelConfirmNo.disabled = false;
@@ -512,6 +514,39 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelConfirmNo.onclick = () => {
       cancelConfirmPopup.classList.add("hidden");
     };
+  };
+
+  // Similarly update the cancellation handler for single slots
+  const handleSingleSlotCancellation = async (slot) => {
+    try {
+      const response = await fetch(backendUrl, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sport: sportSelect.value,
+          date: selectedDate,
+          hour: slot.hour,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Get current URL and sport
+        const currentUrl = new URL(window.location.href);
+        const currentSport = sportSelect.value;
+
+        // Update the sport parameter and reload
+        currentUrl.searchParams.set("sport", currentSport);
+        window.location.href = currentUrl.toString();
+      } else {
+        popupText.textContent = result.message || "Failed to cancel booking";
+        popupMessage.classList.remove("hidden");
+      }
+    } catch (error) {
+      popupText.textContent = "Error cancelling booking";
+      popupMessage.classList.remove("hidden");
+    }
   };
 
   const stripe = Stripe(stripePublicKey);
