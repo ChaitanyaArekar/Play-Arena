@@ -18,6 +18,10 @@ $client = new MongoDB\Client($config['MONGODB_URI']);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 
+// Fetch user details from database
+$usersCollection = $client->Play_Arena->users;
+$userDetails = $usersCollection->findOne(['email' => $_SESSION['email']]);
+
 $userBookings = $bookingsCollection->find(
     ['email' => $_SESSION['email']],
     ['sort' => ['date' => -1, 'hour' => -1]]
@@ -86,17 +90,17 @@ function formatTime($hour)
             <!-- Profile Card -->
             <div class="profile-card">
                 <div class="profile-picture">
-                    <?php echo strtoupper(substr($_SESSION['user_full_name'], 0, 1)); ?>
+                    <?php echo strtoupper(substr($userDetails['full_name'], 0, 1)); ?>
                 </div>
                 <div class="profile-info">
-                    <h2><?php echo htmlspecialchars($_SESSION['user_full_name']); ?></h2>
+                    <h2><?php echo htmlspecialchars($userDetails['full_name']); ?></h2>
                     <div class="info-item">
                         <i class="fas fa-envelope"></i>
-                        <span><?php echo htmlspecialchars($_SESSION['email']); ?></span>
+                        <span><?php echo htmlspecialchars($userDetails['email']); ?></span>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-user-tag"></i>
-                        <span>User</span>
+                        <span><?php echo ucfirst(htmlspecialchars($userDetails['user_type'])); ?></span>
                     </div>
                 </div>
                 <div class="profile-actions mt-4 flex justify-center">

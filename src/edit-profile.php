@@ -19,9 +19,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $updates = [];
     $message = '';
 
+    $bookingsCollection = $client->turf->bookings;
+    $cancelRequestsCollection = $client->turf->cancel_requests;
+    $pendingCollection = $client->Play_Arena->pending_registrations;
+
     if (!empty($_POST['full_name']) && $_POST['full_name'] !== $user['full_name']) {
         $updates['full_name'] = $_POST['full_name'];
         $_SESSION['user_full_name'] = $_POST['full_name'];
+        
+        $bookingsCollection->updateMany(
+            ['email' => $_SESSION['email']], 
+            ['$set' => ['full_name' => $_POST['full_name']]]
+        );
+        
+        $cancelRequestsCollection->updateMany(
+            ['email' => $_SESSION['email']], 
+            ['$set' => ['full_name' => $_POST['full_name']]]
+        );
+        
+        $pendingCollection->updateMany(
+            ['email' => $_SESSION['email']], 
+            ['$set' => ['full_name' => $_POST['full_name']]]
+        );
+        
         $message .= 'Name updated successfully. ';
     }
 
