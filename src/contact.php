@@ -82,7 +82,7 @@ $jsConfig = json_encode([
                 scrollTrigger: {
                     trigger: "#contact-title",
                     start: "top 80%",
-                    end: "top 80%",
+                    end: "top 20%",
                     scrub: true,
                 }
             });
@@ -99,7 +99,7 @@ $jsConfig = json_encode([
                 scrollTrigger: {
                     trigger: "#contact-desc",
                     start: "top 80%",
-                    end: "top 80%",
+                    end: "top 20%",
                     scrub: true,
                 }
             });
@@ -116,7 +116,7 @@ $jsConfig = json_encode([
                 stagger: 0.1,
                 scrollTrigger: {
                     trigger: "#contactForm",
-                    start: "top 80%",
+                    start: "top 120%",
                     toggleActions: "play none none none",
                     scrub: true,
                 }
@@ -155,7 +155,7 @@ $jsConfig = json_encode([
                 }, {
                     opacity: 1,
                     y: 0,
-                    duration: 0.5,
+                    duration: 1,
                     ease: "power3.out"
                 }
             );
@@ -164,7 +164,7 @@ $jsConfig = json_encode([
                 gsap.to("#message", {
                     opacity: 0,
                     y: -30,
-                    duration: 0.5,
+                    duration: 1,
                     ease: "power3.out",
                     onComplete: () => messageDiv.style.display = "none"
                 });
