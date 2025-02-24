@@ -2,6 +2,8 @@
 require 'vendor/autoload.php';
 
 use MongoDB\Client;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class Database
 {
@@ -156,6 +158,52 @@ class Database
         }
     }
 
+    private function sendBookingCancelledEmail($booking)
+    {
+        $config = require __DIR__ . '/config.php';
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host       = $config['SMTP_HOST'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $config['SMTP_USERNAME'];
+            $mail->Password   = $config['SMTP_PASSWORD'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $config['SMTP_PORT'];
+
+            $mail->setFrom($config['SMTP_FROM_ADDRESS'], $config['SMTP_FROM_NAME']);
+            $mail->addAddress($booking['email'], $booking['full_name']);
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Booking Cancelled - ' . ucfirst($booking['sport']) . ' Turf';
+
+            $hour = intval($booking['hour']);
+            $period = $hour >= 12 ? 'PM' : 'AM';
+            $displayHour = $hour % 12;
+            $displayHour = $displayHour == 0 ? 12 : $displayHour;
+
+            $mail->Body = "
+            <h2>Booking Cancelled by Owner</h2>
+            <p>Dear {$booking['full_name']},</p>
+            <p>Your booking has been cancelled by the venue owner. A refund will be processed shortly.</p>
+            <strong>Booking Details:</strong>
+            <ul>
+                <li>Date: " . date('F j, Y', strtotime($booking['date'])) . "</li>
+                <li>Sport: " . ucfirst($booking['sport']) . "</li>
+                <li>Time Slot: {$displayHour}:00 {$period}</li>
+            </ul>
+            <p>We apologize for any inconvenience caused.</p>
+            <p>Thank you for using Play Arena!</p>";
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("Email sending failed: {$mail->ErrorInfo}");
+            return false;
+        }
+    }
+
     public function cancelSlot($date, $hour, $sport)
     {
         try {
@@ -201,6 +249,8 @@ class Database
                                 ]);
                             }
                         }
+
+                        $this->sendBookingCancelledEmail($booking);
 
                         $slot['status'] = 'available';
 

@@ -13,12 +13,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user_type'] !== 'user') {
 //Get environment variablefrom config.php file
 $config = require dirname(__DIR__) . '/config.php';
 
-// Initialize MongoDB connection using config
 $client = new MongoDB\Client($config['MONGODB_URI']);
 $bookingsCollection = $client->turf->bookings;
 $cancelRequestsCollection = $client->turf->cancel_requests;
 
-// Fetch user details from database
 $usersCollection = $client->Play_Arena->users;
 $userDetails = $usersCollection->findOne(['email' => $_SESSION['email']]);
 
@@ -40,12 +38,27 @@ $upcomingBookings = [];
 $pastBookings = [];
 $currentDateTime = new DateTime();
 
+$timeFilter = isset($_GET['timeFilter']) ? $_GET['timeFilter'] : 'all';
+$currentDateTime = new DateTime();
+
 foreach ($userBookings as $booking) {
     $bookingDateTime = new DateTime($booking['date'] . ' ' . str_pad($booking['hour'], 2, '0', STR_PAD_LEFT) . ':00:00');
-    if ($bookingDateTime > $currentDateTime) {
-        $upcomingBookings[] = $booking;
-    } else {
-        $pastBookings[] = $booking;
+    
+    $include = true;
+    if ($timeFilter === 'week') {
+        $weekAgo = (new DateTime())->modify('-1 week');
+        $include = $bookingDateTime >= $weekAgo;
+    } elseif ($timeFilter === 'month') {
+        $monthAgo = (new DateTime())->modify('-1 month');
+        $include = $bookingDateTime >= $monthAgo;
+    }
+
+    if ($include) {
+        if ($bookingDateTime > $currentDateTime) {
+            $upcomingBookings[] = $booking;
+        } else {
+            $pastBookings[] = $booking;
+        }
     }
 }
 
@@ -112,8 +125,16 @@ function formatTime($hour)
 
             <!-- Bookings Section -->
             <div class="bookings-section">
-                <div class="bookings-header">
-                    <h2>Your Bookings</h2>
+                <div class="bookings-header flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">All Bookings</h2>
+                    <div class="filter-controls flex items-center space-x-2">
+                        <label class="text-sm text-gray-600 font-medium">Filter:</label>
+                        <select id="timeFilter" class="border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="window.location.href='?timeFilter=' + this.value">
+                            <option value="week" <?php echo $timeFilter === 'week' ? 'selected' : ''; ?>>Past Week</option>
+                            <option value="month" <?php echo $timeFilter === 'month' ? 'selected' : ''; ?>>Past Month</option>
+                            <option value="all" <?php echo $timeFilter === 'all' ? 'selected' : ''; ?>>All Time</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="bookings-tabs">
@@ -277,7 +298,6 @@ function formatTime($hour)
             }
         };
 
-        // Tab switching function
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -289,7 +309,6 @@ function formatTime($hour)
             event.target.classList.add('active');
         }
 
-        // User-specific booking cancellation function
         function initiateBookingCancel(bookingId, sport, date, hour) {
             Swal.fire({
                 ...swalOptions,
