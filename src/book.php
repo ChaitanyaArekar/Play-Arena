@@ -56,6 +56,14 @@ foreach ($requiredEnvVars as $var) {
                 color: white;
             }
         }
+
+        .popup-container {
+            display: none;
+        }
+
+        .popup-container.active {
+            display: flex;
+        }
     </style>
 
 </head>
@@ -70,6 +78,7 @@ foreach ($requiredEnvVars as $var) {
     <div class="max-h-screen pt-7">
         <div class="container mx-auto">
             <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Turf Details Section -->
                 <div class="lg:w-1/4">
                     <div class="bg-white rounded-lg shadow-lg">
                         <div class="relative h-64">
@@ -158,6 +167,17 @@ foreach ($requiredEnvVars as $var) {
                             </label>
                             <div id="time-slots-grid" class="grid grid-cols-4 gap-3"></div>
                         </div>
+
+                        <!-- Slot Details Imfo -->
+                        <div class="absolute bottom-0 left-0 right-0 border-t bg-gray-50 px-2 sm:px-4 py-2 rounded-lg">
+                            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span>Available</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-red-500 rounded-full"></span>Booked</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-gray-300 rounded-full"></span>Restricted</span>
+                                <span class="flex items-center gap-1"><i class="far fa-clock text-xs sm:text-sm"></i>1hr/slot</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -224,7 +244,7 @@ foreach ($requiredEnvVars as $var) {
             </div>
         </div>
     </div>
-    <div id="popup-message" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div id="popup-message" class="popup-container fixed inset-0 bg-black bg-opacity-50 items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <p id="popup-text" class="text-lg font-semibold text-gray-800 text-center mb-6"></p>
             <button id="popup-close"
@@ -234,7 +254,7 @@ foreach ($requiredEnvVars as $var) {
         </div>
     </div>
 
-    <div id="login-popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div id="login-popup" class="popup-container fixed inset-0 bg-black bg-opacity-50 items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <p class="text-lg font-semibold text-gray-800 text-center mb-6">Please login to book slots</p>
             <div class="flex gap-4">
@@ -249,7 +269,7 @@ foreach ($requiredEnvVars as $var) {
             </div>
         </div>
     </div>
-    <div id="cancel-confirm-popup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div id="cancel-confirm-popup" class="popup-container fixed inset-0 bg-black bg-opacity-50 items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
             <div id="cancel-confirm-details" class="mb-6">
             </div>

@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               </div>`;
 
-            cancelConfirmPopup.classList.remove("hidden");
+            showPopup("cancel-confirm-popup");
 
             cancelConfirmYes.onclick = async () => {
               if (isCancellingInProgress) return;
@@ -326,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 const result = await response.json();
-                cancelConfirmPopup.classList.add("hidden");
+                hidePopup("cancel-confirm-popup");
 
                 if (result.success) {
                   popupText.textContent = "Booking cancelled successfully!";
@@ -351,11 +351,11 @@ document.addEventListener("DOMContentLoaded", () => {
                   popupText.textContent =
                     result.message || "Failed to cancel booking";
                 }
-                popupMessage.classList.remove("hidden");
+                showPopup("popup-message");
               } catch (error) {
-                cancelConfirmPopup.classList.add("hidden");
+                hidePopup("cancel-confirm-popup");
                 popupText.textContent = "Error cancelling booking";
-                popupMessage.classList.remove("hidden");
+                showPopup("popup-message");
               } finally {
                 isCancellingInProgress = false;
                 cancelConfirmYes.innerHTML = "Yes";
@@ -365,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             cancelConfirmNo.onclick = () => {
-              cancelConfirmPopup.classList.add("hidden");
+              hidePopup("cancel-confirm-popup");
             };
           };
         }
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one slot";
-      popupMessage.classList.remove("hidden");
+      showPopup("popup-message");
       return;
     }
 
@@ -429,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (validSlots.length === 0) {
       popupText.textContent = `No slots available to ${action}`;
-      popupMessage.classList.remove("hidden");
+      showPopup("popup-message");
       return;
     }
 
@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    cancelConfirmPopup.classList.remove("hidden");
+    showPopup("cancel-confirm-popup");
 
     cancelConfirmYes.onclick = async () => {
       if (isCancellingInProgress) return;
@@ -495,14 +495,14 @@ document.addEventListener("DOMContentLoaded", () => {
           currentUrl.searchParams.set("sport", currentSport);
           window.location.href = currentUrl.toString();
         } else {
-          cancelConfirmPopup.classList.add("hidden");
+          hidePopup("cancel-confirm-popup");
           popupText.textContent = result.message || `Failed to ${action} slots`;
-          popupMessage.classList.remove("hidden");
+          showPopup("popup-message");
         }
       } catch (error) {
-        cancelConfirmPopup.classList.add("hidden");
+        hidePopup("cancel-confirm-popup");
         popupText.textContent = `Error ${action}ing slots`;
-        popupMessage.classList.remove("hidden");
+        showPopup("popup-message");
       } finally {
         isCancellingInProgress = false;
         cancelConfirmYes.innerHTML = "Yes";
@@ -512,7 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     cancelConfirmNo.onclick = () => {
-      cancelConfirmPopup.classList.add("hidden");
+      hidePopup("cancel-confirm-popup");
     };
   };
 
@@ -541,11 +541,11 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = currentUrl.toString();
       } else {
         popupText.textContent = result.message || "Failed to cancel booking";
-        popupMessage.classList.remove("hidden");
+        showPopup("popup-message");
       }
     } catch (error) {
       popupText.textContent = "Error cancelling booking";
-      popupMessage.classList.remove("hidden");
+      showPopup("popup-message");
     }
   };
 
@@ -557,14 +557,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!selectedDate || selectedTimeSlots.size === 0) {
       popupText.textContent = "Please select at least one time slot";
-      popupMessage.classList.remove("hidden");
+      showPopup("popup-message");
       return;
     }
 
     const isLoggedIn =
       document.getElementById("user-logged-in").value === "true";
     if (!isLoggedIn) {
-      loginPopup.classList.remove("hidden");
+      showPopup("login-popup");
       return;
     }
 
@@ -603,7 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       popupText.textContent = "Error processing payment. Please try again.";
-      popupMessage.classList.remove("hidden");
+      showPopup("popup-message");
     } finally {
       isBookingInProgress = false;
       // Restore button UI
@@ -643,7 +643,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         popupText.innerHTML = "";
         popupText.appendChild(messageDiv);
-        popupMessage.classList.remove("hidden");
+        showPopup("popup-message");
 
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
@@ -651,11 +651,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Add these functions to handle popup visibility:
+
+  function showPopup(popupId) {
+    document.getElementById(popupId).classList.add('active');
+  }
+
+  function hidePopup(popupId) {
+    document.getElementById(popupId).classList.remove('active');
+  }
+
   // Initialize and set up event listeners
   showPaymentStatusMessage();
 
   popupClose.addEventListener("click", () => {
-    popupMessage.classList.add("hidden");
+    hidePopup("popup-message");
   });
 
   loginConfirm.addEventListener("click", () => {
@@ -663,7 +673,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   loginCancel.addEventListener("click", () => {
-    loginPopup.classList.add("hidden");
+    hidePopup("login-popup");
   });
 
   sportSelect.addEventListener("change", () => {
