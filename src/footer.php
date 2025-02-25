@@ -136,8 +136,12 @@
 
         <div class="w-full flex justify-between items-center md:flex-row flex-col pt-4 border-t-[1px] p-4 sm:p-8 border-t-[#9d9ca3] footer-text text-center sm:text-left">
             <p class="font-poppins font-normal text-center text-[18px] sm:text-[18px] leading-[27px] text-white mb-0 sm:mb-5">
-                &#169; 2024 PlayArena. All Rights Reserved.
+                &#169; 2024 PlayArena. All Rights Reserved. | Made by
+                <a href="https://yadavritesh.vercel.app" target="_blank" class="hover:text-blue-400">Ritesh</a>
+                <span>and</span>
+                <a href="https://github.com/ChaitanyaArekar" target="_blank" class="hover:text-blue-400">Chaitanya</a>
             </p>
+
             <div class="flex justify-center space-x-6 mt-4 sm:mt-0 sm:mr-16 mr-0 text-xl mb-5">
                 <a href="https://linkedin.com" class="icon text-white" target="_blank"><i class="fab fa-linkedin"></i></a>
                 <a href="https://twitter.com" class="icon text-white" target="_blank"><i class="fab fa-twitter"></i></a>
