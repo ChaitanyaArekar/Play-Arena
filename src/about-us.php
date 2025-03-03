@@ -27,11 +27,13 @@ if (session_status() === PHP_SESSION_NONE) {
     </style>
 </head>
 
-<body class="bg-gradient-to-b from-white to-gray-50 py-2 px-4">
-    <?php $textColor = 'text-black'; ?>
-    <header class="<?php echo $textColor; ?>">
-        <?php include 'navbar.php'; ?>
-    </header>
+<body class="bg-gradient-to-b from-white to-gray-50">
+    <div class="py-2 px-4">
+        <?php $textColor = 'text-black'; ?>
+        <header class="<?php echo $textColor; ?>">
+            <?php include 'navbar.php'; ?>
+        </header>
+    </div>
 
     <section class="about-us pt-20">
         <div class="relative w-full overflow-hidden bg-gradient-to-r from-green-50 to-blue-50 py-16">
