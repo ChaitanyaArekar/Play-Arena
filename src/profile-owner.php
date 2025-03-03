@@ -123,11 +123,11 @@ function formatTime($hour)
 
             <!-- Bookings Section -->
             <div class="bookings-section">
-                <div class="bookings-header flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold">All Bookings</h2>
-                    <div class="filter-controls flex items-center space-x-2">
+                <div class="bookings-header flex flex-col sm:flex-row justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold mb-2 sm:mb-0">All Bookings</h2>
+                    <div class="filter-controls w-full sm:w-auto flex items-center space-x-2">
                         <label class="text-sm text-gray-600 font-medium">Filter:</label>
-                        <select id="timeFilter" class="border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="window.location.href='?timeFilter=' + this.value">
+                        <select id="timeFilter" class="flex-1 sm:flex-none border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="window.location.href='?timeFilter=' + this.value">
                             <option value="week" <?php echo $timeFilter === 'week' ? 'selected' : ''; ?>>Past Week</option>
                             <option value="month" <?php echo $timeFilter === 'month' ? 'selected' : ''; ?>>Past Month</option>
                             <option value="all" <?php echo $timeFilter === 'all' ? 'selected' : ''; ?>>All Time</option>
