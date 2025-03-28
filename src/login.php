@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (isset($_POST['login'])) {
         $email = strtolower($_POST['email']);
         $password = $_POST['password'];
-        
+
         $user = $collection->findOne(['email' => $email]);
 
         if ($user && password_verify($password, $user['password'])) {
@@ -114,6 +114,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="login.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add these styles for the eye icon */
+        .password-field {
+            position: relative;
+        }
+
+        .password-field .fas {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: none;
+            /* Hide eye icon by default */
+        }
+
+        .password-field input[type="password"],
+        .password-field input[type="text"] {
+            padding-right: 35px;
+        }
+    </style>
 </head>
 
 <body>
@@ -133,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="login.php" method="POST">
                 <input type="email" name="email" placeholder="Email" required><br><br>
                 <div class="password-field">
-                    <input type="password" name="password" id="loginPassword" placeholder="Password" required><br><br>
+                    <input type="password" name="password" id="loginPassword" placeholder="Password" required oninput="toggleEyeVisibility('loginPassword', 'loginEye')"><br><br>
                     <i class="fas fa-eye" id="loginEye" onclick="togglePasswordVisibility('loginPassword', 'loginEye')"></i>
                 </div>
                 <button type="submit" name="login" class="btn">Login</button>
@@ -151,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="full_name" placeholder="Full Name" required><br><br>
                 <input type="email" name="email" placeholder="Email" required><br><br>
                 <div class="password-field">
-                    <input type="password" name="password" id="registerPassword" placeholder="Password" required><br><br>
+                    <input type="password" name="password" id="registerPassword" placeholder="Password" required oninput="toggleEyeVisibility('registerPassword', 'registerEye')"><br><br>
                     <i class="fas fa-eye" id="registerEye" onclick="togglePasswordVisibility('registerPassword', 'registerEye')"></i>
                 </div>
                 <button type="submit" name="register" class="btn">Register</button>
@@ -208,6 +229,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 eyeIcon.classList.add("fa-eye");
             }
         }
+
+        // New function to show/hide eye icon based on input value
+        function toggleEyeVisibility(passwordFieldId, eyeIconId) {
+            const passwordField = document.getElementById(passwordFieldId);
+            const eyeIcon = document.getElementById(eyeIconId);
+
+            if (passwordField.value.length > 0) {
+                eyeIcon.style.display = 'block';
+            } else {
+                eyeIcon.style.display = 'none';
+            }
+        }
+
+        // Initialize eye icon visibility on page load
+        window.onload = function() {
+            toggleEyeVisibility('loginPassword', 'loginEye');
+            toggleEyeVisibility('registerPassword', 'registerEye');
+        };
     </script>
 </body>
 
