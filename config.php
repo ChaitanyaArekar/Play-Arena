@@ -17,12 +17,10 @@ if (!function_exists('getEnvVar')) {
             $envLoaded = true;
         }
 
-        // First try .env loaded variables
         if (isset($_ENV[$key])) {
             return $_ENV[$key];
         }
 
-        // Then try system environment variables (including Render env vars)
         $systemEnv = getenv($key);
         if ($systemEnv !== false) {
             return $systemEnv;
@@ -32,7 +30,6 @@ if (!function_exists('getEnvVar')) {
     }
 }
 
-// Load all environment variables
 $config = [
     'MONGODB_URI' => getEnvVar('MONGODB_URI'),
     'HOST' => getEnvVar('HOST'),
@@ -54,7 +51,6 @@ $config = [
     'EMAILJS_TEMPLATE_ID' => getEnvVar('EMAILJS_TEMPLATE_ID')
 ];
 
-// Check for required environment variables
 $requiredVars = [
     'MONGODB_URI',
     'HOST',
